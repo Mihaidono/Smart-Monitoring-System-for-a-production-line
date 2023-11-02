@@ -1,0 +1,9 @@
+train: images/train # training images relative to 'path'
+val: images/train # training labels relative to 'path'
+
+# Classes
+names:
+  0: red_storage
+  1: blue_storage
+  2: white_storage
+  3: empty_storage
