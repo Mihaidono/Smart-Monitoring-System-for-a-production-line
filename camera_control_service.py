@@ -13,8 +13,9 @@ current_position = {}
 
 def detect_camera_movement() -> bool:
     global previous_position
-    if len(previous_position) == 0:
-        return False
+    global current_position
+    if len(previous_position) == 0 and len(current_position) != 0:
+        return True
     elif previous_position['tilt'] != current_position['tilt'] or previous_position['pan'] != current_position['pan']:
         return True
     return False
@@ -101,6 +102,8 @@ def on_message_txt(client, userdata, msg):
     global previous_position
     global current_position
     current_position = json.loads(msg.payload)
+    print(previous_position)
+    print(current_position)
     if detect_camera_movement():
         previous_position = current_position
 
