@@ -7,16 +7,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-previous_pan = {}
+previous_position = {}
+current_position = {}
 
 
-def detect_camera_movement(json_message: dict) -> bool:
-    global previous_pan
-    if len(previous_pan) == 0:
-        previous_pan = json_message
-        return True
-    elif previous_pan['tilt'] != json_message['tilt'] or previous_pan['pan'] != json_message['pan']:
-        previous_pan = json_message
+def detect_camera_movement() -> bool:
+    global previous_position
+    if len(previous_position) == 0:
+        return False
+    elif previous_position['tilt'] != current_position['tilt'] or previous_position['pan'] != current_position['pan']:
         return True
     return False
 
@@ -99,9 +98,11 @@ def on_connect_txt(client, userdata, flags, rc):
 
 
 def on_message_txt(client, userdata, msg):
-    json_message = json.loads(msg.payload)
-    if detect_camera_movement(json_message):
-        print(json_message)
+    global previous_position
+    global current_position
+    current_position = json.loads(msg.payload)
+    if detect_camera_movement():
+        previous_position = current_position
 
 
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")  # single value
