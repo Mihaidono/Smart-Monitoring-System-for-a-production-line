@@ -8,9 +8,14 @@ import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
 from storage_detection_model import container_detector
-import camera_control_service as camera_control
 
 load_dotenv()
+
+
+def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
+    image_data = base64.b64decode(strip_encoded_image_data(json_message['data']))
+    image_np = np.frombuffer(image_data, np.uint8)
+    return cv2.imdecode(image_np, cv2.IMREAD_COLOR)
 
 
 def strip_encoded_image_data(image_encoded_json_data: str) -> str:
@@ -25,9 +30,7 @@ def on_connect_txt(client, userdata, flags, rc):
 def on_message_txt(client, userdata, msg):
     json_message = json.loads(msg.payload)
     if "data" in json_message:
-        image_data = base64.b64decode(strip_encoded_image_data(json_message['data']))
-        image_np = np.frombuffer(image_data, np.uint8)
-        img = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+        img = decode_image_from_base64(json_message)
         if img is not None:
             container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
                                                         float(os.getenv('RECOGNITION_THRESHOLD')))
