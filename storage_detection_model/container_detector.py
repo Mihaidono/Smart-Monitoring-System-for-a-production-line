@@ -58,7 +58,7 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
 # region Testing:
 
 # region Train
-train_container_detector(os.getenv('YOLO_MODEL_USED'), int(os.getenv('EPOCHS_TO_TRAIN')))
+# train_container_detector(os.getenv('YOLO_MODEL_USED'), int(os.getenv('EPOCHS_TO_TRAIN')))
 # endregion
 
 # region Detection test

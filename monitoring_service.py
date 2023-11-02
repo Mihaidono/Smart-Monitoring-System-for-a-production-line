@@ -8,6 +8,7 @@ import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
 from storage_detection_model import container_detector
+import camera_control_service as camera_control
 
 load_dotenv()
 
@@ -30,15 +31,17 @@ def on_message_txt(client, userdata, msg):
         if img is not None:
             container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
                                                         float(os.getenv('RECOGNITION_THRESHOLD')))
-            # client_txt.publish()
+        # de adaugat camera_control
         else:
             print("Failed to decode the image")
 
 
-txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")  # single value
-txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')  # one /more values separated by ,
-port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))  # single value
-keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))  # single value
+txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
+txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
+port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
+keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
+username = os.getenv('TXT_USERNAME')
+passwd = os.getenv('TXT_PASSWD')
 
 client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt

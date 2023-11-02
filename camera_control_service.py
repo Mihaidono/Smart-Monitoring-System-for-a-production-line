@@ -16,7 +16,8 @@ def detect_camera_movement() -> bool:
     global current_position
     if len(previous_position) == 0 and len(current_position) != 0:
         return True
-    elif previous_position['tilt'] != current_position['tilt'] or previous_position['pan'] != current_position['pan']:
+    elif (previous_position['tilt'] != current_position['tilt'] or
+          previous_position['pan'] != current_position['pan']):
         return True
     return False
 
@@ -102,18 +103,16 @@ def on_message_txt(client, userdata, msg):
     global previous_position
     global current_position
     current_position = json.loads(msg.payload)
-    print(previous_position)
-    print(current_position)
     if detect_camera_movement():
         previous_position = current_position
 
 
-txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")  # single value
-txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')  # one /more values separated by ,
-port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))  # single value
-keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))  # single value
-username = os.getenv('TXT_USERNAME')  # single value
-passwd = os.getenv('TXT_PASSWD')  # single value
+txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
+txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
+port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
+keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
+username = os.getenv('TXT_USERNAME')
+passwd = os.getenv('TXT_PASSWD')
 
 client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
