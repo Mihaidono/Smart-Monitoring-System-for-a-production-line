@@ -27,11 +27,11 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
         print(e)
         exit(0)
     results = trained_model(image)[0]
-    container_positions = []
+    center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
-        # print(x1, y1, x2, y2, score, class_id)
         if score > threshold:
+            # draw rectangle
             if int(class_id) == 0:
                 cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 4)
             elif int(class_id) == 1:
@@ -40,23 +40,11 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
                 cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 255), 4)
             elif int(class_id) == 3:
                 cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 0), 4)
-            container_positions.append([(x1, y1), (x2, y2)])
+            # add object's center
+            center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
 
-    container_count = 1
-    for left_upper_corner, right_lower_corner in container_positions:
-        print(f'Container {container_count} Length:\n' +
-              f'x axis: {abs(right_lower_corner[0] - left_upper_corner[0])}, '
-              f'y axis: {abs(left_upper_corner[1] - right_lower_corner[1])}')
-        container_count += 1
-
-    x_sorted_array = sorted(container_positions, key=lambda x: x[0][0])
-    print(x_sorted_array)
-    y_sorted_array = sorted(container_positions, key=lambda x: x[1][1])
-    print(y_sorted_array)
-
-    cv2.imshow('Image with Objects', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #TODO: implementare pentru sortare si return la matrice in loc de array
+    return center_of_objects, len(center_of_objects)
 
 
 # region Testing:
