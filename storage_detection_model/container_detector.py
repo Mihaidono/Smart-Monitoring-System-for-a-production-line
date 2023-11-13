@@ -20,9 +20,12 @@ def coordinates_to_matrix(coordinates: List):
         matrix_appropriate_index = coord_prefix_groups.index(x_coord_prefix)
         coord_matrix[matrix_appropriate_index].append(point)
 
+    # TODO: remake column pairing
+
     for index, column in enumerate(coord_matrix):
         coord_matrix[index] = sorted(column, key=lambda coord: coord[1], reverse=True)
 
+    bot_extremity, top_extremity = get_top_and_bottom_extremities(coord_matrix)
     print(coord_matrix)
 
 
@@ -35,6 +38,24 @@ def get_coordinates_prefix_groups(sorted_list: List, axis: int = 0):  # axis 0 =
             coord_prefix_groups[prefix_position] = coord_prefix
             prefix_position += 1
     return coord_prefix_groups
+
+
+def get_top_and_bottom_extremities(sorted_matrix: List[List]):
+    top_extremity = (0, 0)
+    bottom_extremity = (0, 0)
+    for column in sorted_matrix:
+        if len(column) == 3:
+            if column[0][1] > top_extremity[1]:
+                top_extremity = column[0]
+            elif column[0][0] > top_extremity[0]:
+                top_extremity = column[0]
+
+            if column[2][1] > bottom_extremity[1]:
+                bottom_extremity = column[2]
+            elif column[2][0] > bottom_extremity[0]:
+                bottom_extremity = column[2]
+
+    return bottom_extremity, top_extremity
 
 
 def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float) -> (float, float):
