@@ -22,10 +22,14 @@ def coordinates_to_matrix(coordinates: List):
             coord_prefix_group[prefix_position] = x_coord_prefix
             prefix_position += 1
 
-    for point in coordinates:
+    for point in x_sorted_coordinates:
         x_coord_prefix = int(point[0] / 10)
         matrix_appropriate_index = coord_prefix_group.index(x_coord_prefix)
         coord_matrix[matrix_appropriate_index].append(point)
+
+    for column in coord_matrix:
+        while len(column) < 3:
+            column.append(None)
 
     print(coord_matrix)
 
