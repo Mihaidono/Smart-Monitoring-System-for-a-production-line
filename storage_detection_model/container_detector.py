@@ -1,5 +1,6 @@
 import base64
 import os
+from typing import List
 
 import cv2
 import numpy as np
@@ -7,6 +8,26 @@ from dotenv import load_dotenv
 from ultralytics import YOLO
 
 load_dotenv()
+
+
+def coordinates_to_matrix(coordinates: List):
+    coord_matrix = [[], [], []]
+    coord_prefix_group = [0] * 3
+    x_sorted_coordinates = sorted(coordinates, key=lambda x: x[0])
+
+    prefix_position = 0
+    for coord in x_sorted_coordinates:
+        x_coord_prefix = int(coord[0] / 10)
+        if x_coord_prefix not in coord_prefix_group:
+            coord_prefix_group[prefix_position] = x_coord_prefix
+            prefix_position += 1
+
+    for point in coordinates:
+        x_coord_prefix = int(point[0] / 10)
+        matrix_appropriate_index = coord_prefix_group.index(x_coord_prefix)
+        coord_matrix[matrix_appropriate_index].append(point)
+
+    print(coord_matrix)
 
 
 def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float) -> (float, float):
@@ -31,20 +52,16 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
         if score > threshold:
-            # draw rectangle
-            if int(class_id) == 0:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 4)
-            elif int(class_id) == 1:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 4)
-            elif int(class_id) == 2:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 255), 4)
-            elif int(class_id) == 3:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 0), 4)
-            # add object's center
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
+            # TODO: implementare pentru sortare si return la matrice in loc de array
+    if len(center_of_objects) < 8:
+        raise Exception("Detection Error! Number of objects detected is too low")
 
-    #TODO: implementare pentru sortare si return la matrice in loc de array
-    return center_of_objects, len(center_of_objects)
+    # cv2.imshow('Image with Objects', image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    coordinates_to_matrix(center_of_objects)
+    return center_of_objects
 
 
 # region Testing:

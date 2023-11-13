@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+from typing import List
 
 import cv2
 import numpy as np
@@ -10,6 +11,31 @@ from dotenv import load_dotenv
 from storage_detection_model import container_detector
 
 load_dotenv()
+
+camera_standby_timer = 0
+
+start_frame_positions = []
+previous_frame_positions = []
+
+
+def is_processing_starting(current_frame_positions: List[float]) -> bool:
+    global previous_frame_positions
+    global start_frame_positions
+
+    if not start_frame_positions:
+        start_frame_positions = current_frame_positions
+        return False
+
+    if not previous_frame_positions and start_frame_positions != current_frame_positions:
+        previous_frame_positions = current_frame_positions
+        return False
+
+    if current_frame_positions != previous_frame_positions and current_frame_positions != start_frame_positions:
+        start_frame_positions = []
+        previous_frame_positions = []
+        return True
+
+    return False
 
 
 def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
@@ -32,9 +58,10 @@ def on_message_txt(client, userdata, msg):
     if "data" in json_message:
         img = decode_image_from_base64(json_message)
         if img is not None:
-            container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
-                                                        float(os.getenv('RECOGNITION_THRESHOLD')))
-        # de adaugat camera_control
+            coordinates = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
+                                                                      float(os.getenv('RECOGNITION_THRESHOLD')))
+
+        # TODO: de adaugat camera_control
         else:
             print("Failed to decode the image")
 
