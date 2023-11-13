@@ -12,26 +12,29 @@ load_dotenv()
 
 def coordinates_to_matrix(coordinates: List):
     coord_matrix = [[], [], []]
-    coord_prefix_group = [0] * 3
     x_sorted_coordinates = sorted(coordinates, key=lambda x: x[0])
-
-    prefix_position = 0
-    for coord in x_sorted_coordinates:
-        x_coord_prefix = int(coord[0] / 10)
-        if x_coord_prefix not in coord_prefix_group:
-            coord_prefix_group[prefix_position] = x_coord_prefix
-            prefix_position += 1
+    coord_prefix_groups = get_coordinates_prefix_groups(x_sorted_coordinates, 0)
 
     for point in x_sorted_coordinates:
         x_coord_prefix = int(point[0] / 10)
-        matrix_appropriate_index = coord_prefix_group.index(x_coord_prefix)
+        matrix_appropriate_index = coord_prefix_groups.index(x_coord_prefix)
         coord_matrix[matrix_appropriate_index].append(point)
 
-    for column in coord_matrix:
-        while len(column) < 3:
-            column.append(None)
+    for index, column in enumerate(coord_matrix):
+        coord_matrix[index] = sorted(column, key=lambda coord: coord[1], reverse=True)
 
     print(coord_matrix)
+
+
+def get_coordinates_prefix_groups(sorted_list: List, axis: int = 0):  # axis 0 => x axis ; axis 1 => y axis
+    coord_prefix_groups = [0] * 3
+    prefix_position = 0
+    for coord in sorted_list:
+        coord_prefix = int(coord[axis] / 10)
+        if coord_prefix not in coord_prefix_groups:
+            coord_prefix_groups[prefix_position] = coord_prefix
+            prefix_position += 1
+    return coord_prefix_groups
 
 
 def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float) -> (float, float):
