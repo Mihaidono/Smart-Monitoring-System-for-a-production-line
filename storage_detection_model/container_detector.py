@@ -9,8 +9,6 @@ from ultralytics import YOLO
 
 load_dotenv()
 
-max_dbp = 15  # maximum distance between points
-
 
 def coordinates_to_matrix(coordinates: List):
     coord_matrix = [[], [], []]
@@ -20,17 +18,13 @@ def coordinates_to_matrix(coordinates: List):
     for index, column in enumerate(coord_matrix):
         coord_matrix[index] = sorted(column, key=lambda coord: coord[1], reverse=True)
 
-    bot_extremity, top_extremity = get_top_and_bottom_extremities(coord_matrix)
-    print(coord_matrix, '\n', bot_extremity, '\n', top_extremity)
 
-
-def fit_matrix_columns(sorted_list: List, axis: int = 0) -> List[List]:
-    global max_dbp
+def fit_matrix_columns(sorted_list: List) -> List[List]:
     coordinates_matrix = [[], [], []]
     group_count = 0
     previous_element = sorted_list[0]
     for point in sorted_list:
-        if point[0] - previous_element[0] < max_dbp:
+        if point[0] - previous_element[0] < 15:
             coordinates_matrix[group_count].append(point)
             previous_element = point
         else:
@@ -38,24 +32,6 @@ def fit_matrix_columns(sorted_list: List, axis: int = 0) -> List[List]:
             coordinates_matrix[group_count].append(point)
             previous_element = point
     return coordinates_matrix
-
-
-def get_top_and_bottom_extremities(sorted_matrix: List[List]):
-    top_extremity = (0, 0)
-    bottom_extremity = (0, 0)
-    for column in sorted_matrix:
-        if len(column) == 3:
-            if column[0][1] > top_extremity[1]:
-                top_extremity = column[0]
-            elif column[0][0] > top_extremity[0]:
-                top_extremity = column[0]
-
-            if column[2][1] > bottom_extremity[1]:
-                bottom_extremity = column[2]
-            elif column[2][0] > bottom_extremity[0]:
-                bottom_extremity = column[2]
-
-    return bottom_extremity, top_extremity
 
 
 def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float) -> (float, float):
@@ -81,13 +57,9 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
         x1, y1, x2, y2, score, class_id = result
         if score > threshold:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
-            # TODO: implementare pentru sortare si return la matrice in loc de array
-    if len(center_of_objects) < 8:
-        raise Exception("Detection Error! Number of objects detected is too low")
-
-    # cv2.imshow('Image with Objects', image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow('Image with Objects', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     coordinates_to_matrix(center_of_objects)
     return center_of_objects
 
