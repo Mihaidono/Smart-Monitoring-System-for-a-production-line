@@ -53,10 +53,10 @@ def on_message_txt(client, userdata, msg):
             print("Failed to decode the image")
 
 
-txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")  # single value
-txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')  # one /more values separated by ,
-port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))  # single value
-keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))  # single value
+txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
+txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
+port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
+keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 
 client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
