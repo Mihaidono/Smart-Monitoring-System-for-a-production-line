@@ -35,7 +35,7 @@ def on_message_txt(client, userdata, msg):
             if previous_img is None:
                 previous_img = np.zeros_like(img)
                 gray_diff = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                threshold = 0.8 * np.sum(gray_diff)
+                threshold = 0.3 * np.sum(gray_diff)
             diff = cv2.absdiff(img, previous_img)
             gray_diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
             if np.sum(gray_diff) >= threshold:
