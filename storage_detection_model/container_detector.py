@@ -87,9 +87,6 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
         x1, y1, x2, y2, score, class_id = result
         if score > threshold:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
-    # cv2.imshow('Image with Objects', image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
     coordinates_matrix = coordinates_to_matrix(center_of_objects)
     evidence_matrix = get_missing_storage_spaces(coordinates_matrix)
     zeros_in_evidence = np.argwhere(np.array(evidence_matrix) == 0)
