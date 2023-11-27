@@ -157,7 +157,9 @@ def set_camera_position_default():
 
 
 def on_connect_txt(client, userdata, flags, rc):
-    client.subscribe('i/ptu/pos')
+    if rc == 0:
+        print("Successfully connected to TXT Controller")
+        client.subscribe('i/ptu/pos')
 
 
 def on_message_txt(client, userdata, msg):
@@ -169,6 +171,11 @@ def on_message_txt(client, userdata, msg):
         previous_position = current_position
 
 
+def on_disconnect(client, userdata, rc=0):
+    print("Disconnected result code " + str(rc))
+    client.loop_stop()
+
+
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
@@ -178,12 +185,12 @@ passwd = os.getenv('TXT_PASSWD')
 client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
+client_txt.on_disconnect = on_disconnect
 client_txt.username_pw_set(username=username, password=passwd)
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    print("Successfully connected to TXT Controller")
-    client_txt.loop_forever()
+    client_txt.loop_start()
 except TimeoutError as ex:
     print(f'Failed to connect to TXT: {ex}')
 except Exception as ex:
