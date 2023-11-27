@@ -14,6 +14,8 @@ current_position = {}
 def detect_camera_movement() -> bool:
     global previous_position
     global current_position
+    if not previous_position or not current_position:
+        return False
     if len(previous_position) == 0 and len(current_position) != 0:
         return True
     elif (previous_position['tilt'] != current_position['tilt'] or
@@ -143,7 +145,15 @@ def set_camera_position_stop():
 
 
 def set_camera_position_default():
-    pass
+    while not detect_camera_movement():
+        set_camera_position_home()
+    while not detect_camera_movement():
+        move_camera_right_max()
+    while not detect_camera_movement():
+        move_camera_down_10_degrees()
+    while not detect_camera_movement():
+        move_camera_down_5_degrees()
+    print("Default position assumed")  # idee: adaug un dictionar in care mapez cod pentru fiecare pozitie in stil enum
 
 
 def on_connect_txt(client, userdata, flags, rc):
@@ -154,14 +164,12 @@ def on_message_txt(client, userdata, msg):
     global previous_position
     global current_position
     current_position = json.loads(msg.payload)
+    print(current_position)
     if detect_camera_movement():
         previous_position = current_position
-    set_camera_position_default()
 
 
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
-txt_topics_to_subscribe = os.getenv(
-    "TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 username = os.getenv('TXT_USERNAME')
@@ -173,13 +181,12 @@ client_txt.on_message = on_message_txt
 client_txt.username_pw_set(username=username, password=passwd)
 
 try:
-    client_txt.connect(host=txt_broker_address, port=port_used,
-                       keepalive=keep_alive, )
+    client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
     print("Successfully connected to TXT Controller")
     client_txt.loop_forever()
 except TimeoutError as ex:
     print(f'Failed to connect to TXT: {ex}')
-    exit(-1)
 except Exception as ex:
     print(f'Failed to continue because of {ex}')
-    exit(-1)
+finally:
+    client_txt.disconnect()
