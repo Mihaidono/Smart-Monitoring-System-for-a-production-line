@@ -77,7 +77,6 @@ def on_message_txt(client, userdata, msg):
 
 def on_disconnect(client, userdata, rc=0):
     print(f"Disconnected {client_txt_name} result code " + str(rc))
-    client.loop_stop()
 
 
 is_sampling_automated = True if (os.getenv("IS_AUTOMATED").lower() == "true") else False
@@ -95,7 +94,7 @@ client_txt.on_disconnect = on_disconnect
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    client_txt.loop_start()
+    client_txt.loop_forever()
 except TimeoutError as ex:
     print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
