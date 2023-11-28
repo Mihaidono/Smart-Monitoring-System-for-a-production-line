@@ -35,7 +35,7 @@ def sample_images_by_user_input(json_content: dict):
                 cv2.imshow(f'Image {hashed_image_timestamp} ', img)
                 key_pressed = cv2.waitKey(0)
                 if key_pressed == ord('s'):
-                    cv2.imwrite(f'fischercam_images/{hashed_image_timestamp}.jpg', img)
+                    cv2.imwrite(f'sampled_images/{hashed_image_timestamp}.jpg', img)
                     print(f"Successfully saved {hashed_image_timestamp}.jpg")
                 cv2.destroyAllWindows()
             else:
@@ -51,8 +51,8 @@ def sample_images_automatically(json_content: dict):
         img = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
         if img is not None:
             hashed_image_timestamp = hashlib.sha256(json_content["ts"].encode()).hexdigest()
-            cv2.imwrite(f'images_before_scaling/{hashed_image_timestamp}.jpg', img)
-            time.sleep(5)
+            cv2.imwrite(f'sampled_images/{hashed_image_timestamp}.jpg', img)
+            print(f"Successfully saved image {hashed_image_timestamp}")
         else:
             print("Failed to decode the image")
 
@@ -71,6 +71,7 @@ def on_message_txt(client, userdata, msg):
     json_message = json.loads(msg.payload)
     if is_sampling_automated:
         sample_images_automatically(json_message)
+        time.sleep(sampling_period)
     else:
         sample_images_by_user_input(json_message)
 
