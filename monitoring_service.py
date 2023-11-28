@@ -66,6 +66,11 @@ def on_message_txt(client, userdata, msg):
             print("Failed to decode the image")
 
 
+def on_disconnect(client, userdata, rc=0):
+    print("Disconnected result code " + str(rc))
+    client.loop_stop()
+
+
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
 txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
@@ -76,14 +81,15 @@ passwd = os.getenv('TXT_PASSWD')
 client_txt = mqtt.Client("MonitoringServiceMQTTClient")
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
+client_txt.on_disconnect = on_disconnect
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
     print("Successfully connected to TXT Controller")
-    client_txt.loop_forever()
+    client_txt.loop_start()
 except TimeoutError as ex:
     print(f'Failed to connect to TXT: {ex}')
-    exit(-1)
+    client_txt.disconnect()
 except Exception as ex:
     print(f'Failed to continue because of {ex}')
-    exit(-1)
+    client_txt.disconnect()

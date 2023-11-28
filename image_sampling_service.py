@@ -75,6 +75,11 @@ def on_message_txt(client, userdata, msg):
         sample_images_by_user_input(json_message)
 
 
+def on_disconnect(client, userdata, rc=0):
+    print("Disconnected result code " + str(rc))
+    client.loop_stop()
+
+
 is_sampling_automated = True if (os.getenv("IS_AUTOMATED").lower() == "true") else False
 sampling_period = int(os.getenv("SAMPLING_PERIOD"))
 
@@ -85,6 +90,7 @@ keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 client_txt = mqtt.Client("ImageSamplingMQTTClient")
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
+client_txt.on_disconnect = on_disconnect
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
@@ -92,7 +98,7 @@ try:
     client_txt.loop_start()
 except TimeoutError as ex:
     print(f'Failed to connect to TXT: {ex}')
-    exit(-1)
+    client_txt.disconnect()
 except Exception as ex:
     print(f'Failed to continue because of {ex}')
-    exit(-1)
+    client_txt.disconnect()
