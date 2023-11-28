@@ -174,7 +174,7 @@ def set_camera_position_default():
 
 def on_connect_txt(client, userdata, flags, rc):
     if rc == 0:
-        print("Successfully connected to TXT Controller")
+        print(f"Successfully connected client {client_txt_name} to TXT Controller")
         client.subscribe('i/ptu/pos')
 
 
@@ -185,7 +185,7 @@ def on_message_txt(client, userdata, msg):
 
 
 def on_disconnect(client, userdata, rc=0):
-    print("Disconnected result code " + str(rc))
+    print(f"Disconnected {client_txt_name} result code " + str(rc))
     client.loop_stop()
 
 
@@ -195,7 +195,8 @@ keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
-client_txt = mqtt.Client("CameraControlMQTTClient")
+client_txt_name = "CameraControlMQTTClient"
+client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
@@ -203,10 +204,11 @@ client_txt.username_pw_set(username=username, password=passwd)
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
+    print(f"Successfully connected client {client_txt_name} to TXT Controller")
     client_txt.loop_start()
 except TimeoutError as ex:
-    print(f'Failed to connect to TXT: {ex}')
+    print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
 except Exception as ex:
-    print(f'Failed to continue because of {ex}')
+    print(f'{client_txt_name} failed to continue because of {ex}')
     client_txt.disconnect()

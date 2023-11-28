@@ -49,8 +49,9 @@ def strip_encoded_image_data(image_encoded_json_data: str) -> str:
 
 
 def on_connect_txt(client, userdata, flags, rc):
-    for topic in txt_topics_to_subscribe:
-        client.subscribe(topic)
+    if rc == 0:
+        print(f"Successfully connected client {client_txt_name} to TXT Controller")
+        client.subscribe('i/ptu/pos')
 
 
 def on_message_txt(client, userdata, msg):
@@ -67,7 +68,7 @@ def on_message_txt(client, userdata, msg):
 
 
 def on_disconnect(client, userdata, rc=0):
-    print("Disconnected result code " + str(rc))
+    print(f"Disconnected {client_txt_name} result code " + str(rc))
     client.loop_stop()
 
 
@@ -78,18 +79,19 @@ keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
-client_txt = mqtt.Client("MonitoringServiceMQTTClient")
+client_txt_name = "MonitoringServiceMQTTClient"
+client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    print("Successfully connected to TXT Controller")
+    print(f"Successfully connected client {client_txt_name} to TXT Controller")
     client_txt.loop_start()
 except TimeoutError as ex:
-    print(f'Failed to connect to TXT: {ex}')
+    print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
 except Exception as ex:
-    print(f'Failed to continue because of {ex}')
+    print(f'{client_txt_name} failed to continue because of {ex}')
     client_txt.disconnect()
