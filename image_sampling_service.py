@@ -87,7 +87,7 @@ txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 
-client_txt_name = "ImageSamplingMQTTClient"
+client_txt_name = "ImageSampling Service"
 client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt

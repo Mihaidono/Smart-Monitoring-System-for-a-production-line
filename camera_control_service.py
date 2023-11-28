@@ -195,7 +195,7 @@ keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
-client_txt_name = "CameraControlMQTTClient"
+client_txt_name = "CameraControl Service"
 client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
