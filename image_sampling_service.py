@@ -2,6 +2,7 @@ import base64
 import hashlib
 import json
 import os
+import time
 
 import cv2
 import numpy as np
@@ -11,35 +12,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 previous_img = None
-threshold = 0
+threshold = 0.3
 
 
-def strip_encoded_image_data(image_encoded_json_data: str) -> str:
-    return image_encoded_json_data.split(',', 1)[-1].strip()
-
-
-def on_connect_txt(client, userdata, flags, rc):
-    for topic in txt_topics_to_subscribe:
-        client.subscribe(topic)
-
-
-def on_message_txt(client, userdata, msg):
+def sample_images_by_user_input(json_content: dict):
     global previous_img
     global threshold
-    json_message = json.loads(msg.payload)
-    if "data" in json_message:
-        image_data = base64.b64decode(strip_encoded_image_data(json_message['data']))
+    if "data" in json_content:
+        image_data = base64.b64decode(strip_encoded_image_data(json_content['data']))
         image_np = np.frombuffer(image_data, np.uint8)
         img = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
         if img is not None:
             if previous_img is None:
                 previous_img = np.zeros_like(img)
                 gray_diff = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                threshold = 0.3 * np.sum(gray_diff)
+                threshold *= np.sum(gray_diff)
             diff = cv2.absdiff(img, previous_img)
             gray_diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
             if np.sum(gray_diff) >= threshold:
-                hashed_image_timestamp = hashlib.sha256(json_message["ts"].encode()).hexdigest()
+                hashed_image_timestamp = hashlib.sha256(json_content["ts"].encode()).hexdigest()
                 previous_img = np.copy(img)
                 cv2.imshow(f'Image {hashed_image_timestamp} ', img)
                 key_pressed = cv2.waitKey(0)
@@ -53,19 +44,52 @@ def on_message_txt(client, userdata, msg):
             print("Failed to decode the image")
 
 
+def sample_images_automatically(json_content: dict):
+    if "data" in json_content:
+        image_data = base64.b64decode(strip_encoded_image_data(json_content['data']))
+        image_np = np.frombuffer(image_data, np.uint8)
+        img = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+        if img is not None:
+            hashed_image_timestamp = hashlib.sha256(json_content["ts"].encode()).hexdigest()
+            cv2.imwrite(f'images_before_scaling/{hashed_image_timestamp}.jpg', img)
+            time.sleep(5)
+        else:
+            print("Failed to decode the image")
+
+
+def strip_encoded_image_data(image_encoded_json_data: str) -> str:
+    return image_encoded_json_data.split(',', 1)[-1].strip()
+
+
+def on_connect_txt(client, userdata, flags, rc):
+    if rc == 0:
+        print("Successfully connected to TXT Controller")
+        client.subscribe('i/cam')
+
+
+def on_message_txt(client, userdata, msg):
+    json_message = json.loads(msg.payload)
+    if is_sampling_automated:
+        sample_images_automatically(json_message)
+    else:
+        sample_images_by_user_input(json_message)
+
+
+is_sampling_automated = True if (os.getenv("IS_AUTOMATED").lower() == "true") else False
+sampling_period = int(os.getenv("SAMPLING_PERIOD"))
+
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
-txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 
-client_txt = mqtt.Client()
+client_txt = mqtt.Client("ImageSamplingMQTTClient")
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
     print("Successfully connected to TXT Controller")
-    client_txt.loop_forever()
+    client_txt.loop_start()
 except TimeoutError as ex:
     print(f'Failed to connect to TXT: {ex}')
     exit(-1)
