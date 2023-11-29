@@ -15,13 +15,17 @@ previous_img = None
 threshold = os.getenv("SIMILARITY_THRESHOLD")
 
 
+def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
+    image_data = base64.b64decode(strip_encoded_image_data(json_message['data']))
+    image_np = np.frombuffer(image_data, np.uint8)
+    return cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+
+
 def sample_images_by_user_input(json_content: dict):
     global previous_img
     global threshold
     if "data" in json_content:
-        image_data = base64.b64decode(strip_encoded_image_data(json_content['data']))
-        image_np = np.frombuffer(image_data, np.uint8)
-        img = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+        img = decode_image_from_base64(json_content)
         if img is not None:
             if previous_img is None:
                 previous_img = np.zeros_like(img)

@@ -9,10 +9,11 @@ import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
 from storage_detection_model import container_detector
+import camera_control_service as camera_control
 
 load_dotenv()
 
-camera_standby_timer = 0
+camera_standby_timer = os.getenv("CAMERA_STANDBY_TIME")
 
 start_frame_positions = []
 previous_frame_positions = []
@@ -62,6 +63,7 @@ def on_message_txt(client, userdata, msg):
             coordinates = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
                                                                       float(os.getenv('RECOGNITION_THRESHOLD')))
 
+            camera_control.set_camera_position_default()
         # TODO: de adaugat camera_control
         else:
             print("Failed to decode the image")
