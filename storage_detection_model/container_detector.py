@@ -75,7 +75,7 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
     model.train(data="yolo_config.yaml", epochs=number_of_epochs)
 
 
-def identify_container_units(model_path: str, image: cv2.typing.MatLike, threshold: float):
+def identify_container_units(model_path: str, image: cv2.typing.MatLike, threshold: float) -> List | List[List]:
     detection_model_used = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                         os.path.join('runs', 'detect', model_path, 'weights', 'last.pt'))
     try:
