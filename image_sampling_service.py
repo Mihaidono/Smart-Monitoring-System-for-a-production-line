@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 previous_img = None
-threshold = 0.3
+threshold = os.getenv("SIMILARITY_THRESHOLD")
 
 
 def sample_images_by_user_input(json_content: dict):
