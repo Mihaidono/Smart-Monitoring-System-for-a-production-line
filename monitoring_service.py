@@ -64,7 +64,6 @@ def on_message_txt(client, userdata, msg):
                                                                       float(os.getenv('RECOGNITION_THRESHOLD')))
 
             camera_control.set_camera_position_default()
-        # TODO: de adaugat camera_control
         else:
             print("Failed to decode the image")
 

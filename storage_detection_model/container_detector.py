@@ -89,13 +89,15 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
         x1, y1, x2, y2, score, class_id = result
         if score > threshold:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
-    coordinates_matrix = coordinates_to_matrix(center_of_objects)
+    return coordinates_to_matrix(center_of_objects)
+
+
+def get_missing_workpiece_count(coordinates_matrix: List[List]) -> int:
     evidence_matrix = get_missing_storage_spaces(coordinates_matrix)
     zeros_in_evidence = np.argwhere(np.array(evidence_matrix) == 0)
     if len(zeros_in_evidence):
         missing_positions = ""
         for idx in zeros_in_evidence:
             missing_positions += f'Column {idx[0] + 1}, Row {idx[1] + 1} | '
-        print(f"More than one workpiece missing at:\n{missing_positions.strip()}")
-        return []
-    return coordinates_matrix
+        print(f"More than one workpiece missing at:{missing_positions.strip()}")
+    return len(zeros_in_evidence)
