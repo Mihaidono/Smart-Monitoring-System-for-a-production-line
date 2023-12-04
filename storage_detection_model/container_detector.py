@@ -2,7 +2,6 @@ import os
 from typing import List
 
 import cv2
-import numpy as np
 import yaml
 from dotenv import load_dotenv
 from ultralytics import YOLO
@@ -42,11 +41,11 @@ def get_missing_storage_spaces(coordinate_matrix: List[List]):
         for jdx, coord in enumerate(reference_matrix[idx]):
             if not len(coordinate_matrix) <= idx and not len(coordinate_matrix[idx]) <= jdx:
                 if abs(coordinate_matrix[idx][jdx][1] - reference_matrix[idx][jdx][1]) < similarity_diff:
-                    evidence_matrix[idx][jdx] = 1
+                    evidence_matrix[idx][jdx] = coordinate_matrix[idx][jdx]
                 else:
                     for index, point in enumerate(reference_matrix[idx]):
                         if abs(coordinate_matrix[idx][jdx][1] - point[1]) < similarity_diff:
-                            evidence_matrix[idx][index] = 1
+                            evidence_matrix[idx][index] = coordinate_matrix[idx][jdx]
                             break
     return evidence_matrix
 
@@ -91,14 +90,3 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
         if score > threshold:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
     return coordinates_to_matrix(center_of_objects)
-
-
-def get_missing_workpiece_count(coordinates_matrix: List[List]) -> int:
-    evidence_matrix = get_missing_storage_spaces(coordinates_matrix)
-    zeros_in_evidence = np.argwhere(np.array(evidence_matrix) == 0)
-    if len(zeros_in_evidence):
-        missing_positions = ""
-        for idx in zeros_in_evidence:
-            missing_positions += f'Column {idx[0] + 1}, Row {idx[1] + 1} | '
-        print(f"More than one workpiece missing at:{missing_positions.strip()}")
-    return len(zeros_in_evidence)
