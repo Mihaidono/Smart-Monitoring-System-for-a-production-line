@@ -204,7 +204,6 @@ client_txt.username_pw_set(username=username, password=passwd)
 
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    print(f"Successfully connected client {client_txt_name} to TXT Controller")
     client_txt.loop_start()
 except TimeoutError as ex:
     print(f'{client_txt_name} failed to connect to TXT: {ex}')

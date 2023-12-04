@@ -11,7 +11,8 @@ load_dotenv()
 
 
 def get_local_config_from_yaml():
-    with open('sdm_config.yaml', 'r') as file:
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(current_directory, "sdm_config.yaml"), 'r') as file:
         data = yaml.full_load(file)
         ref_matrix = data.get('reference_matrix')
         sim_diff = data.get('similarity_diff')
