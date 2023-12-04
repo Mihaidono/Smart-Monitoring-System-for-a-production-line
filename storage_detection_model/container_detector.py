@@ -83,7 +83,7 @@ def identify_container_units(model_path: str, image: cv2.typing.MatLike, thresho
         trained_model = YOLO(detection_model_used)
     except Exception as e:
         print(e)
-        exit(0)
+        exit(-1)
     results = trained_model(image)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
