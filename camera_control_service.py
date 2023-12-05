@@ -175,6 +175,7 @@ def set_camera_position_default():
 def on_connect_txt(client, userdata, flags, rc):
     if rc == 0:
         print(f"Successfully connected client {client_txt_name} to TXT Controller")
+        client.connected_flag = True
         client.subscribe('i/ptu/pos')
 
 
@@ -195,7 +196,7 @@ username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
 client_txt_name = "CameraControlService"
-client_txt = mqtt.Client()
+client_txt = mqtt.Client(client_txt_name)
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect

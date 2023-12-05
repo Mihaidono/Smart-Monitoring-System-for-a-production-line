@@ -68,6 +68,7 @@ def strip_encoded_image_data(image_encoded_json_data: str) -> str:
 def on_connect_txt(client, userdata, flags, rc):
     if rc == 0:
         print(f"Successfully connected client {client_txt_name} to TXT Controller")
+        client.connected_flag = True
         client.subscribe('i/cam')
 
 
@@ -92,7 +93,7 @@ port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 
 client_txt_name = "ImageSamplingService"
-client_txt = mqtt.Client()
+client_txt = mqtt.Client(client_txt_name)
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
