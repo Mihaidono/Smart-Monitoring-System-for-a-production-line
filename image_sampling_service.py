@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 previous_img = None
-threshold = os.getenv("SIMILARITY_THRESHOLD")
+threshold = float(os.getenv("SIMILARITY_THRESHOLD"))
 
 
 def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:

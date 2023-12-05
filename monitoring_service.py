@@ -1,20 +1,26 @@
 import base64
 import json
 import os
-import time
 from datetime import datetime
+from typing import List
 
 import cv2
 import numpy as np
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
+import camera_control_service as camera_control
 from storage_detection_model import container_detector
 
 load_dotenv()
 
 camera_standby_timer = os.getenv("CAMERA_STANDBY_TIME")
 previous_timestamp = datetime.utcnow()
+
+first_frame_with_detected_objects = []
+second_frame_with_detected_objects = []
+
+previous_img = None
 
 
 def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
@@ -33,26 +39,50 @@ def on_connect_txt(client, userdata, flags, rc):
         client.subscribe('i/cam')
 
 
+def has_object_moved(filled_coordinate_matrix: List[List]):
+    global first_frame_with_detected_objects
+    global second_frame_with_detected_objects
+
+    if len(first_frame_with_detected_objects) == 0:
+        first_frame_with_detected_objects = filled_coordinate_matrix
+        return False
+
+    if len(second_frame_with_detected_objects) == 0:
+        second_frame_with_detected_objects = filled_coordinate_matrix
+        return False
+
+    for idx in range(len(filled_coordinate_matrix)):
+        for jdx in range(len(filled_coordinate_matrix)):
+            if isinstance(second_frame_with_detected_objects[idx][jdx], type(filled_coordinate_matrix[idx][jdx])) and \
+                    not isinstance(first_frame_with_detected_objects[idx][jdx],
+                                   type(filled_coordinate_matrix[idx][jdx])):
+                return True
+
+    first_frame_with_detected_objects = []
+    second_frame_with_detected_objects = []
+    return False
+
+
 def on_message_txt(client, userdata, msg):
     global previous_timestamp
+    global previous_img
+
     json_message = json.loads(msg.payload)
-    if "data" in json_message:
-        if "ts" in json_message:
-            current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
-            if previous_timestamp < current_timestamp:
-                previous_timestamp = current_timestamp
-                img = decode_image_from_base64(json_message)
-                if img is not None:
-                    coordinates = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
-                                                                              float(os.getenv('RECOGNITION_THRESHOLD')))
-                    print("Lines: ", len(coordinates))
-                    for column in coordinates:
-                        print(len(column), end=",")
-                    print()
-                    # camera_control.set_camera_position_default()
-                else:
-                    print("Failed to decode the image")
-    time.sleep(0.5)
+    if "data" in json_message and "ts" in json_message:
+        current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        if previous_timestamp < current_timestamp:
+            previous_timestamp = current_timestamp
+            img = decode_image_from_base64(json_message)
+            if img is not None:
+                coordinates_matrix = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
+                                                                                 float(os.getenv(
+                                                                                     'RECOGNITION_THRESHOLD')))
+                filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
+                if has_object_moved(filled_coordinates_matrix):
+                    camera_control.set_camera_position_default()
+                # camera_control.set_camera_position_default()
+            else:
+                print("Failed to decode the image")
 
 
 def on_disconnect(client, userdata, rc=0):
