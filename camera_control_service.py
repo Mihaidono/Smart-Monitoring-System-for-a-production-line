@@ -179,7 +179,6 @@ def on_connect_txt(client, userdata, flags, rc):
 
 
 def on_message_txt(client, userdata, msg):
-    global previous_position
     global current_position
     current_position = json.loads(msg.payload)
 

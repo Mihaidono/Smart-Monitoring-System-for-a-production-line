@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import time
 from datetime import datetime
 from typing import List
 
@@ -81,6 +82,7 @@ def on_message_txt(client, userdata, msg):
                 if has_object_moved(filled_coordinates_matrix):
                     camera_control.set_camera_position_default()
                 # camera_control.set_camera_position_default()
+                time.sleep(1)
             else:
                 print("Failed to decode the image")
 
@@ -102,7 +104,6 @@ client_txt = mqtt.Client()
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
-
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
     client_txt.loop_forever()
