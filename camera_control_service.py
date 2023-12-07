@@ -196,7 +196,7 @@ username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
 client_txt_name = "CameraControlService"
-client_txt = mqtt.Client(client_txt_name)
+client_txt = mqtt.Client(client_id=client_txt_name)
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect

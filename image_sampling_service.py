@@ -93,7 +93,7 @@ port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 
 client_txt_name = "ImageSamplingService"
-client_txt = mqtt.Client(client_txt_name)
+client_txt = mqtt.Client(client_id=client_txt_name)
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect

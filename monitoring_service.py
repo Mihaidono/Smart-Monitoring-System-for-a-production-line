@@ -1,7 +1,7 @@
 import base64
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 
 import cv2
@@ -64,13 +64,13 @@ def on_message_txt(client, userdata, msg):
     json_message = json.loads(msg.payload)
     if "data" in json_message and "ts" in json_message:
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        if previous_timestamp < current_timestamp:
+        if previous_timestamp + timedelta(seconds=1) <= current_timestamp:
             previous_timestamp = current_timestamp
             img = decode_image_from_base64(json_message)
             if img is not None:
                 coordinates_matrix = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
                                                                                  float(os.getenv(
-                                                                                     'RECOGNITION_THRESHOLD')))
+                                                                                     'RECOGNITION_THRESHOLD'))) # rulez pe thread separat si astept executia
                 filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
                 if has_object_moved(filled_coordinates_matrix):
                     camera_control.set_camera_position_default()
@@ -99,13 +99,13 @@ username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
 client_txt_name = "MonitoringService"
-client_txt = mqtt.Client(client_txt_name)
+client_txt = mqtt.Client(client_id=client_txt_name)
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    client_txt.loop_start()
+    client_txt.loop_forever()
 except TimeoutError as ex:
     print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
