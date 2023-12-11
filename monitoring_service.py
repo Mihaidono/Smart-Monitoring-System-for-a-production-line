@@ -1,6 +1,8 @@
 import base64
 import json
 import os
+import threading
+import time
 from datetime import datetime, timedelta
 from typing import List
 
@@ -20,7 +22,7 @@ previous_timestamp = datetime.utcnow()
 first_frame_with_detected_objects = []
 second_frame_with_detected_objects = []
 
-previous_img = None
+json_mqtt_data = {}
 
 
 def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
@@ -57,26 +59,21 @@ def has_object_moved(filled_coordinate_matrix: List[List]):
     return False
 
 
+def initiate_camera_position():
+    initiate_camera_pos_thread = threading.Thread(target=camera_control.set_camera_position_default())
+    initiate_camera_pos_thread.start()
+    initiate_camera_pos_thread.join()
+
+
 def on_message_txt(client, userdata, msg):
     global previous_timestamp
-    global previous_img
-
+    global json_mqtt_data
     json_message = json.loads(msg.payload)
     if "data" in json_message and "ts" in json_message:
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
         if previous_timestamp + timedelta(seconds=1) <= current_timestamp:
+            json_mqtt_data = json_message
             previous_timestamp = current_timestamp
-            img = decode_image_from_base64(json_message)
-            if img is not None:
-                coordinates_matrix = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
-                                                                                 float(os.getenv(
-                                                                                     'RECOGNITION_THRESHOLD'))) # rulez pe thread separat si astept executia
-                filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-                if has_object_moved(filled_coordinates_matrix):
-                    camera_control.set_camera_position_default()
-                # camera_control.set_camera_position_default()
-            else:
-                print("Failed to decode the image")
 
 
 def on_disconnect(client, userdata, rc=0):
@@ -105,10 +102,31 @@ client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    client_txt.loop_forever()
+    client_txt.loop_start()
 except TimeoutError as ex:
     print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
 except Exception as ex:
     print(f'{client_txt_name} failed to continue because of {ex}')
     client_txt.disconnect()
+
+initiate_camera_position()
+
+while True:
+    if json_mqtt_data:
+        img = decode_image_from_base64(json_mqtt_data)
+        if img is not None:
+            coordinates_matrix = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
+                                                                             float(os.getenv(
+                                                                                 'RECOGNITION_THRESHOLD')))
+            filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
+            if has_object_moved(filled_coordinates_matrix):
+                print("Starting surveillance of the in-delivery workpiece")
+                camera_control.move_camera_left_20_degrees()
+                camera_control.move_camera_left_20_degrees()
+                camera_control.move_camera_left_10_degrees()
+
+                # ---------- start following the workpiece here ----------
+        else:
+            print("Failed to decode the image")
+    time.sleep(2)

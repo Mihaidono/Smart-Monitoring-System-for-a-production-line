@@ -163,6 +163,7 @@ def set_camera_position_stop():
 
 
 def set_camera_position_default():
+    print("Setting camera position to default ...")
     while not detect_camera_movement():
         set_camera_position_home()
     while not detect_camera_movement():
