@@ -2,6 +2,7 @@ import base64
 import hashlib
 import json
 import os
+import threading
 import time
 from datetime import datetime, timedelta
 
@@ -14,6 +15,7 @@ load_dotenv()
 
 previous_img = None
 previous_timestamp = datetime.utcnow()
+is_img_processing = False
 threshold = float(os.getenv("SIMILARITY_THRESHOLD"))
 
 
@@ -51,6 +53,8 @@ def sample_images_by_user_input(json_content: dict):
 
 
 def sample_images_automatically(json_content: dict):
+    global is_img_processing
+    is_img_processing = True
     if "data" in json_content:
         image_data = base64.b64decode(strip_encoded_image_data(json_content['data']))
         image_np = np.frombuffer(image_data, np.uint8)
@@ -59,6 +63,8 @@ def sample_images_automatically(json_content: dict):
             hashed_image_timestamp = hashlib.sha256(json_content["ts"].encode()).hexdigest()
             cv2.imwrite(f'sampled_images/{hashed_image_timestamp}.jpg', img)
             print(f"Successfully saved image {hashed_image_timestamp}")
+            time.sleep(sampling_period)
+            is_img_processing = False
         else:
             print("Failed to decode the image")
 
@@ -80,8 +86,10 @@ def on_message_txt(client, userdata, msg):
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
         if previous_timestamp + timedelta(seconds=1) <= current_timestamp:
             if is_sampling_automated:
-                sample_images_automatically(json_message)
-                time.sleep(sampling_period)
+                if not is_img_processing:
+                    automatic_sampling_thread = threading.Thread(target=sample_images_automatically,
+                                                                 args=(json_message,))
+                    automatic_sampling_thread.start()
             else:
                 sample_images_by_user_input(json_message)
 
