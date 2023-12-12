@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import time
+from datetime import datetime, timedelta
 
 import cv2
 import numpy as np
@@ -12,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 previous_img = None
+previous_timestamp = datetime.utcnow()
 threshold = float(os.getenv("SIMILARITY_THRESHOLD"))
 
 
@@ -74,11 +76,14 @@ def on_connect_txt(client, userdata, flags, rc):
 
 def on_message_txt(client, userdata, msg):
     json_message = json.loads(msg.payload)
-    if is_sampling_automated:
-        sample_images_automatically(json_message)
-        time.sleep(sampling_period)
-    else:
-        sample_images_by_user_input(json_message)
+    if "ts" in json_message:
+        current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        if previous_timestamp + timedelta(seconds=1) <= current_timestamp:
+            if is_sampling_automated:
+                sample_images_automatically(json_message)
+                time.sleep(sampling_period)
+            else:
+                sample_images_by_user_input(json_message)
 
 
 def on_disconnect(client, userdata, rc=0):
