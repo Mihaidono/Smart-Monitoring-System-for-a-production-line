@@ -99,7 +99,7 @@ def on_disconnect(client, userdata, rc=0):
 
 
 is_sampling_automated = True if (os.getenv("IS_AUTOMATED").lower() == "true") else False
-sampling_period = int(os.getenv("SAMPLING_PERIOD"))
+sampling_period = float(os.getenv("SAMPLING_PERIOD"))
 
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
