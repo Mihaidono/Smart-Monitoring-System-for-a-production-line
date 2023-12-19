@@ -71,8 +71,10 @@ def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float) ->
 
 
 def train_container_detector(yolo_model_type: str, number_of_epochs: int):
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    config_file = os.path.join(script_directory, "yolo_config.yaml")
     model = YOLO(yolo_model_type + '.yaml')
-    model.train(data="yolo_config.yaml", epochs=number_of_epochs)
+    model.train(data=config_file, epochs=number_of_epochs)
 
 
 def identify_container_units(model_path: str, image: cv2.typing.MatLike, threshold: float) -> List | List[List]:
