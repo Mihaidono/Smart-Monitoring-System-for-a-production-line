@@ -8,6 +8,14 @@ from ultralytics import YOLO
 
 load_dotenv()
 
+detection_model_used = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    os.path.join('runs', 'detect', os.getenv('YOLO_MODEL_PATH'), 'weights', 'best.pt'))
+try:
+    trained_model = YOLO(detection_model_used)
+except Exception as e:
+    print(e)
+    exit(-1)
+
 
 def get_local_config_from_yaml():
     current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -77,18 +85,30 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
     model.train(data=config_file, epochs=number_of_epochs)
 
 
-def identify_container_units(model_path: str, image: cv2.typing.MatLike, threshold: float) -> List | List[List]:
-    detection_model_used = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                        os.path.join('runs', 'detect', model_path, 'weights', 'best.pt'))
-    try:
-        trained_model = YOLO(detection_model_used)
-    except Exception as e:
-        print(e)
-        exit(-1)
+def identify_container_units(image: cv2.typing.MatLike, threshold: float) -> List | List[List]:
     results = trained_model(image)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
         if score > threshold:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
+            # draw rectangle
+            if int(class_id) == 0:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 4)
+            elif int(class_id) == 2:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 4)
+            elif int(class_id) == 3:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 255), 4)
+            elif int(class_id) == 1:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 0), 4)
+            elif int(class_id) == 4:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 222, 173), 4)
+            elif int(class_id) == 5:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (72, 61, 139), 4)
+            elif int(class_id) == 6:
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (139, 0, 0), 4)
+            center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
+    cv2.imshow('Image with Objects', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     return coordinates_to_matrix(center_of_objects)

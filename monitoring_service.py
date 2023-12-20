@@ -116,9 +116,8 @@ while True:
     if json_mqtt_data:
         img = decode_image_from_base64(json_mqtt_data)
         if img is not None:
-            coordinates_matrix = container_detector.identify_container_units(os.getenv('YOLO_MODEL_PATH'), img,
-                                                                             float(os.getenv(
-                                                                                 'RECOGNITION_THRESHOLD')))
+            coordinates_matrix = container_detector.identify_container_units(img,
+                                                                             float(os.getenv('RECOGNITION_THRESHOLD')))
             filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
             if has_object_moved(filled_coordinates_matrix):
                 print("Starting surveillance of the in-delivery workpiece")
