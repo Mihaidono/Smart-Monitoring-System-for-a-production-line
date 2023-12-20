@@ -79,7 +79,7 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
 
 def identify_container_units(model_path: str, image: cv2.typing.MatLike, threshold: float) -> List | List[List]:
     detection_model_used = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                        os.path.join('runs', 'detect', model_path, 'weights', 'last.pt'))
+                                        os.path.join('runs', 'detect', model_path, 'weights', 'best.pt'))
     try:
         trained_model = YOLO(detection_model_used)
     except Exception as e:
