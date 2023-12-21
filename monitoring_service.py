@@ -21,18 +21,16 @@ is_camera_moving = True
 
 previous_timestamp = datetime.utcnow()
 
-first_frame_with_detected_objects = []
-second_frame_with_detected_objects = []
+prev_frame_with_detected_objects = []
+reoccurrence_matrix = np.zeros((3, 3))
 
 json_mqtt_data = {}
 
 
-def check_matrix_position_similarity(pos1, pos2, pos3):
-    if not isinstance(pos2, type(pos1)) and \
-            not isinstance(pos3, type(pos1)) and \
-            isinstance(pos2, type(pos3)):
+def check_workpiece_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
+    if (prev_frame_workpiece is tuple and crt_frame_workpiece is not tuple) or (
+            type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int and crt_frame_workpiece == 0 and prev_frame_workpiece == 0):
         return True
-    #TODO: REMAKE CA IAR NU MERGE >:()
     return False
 
 
@@ -47,26 +45,24 @@ def strip_encoded_image_data(image_encoded_json_data: str) -> str:
 
 
 def has_object_moved(filled_coordinate_matrix: List[List]):
-    global first_frame_with_detected_objects
-    global second_frame_with_detected_objects
+    global prev_frame_with_detected_objects
+    global reoccurrence_matrix
 
-    if len(first_frame_with_detected_objects) == 0:
-        first_frame_with_detected_objects = filled_coordinate_matrix
+    if len(prev_frame_with_detected_objects) == 0:
+        prev_frame_with_detected_objects = filled_coordinate_matrix
         return False
 
-    if len(second_frame_with_detected_objects) == 0:
-        second_frame_with_detected_objects = filled_coordinate_matrix
-        return False
+    for idx in range(0, len(filled_coordinate_matrix)):
+        for jdx in range(0, len(filled_coordinate_matrix)):
+            if check_workpiece_movement(prev_frame_with_detected_objects[idx][jdx], filled_coordinate_matrix[idx][jdx]):
+                reoccurrence_matrix[idx][jdx] += 1
+            else:
+                reoccurrence_matrix[idx][jdx] = 0
 
-    for idx in range(len(filled_coordinate_matrix)):
-        for jdx in range(len(filled_coordinate_matrix)):
-            if check_matrix_position_similarity(first_frame_with_detected_objects[idx][jdx],
-                                                second_frame_with_detected_objects[idx][jdx],
-                                                filled_coordinate_matrix[idx][jdx]): #TODO: REMAKE CA IAR NU MERGE >:()
-                return True
-
-    first_frame_with_detected_objects = []
-    second_frame_with_detected_objects = []
+    prev_frame_with_detected_objects = filled_coordinate_matrix
+    if any(3 in column for column in reoccurrence_matrix):
+        reoccurrence_matrix = np.zeros((3, 3))
+        return True
     return False
 
 
