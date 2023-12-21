@@ -173,6 +173,12 @@ def set_camera_position_default():
     print("Default position assumed")  # idee: adaug un dictionar in care mapez cod pentru fiecare pozitie in stil enum
 
 
+def set_camera_position_to_process_start():
+    move_camera_left_20_degrees()
+    move_camera_left_20_degrees()
+    move_camera_left_10_degrees()
+
+
 def on_connect_txt(client, userdata, flags, rc):
     if rc == 0:
         print(f"Successfully connected client {client_txt_name} to TXT Controller")

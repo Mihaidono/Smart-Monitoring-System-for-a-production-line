@@ -17,12 +17,23 @@ from storage_detection_model import container_detector
 load_dotenv()
 
 camera_standby_timer = os.getenv("CAMERA_STANDBY_TIME")
+is_camera_moving = True
+
 previous_timestamp = datetime.utcnow()
 
 first_frame_with_detected_objects = []
 second_frame_with_detected_objects = []
 
 json_mqtt_data = {}
+
+
+def check_matrix_position_similarity(pos1, pos2, pos3):
+    if not isinstance(pos2, type(pos1)) and \
+            not isinstance(pos3, type(pos1)) and \
+            isinstance(pos2, type(pos3)):
+        return True
+    #TODO: REMAKE CA IAR NU MERGE >:()
+    return False
 
 
 def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
@@ -49,9 +60,9 @@ def has_object_moved(filled_coordinate_matrix: List[List]):
 
     for idx in range(len(filled_coordinate_matrix)):
         for jdx in range(len(filled_coordinate_matrix)):
-            if isinstance(second_frame_with_detected_objects[idx][jdx], type(filled_coordinate_matrix[idx][jdx])) and \
-                    not isinstance(first_frame_with_detected_objects[idx][jdx],
-                                   type(filled_coordinate_matrix[idx][jdx])):
+            if check_matrix_position_similarity(first_frame_with_detected_objects[idx][jdx],
+                                                second_frame_with_detected_objects[idx][jdx],
+                                                filled_coordinate_matrix[idx][jdx]): #TODO: REMAKE CA IAR NU MERGE >:()
                 return True
 
     first_frame_with_detected_objects = []
@@ -60,9 +71,21 @@ def has_object_moved(filled_coordinate_matrix: List[List]):
 
 
 def initiate_camera_position():
+    global is_camera_moving
+    is_camera_moving = True
     initiate_camera_pos_thread = threading.Thread(target=camera_control.set_camera_position_default())
     initiate_camera_pos_thread.start()
     initiate_camera_pos_thread.join()
+    is_camera_moving = False
+
+
+def process_start_camera_position():
+    global is_camera_moving
+    is_camera_moving = True
+    process_start_camera_pos = threading.Thread(target=camera_control.set_camera_position_to_process_start())
+    process_start_camera_pos.start()
+    process_start_camera_pos.join()
+    is_camera_moving = False
 
 
 def on_message_txt(client, userdata, msg):
@@ -100,6 +123,7 @@ client_txt = mqtt.Client(client_id=client_txt_name)
 client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
+
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
     client_txt.loop_start()
@@ -113,7 +137,7 @@ except Exception as ex:
 initiate_camera_position()
 
 while True:
-    if json_mqtt_data:
+    if json_mqtt_data and is_camera_moving is False:
         img = decode_image_from_base64(json_mqtt_data)
         if img is not None:
             coordinates_matrix = container_detector.identify_container_units(img,
@@ -121,11 +145,8 @@ while True:
             filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
             if has_object_moved(filled_coordinates_matrix):
                 print("Starting surveillance of the in-delivery workpiece")
-                camera_control.move_camera_left_20_degrees()
-                camera_control.move_camera_left_20_degrees()
-                camera_control.move_camera_left_10_degrees()
-
+                process_start_camera_position()
                 # ---------- start following the workpiece here ----------
         else:
             print("Failed to decode the image")
-    time.sleep(2)
+    time.sleep(1)
