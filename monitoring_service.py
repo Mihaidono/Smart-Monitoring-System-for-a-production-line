@@ -28,8 +28,9 @@ json_mqtt_data = {}
 
 
 def check_workpiece_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
-    if (prev_frame_workpiece is tuple and crt_frame_workpiece is not tuple) or (
-            type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int and crt_frame_workpiece == 0 and prev_frame_workpiece == 0):
+    if ((prev_frame_workpiece is tuple and crt_frame_workpiece is not tuple) or
+            (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
+             and crt_frame_workpiece == 0 and prev_frame_workpiece == 0)):
         return True
     return False
 
@@ -69,7 +70,7 @@ def has_object_moved(filled_coordinate_matrix: List[List]):
 def initiate_camera_position():
     global is_camera_moving
     is_camera_moving = True
-    initiate_camera_pos_thread = threading.Thread(target=camera_control.set_camera_position_default())
+    initiate_camera_pos_thread = threading.Thread(target=camera_control.set_camera_position_default)
     initiate_camera_pos_thread.start()
     initiate_camera_pos_thread.join()
     is_camera_moving = False
@@ -78,7 +79,7 @@ def initiate_camera_position():
 def process_start_camera_position():
     global is_camera_moving
     is_camera_moving = True
-    process_start_camera_pos = threading.Thread(target=camera_control.set_camera_position_to_process_start())
+    process_start_camera_pos = threading.Thread(target=camera_control.set_camera_position_to_process_start)
     process_start_camera_pos.start()
     process_start_camera_pos.join()
     is_camera_moving = False
