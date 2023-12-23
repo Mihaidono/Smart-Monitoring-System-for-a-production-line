@@ -173,6 +173,12 @@ def set_camera_position_default():
     print("Default position assumed")  # idee: adaug un dictionar in care mapez cod pentru fiecare pozitie in stil enum
 
 
+def get_camera_position():
+    if current_position:
+        return current_position['tilt'], current_position['pan']
+    return None, None
+
+
 def set_camera_position_to_process_start():
     move_camera_left_20_degrees()
     move_camera_left_20_degrees()
