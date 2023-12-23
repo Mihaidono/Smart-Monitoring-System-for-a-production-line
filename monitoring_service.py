@@ -21,6 +21,7 @@ class RoutineStatus:
     INITIALIZING = 0
     SURVEYING_BAY = 1
     SURVEYING_DELIVERY_PROCESS = 2
+    TIMED_OUT = 3
 
 
 camera_standby_timer = os.getenv("CAMERA_STANDBY_TIME")
@@ -54,7 +55,11 @@ def strip_encoded_image_data(image_encoded_json_data: str) -> str:
     return image_encoded_json_data.split(',', 1)[-1].strip()
 
 
-def has_object_moved(filled_coordinate_matrix: List[List]):
+def has_object_moved(detected_workpiece):
+    pass
+
+
+def has_object_moved_from_bay(filled_coordinate_matrix: List[List]):
     global prev_frame_with_detected_objects
     global reoccurrence_matrix
 
@@ -94,17 +99,24 @@ def process_start_camera_position():
     is_camera_moving = False
 
 
+def initialization_routine():
+    global current_routine
+    global prev_frame_with_detected_objects
+    initiate_camera_position()
+    prev_frame_with_detected_objects = []
+    current_routine = RoutineStatus.SURVEYING_BAY
+    time.sleep(1)
+
+
 def survey_bay_routine():
     global current_routine
     while current_routine == RoutineStatus.SURVEYING_BAY:
         if json_mqtt_data and is_camera_moving is False:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
-                coordinates_matrix = container_detector.identify_container_units(img,
-                                                                                 float(os.getenv(
-                                                                                     'RECOGNITION_THRESHOLD')))
+                coordinates_matrix = container_detector.identify_container_units(img)
                 filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-                if has_object_moved(filled_coordinates_matrix):
+                if has_object_moved_from_bay(filled_coordinates_matrix):
                     print("Starting surveillance of the in-delivery workpiece")
                     process_start_camera_position()
                     current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
@@ -119,22 +131,26 @@ def survey_delivery_process_routine():
         if json_mqtt_data and is_camera_moving is False:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
-                coordinates_matrix = container_detector.identify_container_units(img,
-                                                                                 float(os.getenv(
-                                                                                     'RECOGNITION_THRESHOLD')))
-                if not coordinates_matrix:
+                detected_object = container_detector.identify_workpiece(img)
+                if not detected_object:
                     standby_seconds_count += 1
                     if standby_seconds_count == camera_standby_timer:
-                        print("Object lost from field of view. Returning to bay")
-                        current_routine = RoutineStatus.INITIALIZING
+                        current_routine = RoutineStatus.TIMED_OUT
+                        break
+                    time.sleep(1)
                     continue
-                filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-                if has_object_moved(filled_coordinates_matrix):
+                if has_object_moved(detected_object):
                     print("Starting surveillance of the in-delivery workpiece")
                     process_start_camera_position()
                     current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
                     break
         time.sleep(1)
+
+
+def camera_timeout_routine():
+    global current_routine
+    print("Object lost from field of view. Returning to bay")
+    current_routine = RoutineStatus.INITIALIZING
 
 
 def on_message_txt(client, userdata, msg):
@@ -174,9 +190,10 @@ client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
 
 routines = {
-    RoutineStatus.INITIALIZING: initiate_camera_position,
+    RoutineStatus.INITIALIZING: initialization_routine,
     RoutineStatus.SURVEYING_BAY: survey_bay_routine,
-    RoutineStatus.SURVEYING_DELIVERY_PROCESS: survey_delivery_process_routine
+    RoutineStatus.SURVEYING_DELIVERY_PROCESS: survey_delivery_process_routine,
+    RoutineStatus.TIMED_OUT: camera_timeout_routine
 }
 
 try:
