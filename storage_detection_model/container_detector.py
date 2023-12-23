@@ -115,7 +115,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
     return coordinates_to_matrix(center_of_objects)
 
 
-def identify_workpiece(image: cv2.typing.MatLike) -> tuple:
+def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
     results = trained_model(image)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
@@ -132,5 +132,6 @@ def identify_workpiece(image: cv2.typing.MatLike) -> tuple:
     cv2.imshow('Image with Objects', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    detected_object_with_highest_score = max(center_of_objects, key=lambda x: x[1])
-    return detected_object_with_highest_score
+    if center_of_objects:
+        return max(center_of_objects, key=lambda x: x[1])
+    return None

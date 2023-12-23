@@ -32,6 +32,8 @@ previous_timestamp = datetime.utcnow()
 prev_frame_with_detected_objects = []
 reoccurrence_matrix = np.zeros((3, 3))
 
+prev_frame_with_detected_workpiece = ()
+
 json_mqtt_data = {}
 
 current_routine = RoutineStatus.INITIALIZING
@@ -56,7 +58,19 @@ def strip_encoded_image_data(image_encoded_json_data: str) -> str:
 
 
 def has_object_moved(detected_workpiece):
-    pass
+    global prev_frame_with_detected_workpiece
+
+    if not prev_frame_with_detected_workpiece:
+        prev_frame_with_detected_workpiece = detected_workpiece
+        return False
+
+    if abs(prev_frame_with_detected_workpiece[0] - detected_workpiece[0]) > 10 or \
+            abs(prev_frame_with_detected_workpiece[1] - detected_workpiece[1]) > 10:
+        prev_frame_with_detected_workpiece = detected_workpiece
+        return True
+
+    prev_frame_with_detected_workpiece = detected_workpiece
+    return False
 
 
 def has_object_moved_from_bay(filled_coordinate_matrix: List[List]):
