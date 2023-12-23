@@ -111,4 +111,6 @@ def identify_container_units(image: cv2.typing.MatLike, threshold: float) -> Lis
     cv2.imshow('Image with Objects', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    if len(center_of_objects) <= 1:
+        return center_of_objects
     return coordinates_to_matrix(center_of_objects)

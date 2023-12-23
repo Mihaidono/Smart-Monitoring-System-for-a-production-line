@@ -16,6 +16,13 @@ from storage_detection_model import container_detector
 
 load_dotenv()
 
+
+class RoutineStatus:
+    INITIALIZING = 0
+    SURVEYING_BAY = 1
+    SURVEYING_DELIVERY_PROCESS = 2
+
+
 camera_standby_timer = os.getenv("CAMERA_STANDBY_TIME")
 is_camera_moving = True
 
@@ -25,6 +32,8 @@ prev_frame_with_detected_objects = []
 reoccurrence_matrix = np.zeros((3, 3))
 
 json_mqtt_data = {}
+
+current_routine = RoutineStatus.INITIALIZING
 
 
 def check_workpiece_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
@@ -85,6 +94,49 @@ def process_start_camera_position():
     is_camera_moving = False
 
 
+def survey_bay_routine():
+    global current_routine
+    while current_routine == RoutineStatus.SURVEYING_BAY:
+        if json_mqtt_data and is_camera_moving is False:
+            img = decode_image_from_base64(json_mqtt_data)
+            if img is not None:
+                coordinates_matrix = container_detector.identify_container_units(img,
+                                                                                 float(os.getenv(
+                                                                                     'RECOGNITION_THRESHOLD')))
+                filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
+                if has_object_moved(filled_coordinates_matrix):
+                    print("Starting surveillance of the in-delivery workpiece")
+                    process_start_camera_position()
+                    current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                    break
+        time.sleep(1)
+
+
+def survey_delivery_process_routine():
+    global current_routine
+    standby_seconds_count = 0
+    while current_routine == RoutineStatus.SURVEYING_BAY:
+        if json_mqtt_data and is_camera_moving is False:
+            img = decode_image_from_base64(json_mqtt_data)
+            if img is not None:
+                coordinates_matrix = container_detector.identify_container_units(img,
+                                                                                 float(os.getenv(
+                                                                                     'RECOGNITION_THRESHOLD')))
+                if not coordinates_matrix:
+                    standby_seconds_count += 1
+                    if standby_seconds_count == camera_standby_timer:
+                        print("Object lost from field of view. Returning to bay")
+                        current_routine = RoutineStatus.INITIALIZING
+                    continue
+                filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
+                if has_object_moved(filled_coordinates_matrix):
+                    print("Starting surveillance of the in-delivery workpiece")
+                    process_start_camera_position()
+                    current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                    break
+        time.sleep(1)
+
+
 def on_message_txt(client, userdata, msg):
     global previous_timestamp
     global json_mqtt_data
@@ -121,6 +173,12 @@ client_txt.on_connect = on_connect_txt
 client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
 
+routines = {
+    RoutineStatus.INITIALIZING: initiate_camera_position,
+    RoutineStatus.SURVEYING_BAY: survey_bay_routine,
+    RoutineStatus.SURVEYING_DELIVERY_PROCESS: survey_delivery_process_routine
+}
+
 try:
     client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
     client_txt.loop_start()
@@ -131,19 +189,6 @@ except Exception as ex:
     print(f'{client_txt_name} failed to continue because of {ex}')
     client_txt.disconnect()
 
-initiate_camera_position()
-
 while True:
-    if json_mqtt_data and is_camera_moving is False:
-        img = decode_image_from_base64(json_mqtt_data)
-        if img is not None:
-            coordinates_matrix = container_detector.identify_container_units(img,
-                                                                             float(os.getenv('RECOGNITION_THRESHOLD')))
-            filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-            if has_object_moved(filled_coordinates_matrix):
-                print("Starting surveillance of the in-delivery workpiece")
-                process_start_camera_position()
-                # ---------- start following the workpiece here ----------
-        else:
-            print("Failed to decode the image")
-    time.sleep(1)
+    routines[current_routine]()
+    pass
