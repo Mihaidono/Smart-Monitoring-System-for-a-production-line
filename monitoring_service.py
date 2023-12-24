@@ -101,13 +101,12 @@ def is_object_centered():
 
 def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
     x_img_center_coord, y_img_center_coord = img_width / 2, img_height / 2
-    x_ten_percent_value = 0.1 * x_img_center_coord
-    y_ten_percent_value = 0.1 * y_img_center_coord
-    if (x_img_center_coord + x_ten_percent_value > workpiece_coordinates[
-        0] > x_img_center_coord - x_ten_percent_value and
-            y_img_center_coord + y_ten_percent_value > workpiece_coordinates[
-                1] > y_img_center_coord - y_ten_percent_value):
-        pass
+    x_tpt_value = 0.1 * x_img_center_coord
+    y_tpt_value = 0.1 * y_img_center_coord
+
+    if x_img_center_coord + x_tpt_value > workpiece_coordinates[0] > x_img_center_coord - x_tpt_value and \
+            y_img_center_coord + y_tpt_value > workpiece_coordinates[1] > y_img_center_coord - y_tpt_value:
+        return
 
     if workpiece_coordinates[0] > x_img_center_coord + x_img_center_coord / 2:
         camera_control.move_camera_left_10_degrees()
@@ -120,11 +119,11 @@ def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, im
 
     if workpiece_coordinates[1] > y_img_center_coord + y_img_center_coord / 2:
         camera_control.move_camera_up_10_degrees()
-    elif workpiece_coordinates[0] < y_img_center_coord - y_img_center_coord / 2:
+    elif workpiece_coordinates[1] < y_img_center_coord - y_img_center_coord / 2:
         camera_control.move_camera_down_10_degrees()
-    elif workpiece_coordinates[0] > y_img_center_coord:
+    elif workpiece_coordinates[1] > y_img_center_coord:
         camera_control.move_camera_up_5_degrees()
-    elif workpiece_coordinates[0] < y_img_center_coord:
+    elif workpiece_coordinates[1] < y_img_center_coord:
         camera_control.move_camera_down_5_degrees()
 
 
