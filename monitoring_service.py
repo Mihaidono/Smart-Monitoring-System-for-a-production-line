@@ -153,10 +153,10 @@ def survey_delivery_process_routine():
                         break
                     time.sleep(1)
                     continue
+                standby_seconds_count = 0
+
                 if has_object_moved(detected_object):
-                    print("Starting surveillance of the in-delivery workpiece")
-                    process_start_camera_position()
-                    current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+
                     break
         time.sleep(1)
 
