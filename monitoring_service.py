@@ -190,7 +190,6 @@ def survey_delivery_process_routine():
                 if has_object_moved(detected_object):
                     crt_height, crt_width, _ = img.shape
                     center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
-                    break
         time.sleep(1)
 
 
