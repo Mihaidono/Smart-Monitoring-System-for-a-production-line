@@ -30,14 +30,14 @@ def move_camera_left_5_degrees():
     client_txt.publish('o/ptu',
                        json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
                                    'degree': 5}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_right_5_degrees():
     client_txt.publish('o/ptu',
                        json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_right',
                                    'degree': 5}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_up_5_degrees():
@@ -45,7 +45,7 @@ def move_camera_up_5_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_up',
                             'degree': 5}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_down_5_degrees():
@@ -53,7 +53,7 @@ def move_camera_down_5_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_down',
                             'degree': 5}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_left_10_degrees():
@@ -61,7 +61,7 @@ def move_camera_left_10_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
                             'degree': 10}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_right_10_degrees():
@@ -70,7 +70,7 @@ def move_camera_right_10_degrees():
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_right',
                             'degree': 10}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_up_10_degrees():
@@ -78,7 +78,7 @@ def move_camera_up_10_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_up', 'degree': 10}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_down_10_degrees():
@@ -87,7 +87,7 @@ def move_camera_down_10_degrees():
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_down',
                             'degree': 10}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_left_20_degrees():
@@ -96,7 +96,7 @@ def move_camera_left_20_degrees():
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_left',
                             'degree': 20}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_right_20_degrees():
@@ -105,7 +105,7 @@ def move_camera_right_20_degrees():
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_right',
                             'degree': 20}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_up_20_degrees():
@@ -114,7 +114,7 @@ def move_camera_up_20_degrees():
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_up',
                             'degree': 20}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_down_20_degrees():
@@ -123,7 +123,7 @@ def move_camera_down_20_degrees():
                            {'ts': datetime.utcnow().strftime(
                                "%Y-%m-%dT%H:%M:%S.%fZ"),
                                'cmd': 'relmove_down', 'degree': 20}))
-    time.sleep(1)
+    time.sleep(2)
 
 
 def move_camera_right_max():
