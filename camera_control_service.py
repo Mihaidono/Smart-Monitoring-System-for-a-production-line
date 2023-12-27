@@ -171,7 +171,7 @@ def set_camera_position_default():
     move_camera_left_10_degrees()
     move_camera_down_10_degrees()
     move_camera_down_5_degrees()
-    print("Default position assumed")  # idee: adaug un dictionar in care mapez cod pentru fiecare pozitie in stil enum
+    print("Default position assumed")
 
 
 def get_camera_position():
