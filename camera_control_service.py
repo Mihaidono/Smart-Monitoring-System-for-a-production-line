@@ -168,7 +168,6 @@ def set_camera_position_default():
         set_camera_position_home()
     while not detect_camera_movement():
         move_camera_right_max()
-    move_camera_left_10_degrees()
     move_camera_down_10_degrees()
     move_camera_down_5_degrees()
     print("Default position assumed")

@@ -24,7 +24,7 @@ class RoutineStatus:
     TIMED_OUT = 3
 
 
-camera_standby_timer = os.getenv("CAMERA_STANDBY_TIME")
+camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
 is_camera_moving = True
 
 previous_timestamp = datetime.utcnow()
@@ -57,9 +57,8 @@ def strip_encoded_image_data(image_encoded_json_data: str) -> str:
     return image_encoded_json_data.split(',', 1)[-1].strip()
 
 
-def has_object_moved(detected_workpiece):
+def has_workpiece_moved(detected_workpiece):
     global prev_frame_with_detected_workpiece
-
     if not prev_frame_with_detected_workpiece:
         prev_frame_with_detected_workpiece = detected_workpiece
         return False
@@ -73,7 +72,7 @@ def has_object_moved(detected_workpiece):
     return False
 
 
-def has_object_moved_from_bay(filled_coordinate_matrix: List[List]):
+def has_container_moved(filled_coordinate_matrix: List[List]):
     global prev_frame_with_detected_objects
     global reoccurrence_matrix
 
@@ -100,6 +99,8 @@ def is_object_centered():
 
 
 def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
+    global is_camera_moving
+    is_camera_moving = True
     x_img_center_coord, y_img_center_coord = img_width / 2, img_height / 2
     x_tpt_value = 0.1 * x_img_center_coord
     y_tpt_value = 0.1 * y_img_center_coord
@@ -126,22 +127,20 @@ def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, im
     elif workpiece_coordinates[1] < y_img_center_coord:
         camera_control.move_camera_down_5_degrees()
 
+    is_camera_moving = False
+
 
 def initiate_camera_position():
     global is_camera_moving
     is_camera_moving = True
-    initiate_camera_pos_thread = threading.Thread(target=camera_control.set_camera_position_default)
-    initiate_camera_pos_thread.start()
-    initiate_camera_pos_thread.join()
+    camera_control.set_camera_position_default()
     is_camera_moving = False
 
 
 def process_start_camera_position():
     global is_camera_moving
     is_camera_moving = True
-    process_start_camera_pos = threading.Thread(target=camera_control.set_camera_position_to_process_start)
-    process_start_camera_pos.start()
-    process_start_camera_pos.join()
+    camera_control.set_camera_position_to_process_start()
     is_camera_moving = False
 
 
@@ -156,13 +155,13 @@ def initialization_routine():
 
 def survey_bay_routine():
     global current_routine
-    while current_routine == RoutineStatus.SURVEYING_BAY:
+    while True:
         if json_mqtt_data and is_camera_moving is False:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
                 coordinates_matrix = container_detector.identify_container_units(img)
                 filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-                if has_object_moved_from_bay(filled_coordinates_matrix):
+                if has_container_moved(filled_coordinates_matrix):
                     current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
                     break
         time.sleep(1)
@@ -173,7 +172,7 @@ def survey_delivery_process_routine():
     print("Starting surveillance of the in-delivery workpiece")
     process_start_camera_position()
     standby_seconds_count = 0
-    while current_routine == RoutineStatus.SURVEYING_BAY:
+    while True:
         if json_mqtt_data and is_camera_moving is False:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
@@ -187,7 +186,7 @@ def survey_delivery_process_routine():
                     continue
                 standby_seconds_count = 0
 
-                if has_object_moved(detected_object):
+                if has_workpiece_moved(detected_object):
                     crt_height, crt_width, _ = img.shape
                     center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
         time.sleep(1)
@@ -205,7 +204,7 @@ def on_message_txt(client, userdata, msg):
     json_message = json.loads(msg.payload)
     if "data" in json_message and "ts" in json_message:
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        if previous_timestamp + timedelta(seconds=1) <= current_timestamp:
+        if previous_timestamp < current_timestamp:
             json_mqtt_data = json_message
             previous_timestamp = current_timestamp
 
@@ -248,9 +247,11 @@ try:
 except TimeoutError as ex:
     print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
+    exit(-1)
 except Exception as ex:
     print(f'{client_txt_name} failed to continue because of {ex}')
     client_txt.disconnect()
+    exit(-1)
 
 while True:
     routines[current_routine]()
