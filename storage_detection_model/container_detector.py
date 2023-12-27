@@ -92,7 +92,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
-        if score > recognition_threshold:
+        if score > recognition_threshold and class_id in [0, 1, 2, 3]:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
             # draw rectangle
             if int(class_id) == 0:
@@ -103,12 +103,6 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
                 cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 255), 4)
             elif int(class_id) == 1:
                 cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 0), 4)
-            elif int(class_id) == 4:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 222, 173), 4)
-            elif int(class_id) == 5:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (72, 61, 139), 4)
-            elif int(class_id) == 6:
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (139, 0, 0), 4)
     cv2.imshow('Image with Objects', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -120,7 +114,7 @@ def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
-        if score > recognition_threshold:
+        if score > recognition_threshold and class_id in [4, 5, 6]:
             center_of_objects.append((get_object_center_coordinates(x1, y1, x2, y2), score))
             # draw rectangle
             if int(class_id) == 4:

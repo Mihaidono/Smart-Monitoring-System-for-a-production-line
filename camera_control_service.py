@@ -168,6 +168,7 @@ def set_camera_position_default():
         set_camera_position_home()
     while not detect_camera_movement():
         move_camera_right_max()
+    move_camera_left_10_degrees()
     move_camera_down_10_degrees()
     move_camera_down_5_degrees()
     print("Default position assumed")  # idee: adaug un dictionar in care mapez cod pentru fiecare pozitie in stil enum
@@ -182,7 +183,7 @@ def get_camera_position():
 def set_camera_position_to_process_start():
     move_camera_left_20_degrees()
     move_camera_left_20_degrees()
-    move_camera_left_10_degrees()
+    move_camera_left_20_degrees()
 
 
 def on_connect_txt(client, userdata, flags, rc):
