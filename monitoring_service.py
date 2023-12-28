@@ -1,9 +1,8 @@
 import base64
 import json
 import os
-import threading
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List
 
 import cv2
@@ -39,7 +38,7 @@ json_mqtt_data = {}
 current_routine = RoutineStatus.INITIALIZING
 
 
-def check_workpiece_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
+def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
     if ((prev_frame_workpiece is tuple and crt_frame_workpiece is not tuple) or
             (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
              and crt_frame_workpiece == 0 and prev_frame_workpiece == 0)):
@@ -82,7 +81,7 @@ def has_container_moved(filled_coordinate_matrix: List[List]):
 
     for idx in range(0, len(filled_coordinate_matrix)):
         for jdx in range(0, len(filled_coordinate_matrix)):
-            if check_workpiece_movement(prev_frame_with_detected_objects[idx][jdx], filled_coordinate_matrix[idx][jdx]):
+            if check_container_movement(prev_frame_with_detected_objects[idx][jdx], filled_coordinate_matrix[idx][jdx]):
                 reoccurrence_matrix[idx][jdx] += 1
             else:
                 reoccurrence_matrix[idx][jdx] = 0
@@ -92,10 +91,6 @@ def has_container_moved(filled_coordinate_matrix: List[List]):
         reoccurrence_matrix = np.zeros((3, 3))
         return True
     return False
-
-
-def is_object_centered():
-    pass
 
 
 def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
@@ -164,7 +159,7 @@ def survey_bay_routine():
                 if has_container_moved(filled_coordinates_matrix):
                     current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
                     break
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 def survey_delivery_process_routine():
@@ -189,7 +184,7 @@ def survey_delivery_process_routine():
                 if has_workpiece_moved(detected_object):
                     crt_height, crt_width, _ = img.shape
                     center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 def camera_timeout_routine():

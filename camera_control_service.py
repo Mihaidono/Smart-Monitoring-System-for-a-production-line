@@ -12,6 +12,7 @@ previous_position = {}
 current_position = {}
 
 home_position_coord = (-0.06000000238418579, 0.09981644153594971)
+max_right_position_coord = (-0.06400001049041748, 0.9963302612304688)
 
 
 def detect_camera_movement() -> bool:
@@ -28,17 +29,27 @@ def detect_camera_movement() -> bool:
     return False
 
 
+def wait_camera_to_stabilize():
+    standby_count = 0
+    while True:
+        time.sleep(2)
+        if not detect_camera_movement():
+            standby_count += 1
+        if standby_count == 3:
+            break
+
+
 def move_camera_left_5_degrees():
     client_txt.publish('o/ptu',
                        json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
-                                   'degree': 5}), qos=2)
+                                   'degree': 5}))
     time.sleep(1)
 
 
 def move_camera_right_5_degrees():
     client_txt.publish('o/ptu',
                        json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_right',
-                                   'degree': 5}), qos=2)
+                                   'degree': 5}))
     time.sleep(1)
 
 
@@ -46,7 +57,7 @@ def move_camera_up_5_degrees():
     client_txt.publish('o/ptu',
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_up',
-                            'degree': 5}), qos=2)
+                            'degree': 5}))
     time.sleep(1)
 
 
@@ -54,7 +65,7 @@ def move_camera_down_5_degrees():
     client_txt.publish('o/ptu',
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_down',
-                            'degree': 5}), qos=2)
+                            'degree': 5}))
     time.sleep(1)
 
 
@@ -62,7 +73,7 @@ def move_camera_left_10_degrees():
     client_txt.publish('o/ptu',
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
-                            'degree': 10}), qos=2)
+                            'degree': 10}))
     time.sleep(1)
 
 
@@ -71,7 +82,7 @@ def move_camera_right_10_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_right',
-                            'degree': 10}), qos=2)
+                            'degree': 10}))
     time.sleep(1)
 
 
@@ -79,7 +90,7 @@ def move_camera_up_10_degrees():
     client_txt.publish('o/ptu',
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_up', 'degree': 10}), qos=2)
+                            'cmd': 'relmove_up', 'degree': 10}))
     time.sleep(1)
 
 
@@ -88,7 +99,7 @@ def move_camera_down_10_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_down',
-                            'degree': 10}), qos=2)
+                            'degree': 10}))
     time.sleep(1)
 
 
@@ -97,7 +108,7 @@ def move_camera_left_20_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_left',
-                            'degree': 20}), qos=2)
+                            'degree': 20}))
     time.sleep(1)
 
 
@@ -106,7 +117,7 @@ def move_camera_right_20_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_right',
-                            'degree': 20}), qos=2)
+                            'degree': 20}))
     time.sleep(1)
 
 
@@ -115,7 +126,7 @@ def move_camera_up_20_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                             'cmd': 'relmove_up',
-                            'degree': 20}), qos=2)
+                            'degree': 20}))
     time.sleep(1)
 
 
@@ -124,7 +135,7 @@ def move_camera_down_20_degrees():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime(
                                "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'relmove_down', 'degree': 20}), qos=2)
+                               'cmd': 'relmove_down', 'degree': 20}))
     time.sleep(1)
 
 
@@ -133,7 +144,7 @@ def move_camera_right_max():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime(
                                "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'end_pan'}), qos=2)
+                               'cmd': 'end_pan'}))
     time.sleep(0.5)
 
 
@@ -142,7 +153,7 @@ def move_camera_left_max():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime(
                                "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'start_pan'}), qos=2)
+                               'cmd': 'start_pan'}))
     time.sleep(0.5)
 
 
@@ -151,7 +162,7 @@ def set_camera_position_home():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime(
                                "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'home'}), qos=2)
+                               'cmd': 'home'}))
     time.sleep(0.5)
 
 
@@ -160,23 +171,26 @@ def set_camera_position_stop():
                        json.dumps(
                            {'ts': datetime.utcnow().strftime(
                                "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'stop'}), qos=2)
+                               'cmd': 'stop'}))
     time.sleep(0.5)
 
 
 def set_camera_position_default():
     print("Setting camera position to default ...")
-    if current_position['tilt'] == home_position_coord[0] and current_position['pan'] == home_position_coord[1]:
+    if round(current_position['tilt'], 7) == round(home_position_coord[0], 7) and \
+            round(current_position['pan'], 7) == round(home_position_coord[1], 7):
         move_camera_left_5_degrees()
-    while current_position != home_position_coord and not detect_camera_movement():
-        set_camera_position_home()
-        time.sleep(0.2)
-    while not detect_camera_movement():
-        move_camera_right_max()
+
+    set_camera_position_home()
+    wait_camera_to_stabilize()
+
+    move_camera_right_max()
+    wait_camera_to_stabilize()
+
     move_camera_down_10_degrees()
     move_camera_down_5_degrees()
+    wait_camera_to_stabilize()
     print("Default position assumed")
-    time.sleep(3)
 
 
 def get_camera_position():
@@ -189,6 +203,7 @@ def set_camera_position_to_process_start():
     move_camera_left_20_degrees()
     move_camera_left_20_degrees()
     move_camera_left_20_degrees()
+    wait_camera_to_stabilize()
 
 
 def on_connect_txt(client, userdata, flags, rc):
