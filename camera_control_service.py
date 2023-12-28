@@ -12,7 +12,6 @@ previous_position = {}
 current_position = {}
 
 home_position_coord = (-0.06000000238418579, 0.09981644153594971)
-max_right_position_coord = (-0.06400001049041748, 0.9963302612304688)
 
 
 def detect_camera_movement() -> bool:
