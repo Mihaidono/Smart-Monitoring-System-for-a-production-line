@@ -31,8 +31,6 @@ previous_timestamp = datetime.utcnow()
 prev_frame_with_detected_objects = []
 reoccurrence_matrix = np.zeros((3, 3))
 
-prev_frame_with_detected_workpiece = ()
-
 json_mqtt_data = {}
 
 current_routine = RoutineStatus.INITIALIZING
@@ -54,21 +52,6 @@ def decode_image_from_base64(json_message: dict) -> cv2.typing.MatLike:
 
 def strip_encoded_image_data(image_encoded_json_data: str) -> str:
     return image_encoded_json_data.split(',', 1)[-1].strip()
-
-
-def has_workpiece_moved(detected_workpiece):
-    global prev_frame_with_detected_workpiece
-    if not prev_frame_with_detected_workpiece:
-        prev_frame_with_detected_workpiece = detected_workpiece
-        return False
-
-    if abs(prev_frame_with_detected_workpiece[0] - detected_workpiece[0]) > 10 or \
-            abs(prev_frame_with_detected_workpiece[1] - detected_workpiece[1]) > 10:
-        prev_frame_with_detected_workpiece = detected_workpiece
-        return True
-
-    prev_frame_with_detected_workpiece = detected_workpiece
-    return False
 
 
 def has_container_moved(filled_coordinate_matrix: List[List]):
@@ -181,7 +164,6 @@ def survey_delivery_process_routine():
                     continue
                 standby_seconds_count = 0
 
-                # if has_workpiece_moved(detected_object):
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
         time.sleep(0.5)
