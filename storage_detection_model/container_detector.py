@@ -105,5 +105,5 @@ def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
         if score > recognition_threshold and class_id in [4, 5, 6]:
             center_of_objects.append((get_object_center_coordinates(x1, y1, x2, y2), score))
     if center_of_objects:
-        return max(center_of_objects, key=lambda x: x[1])
+        return max(center_of_objects, key=lambda x: x[1])[0]
     return None

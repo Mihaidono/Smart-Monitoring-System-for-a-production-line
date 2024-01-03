@@ -105,22 +105,22 @@ def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, im
         return
 
     if workpiece_coordinates[0] > x_img_center_coord + x_img_center_coord / 2:
-        camera_control.move_camera_left_10_degrees()
-    elif workpiece_coordinates[0] < x_img_center_coord - x_img_center_coord / 2:
         camera_control.move_camera_right_10_degrees()
+    elif workpiece_coordinates[0] < x_img_center_coord - x_img_center_coord / 2:
+        camera_control.move_camera_left_10_degrees()
     elif workpiece_coordinates[0] > x_img_center_coord:
-        camera_control.move_camera_left_5_degrees()
-    elif workpiece_coordinates[0] < x_img_center_coord:
         camera_control.move_camera_right_5_degrees()
+    elif workpiece_coordinates[0] < x_img_center_coord:
+        camera_control.move_camera_left_5_degrees()
 
     if workpiece_coordinates[1] > y_img_center_coord + y_img_center_coord / 2:
-        camera_control.move_camera_up_10_degrees()
-    elif workpiece_coordinates[1] < y_img_center_coord - y_img_center_coord / 2:
         camera_control.move_camera_down_10_degrees()
+    elif workpiece_coordinates[1] < y_img_center_coord - y_img_center_coord / 2:
+        camera_control.move_camera_up_10_degrees()
     elif workpiece_coordinates[1] > y_img_center_coord:
-        camera_control.move_camera_up_5_degrees()
-    elif workpiece_coordinates[1] < y_img_center_coord:
         camera_control.move_camera_down_5_degrees()
+    elif workpiece_coordinates[1] < y_img_center_coord:
+        camera_control.move_camera_up_5_degrees()
 
     is_camera_moving = False
 
@@ -172,7 +172,7 @@ def survey_delivery_process_routine():
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
                 detected_object = container_detector.identify_workpiece(img)
-                if not detected_object:
+                if detected_object is None:
                     standby_seconds_count += 1
                     if standby_seconds_count == camera_standby_timer:
                         current_routine = RoutineStatus.TIMED_OUT
@@ -181,9 +181,9 @@ def survey_delivery_process_routine():
                     continue
                 standby_seconds_count = 0
 
-                if has_workpiece_moved(detected_object):
-                    crt_height, crt_width, _ = img.shape
-                    center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
+                # if has_workpiece_moved(detected_object):
+                crt_height, crt_width, _ = img.shape
+                center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
         time.sleep(0.5)
 
 
