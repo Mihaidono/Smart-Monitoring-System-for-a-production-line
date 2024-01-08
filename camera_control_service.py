@@ -179,9 +179,6 @@ def set_camera_position_default():
     if round(current_position['tilt'], 7) == round(home_position_coord[0], 7) and \
             round(current_position['pan'], 7) == round(home_position_coord[1], 7):
         move_camera_left_5_degrees()
-    else:
-        move_camera_left_max()
-        wait_camera_to_stabilize()
 
     set_camera_position_home()
     wait_camera_to_stabilize()
@@ -244,6 +241,8 @@ try:
 except TimeoutError as ex:
     print(f'{client_txt_name} failed to connect to TXT: {ex}')
     client_txt.disconnect()
+    exit(-1)
 except Exception as ex:
     print(f'{client_txt_name} failed to continue because of {ex}')
     client_txt.disconnect()
+    exit(-1)
