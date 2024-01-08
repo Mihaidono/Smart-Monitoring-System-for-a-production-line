@@ -1,4 +1,6 @@
+import math
 import os
+import time
 from typing import List
 
 import cv2
@@ -17,6 +19,8 @@ except Exception as e:
     exit(-1)
 
 recognition_threshold = float(os.getenv('RECOGNITION_THRESHOLD'))
+
+elapsed_detection_time = 0
 
 
 def get_local_config_from_yaml():
@@ -88,22 +92,32 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
 
 
 def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
+    global elapsed_detection_time
+
+    start_time = time.time()
     results = trained_model(image)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
         if score > recognition_threshold and class_id in [0, 1, 2, 3]:
             center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
+    end_time = time.time()
+    elapsed_detection_time = math.ceil((end_time - start_time) * 1000)
     return coordinates_to_matrix(center_of_objects)
 
 
 def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
+    global elapsed_detection_time
+
+    start_time = time.time()
     results = trained_model(image)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
         if score > recognition_threshold and class_id in [4, 5, 6]:
             center_of_objects.append((get_object_center_coordinates(x1, y1, x2, y2), score))
+    end_time = time.time()
+    elapsed_detection_time = math.ceil((end_time - start_time) * 1000)
     if center_of_objects:
         return max(center_of_objects, key=lambda x: x[1])[0]
     return None

@@ -36,6 +36,18 @@ json_mqtt_data = {}
 current_routine = RoutineStatus.INITIALIZING
 
 
+def sleep_monitoring(sleep_time: int) -> None:
+    """
+    Function works with milliseconds, it takes the time you want to sleep the monitoring thread and subtracts the
+    processing time to fulfil exactly the time you need
+    :param sleep_time: milliseconds of time you want monitoring thread to sleep
+    :return:
+    """
+    if container_detector.elapsed_detection_time > sleep_time:
+        return
+    time.sleep((sleep_time - container_detector.elapsed_detection_time) / 1000)
+
+
 def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
     if ((prev_frame_workpiece is tuple and crt_frame_workpiece is not tuple) or
             (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
@@ -128,7 +140,6 @@ def initialization_routine():
     initiate_camera_position()
     prev_frame_with_detected_objects = []
     current_routine = RoutineStatus.SURVEYING_BAY
-    time.sleep(1)
 
 
 def survey_bay_routine():
@@ -141,8 +152,9 @@ def survey_bay_routine():
                 filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
                 if has_container_moved(filled_coordinates_matrix):
                     current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                    sleep_monitoring(1000)
                     break
-        time.sleep(0.5)
+                sleep_monitoring(1000)
 
 
 def survey_delivery_process_routine():
@@ -160,13 +172,13 @@ def survey_delivery_process_routine():
                     if standby_seconds_count == camera_standby_timer:
                         current_routine = RoutineStatus.TIMED_OUT
                         break
-                    time.sleep(1)
+                    sleep_monitoring(1000)
                     continue
                 standby_seconds_count = 0
 
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
-        time.sleep(0.5)
+                sleep_monitoring(1000)
 
 
 def camera_timeout_routine():
