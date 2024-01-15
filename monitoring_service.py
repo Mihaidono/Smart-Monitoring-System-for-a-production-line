@@ -8,6 +8,7 @@ from typing import List
 import cv2
 import numpy as np
 import paho.mqtt.client as mqtt
+import paho.mqtt.subscribe as subscribe
 from dotenv import load_dotenv
 
 import camera_control_service as camera_control
@@ -145,6 +146,7 @@ def initialization_routine():
 def survey_bay_routine():
     global current_routine
     while True:
+        update_json_message()
         if json_mqtt_data and is_camera_moving is False:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
@@ -163,6 +165,7 @@ def survey_delivery_process_routine():
     process_start_camera_position()
     standby_seconds_count = 0
     while True:
+        update_json_message()
         if json_mqtt_data and is_camera_moving is False:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
@@ -187,9 +190,10 @@ def camera_timeout_routine():
     current_routine = RoutineStatus.INITIALIZING
 
 
-def on_message_txt(client, userdata, msg):
+def update_json_message():
     global previous_timestamp
     global json_mqtt_data
+    msg = subscribe.simple("i/cam", txt_broker_address)
     json_message = json.loads(msg.payload)
     if "data" in json_message and "ts" in json_message:
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -207,7 +211,6 @@ def on_connect_txt(client, userdata, flags, rc):
     if rc == 0:
         print(f"Successfully connected client {client_txt_name} to TXT Controller")
         client.connected_flag = True
-        client.subscribe('i/cam')
 
 
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
@@ -220,7 +223,6 @@ passwd = os.getenv('TXT_PASSWD')
 client_txt_name = "MonitoringService"
 client_txt = mqtt.Client(client_id=client_txt_name)
 client_txt.on_connect = on_connect_txt
-client_txt.on_message = on_message_txt
 client_txt.on_disconnect = on_disconnect
 
 routines = {
