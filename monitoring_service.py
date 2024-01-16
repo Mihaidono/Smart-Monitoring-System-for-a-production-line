@@ -7,7 +7,6 @@ from typing import List
 
 import cv2
 import numpy as np
-import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as subscribe
 from dotenv import load_dotenv
 
@@ -144,9 +143,7 @@ def survey_bay_routine():
                 filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
                 if has_container_moved(filled_coordinates_matrix):
                     current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
-                    sleep_monitoring(1000)
                     break
-                sleep_monitoring(1000)
 
 
 def survey_delivery_process_routine():
