@@ -39,11 +39,11 @@ def coordinates_to_matrix(coordinates: List):
     global reference_matrix
     if len(coordinates) == 0:
         return []
-    x_sorted_coordinates = sorted(coordinates, key=lambda x: x[0])
+    x_sorted_coordinates = sorted(coordinates, key=lambda x: x["coordinates"][0])
     coord_matrix = fit_matrix_columns(x_sorted_coordinates)
 
     for index, column in enumerate(coord_matrix):
-        coord_matrix[index] = sorted(column, key=lambda coord: coord[1])
+        coord_matrix[index] = sorted(column, key=lambda coord: coord["coordinates"][1])
     return coord_matrix
 
 
@@ -54,11 +54,11 @@ def get_missing_storage_spaces(coordinate_matrix: List[List]):
     for idx in range(0, len(reference_matrix)):
         for jdx, coord in enumerate(reference_matrix[idx]):
             if not len(coordinate_matrix) <= idx and not len(coordinate_matrix[idx]) <= jdx:
-                if abs(coordinate_matrix[idx][jdx][1] - reference_matrix[idx][jdx][1]) < similarity_diff:
+                if abs(coordinate_matrix[idx][jdx]["coordinates"][1] - reference_matrix[idx][jdx][1]) < similarity_diff:
                     evidence_matrix[idx][jdx] = coordinate_matrix[idx][jdx]
                 else:
                     for index, point in enumerate(reference_matrix[idx]):
-                        if abs(coordinate_matrix[idx][jdx][1] - point[1]) < similarity_diff:
+                        if abs(coordinate_matrix[idx][jdx]["coordinates"][1] - point[1]) < similarity_diff:
                             evidence_matrix[idx][index] = coordinate_matrix[idx][jdx]
                             break
     return evidence_matrix
@@ -70,7 +70,7 @@ def fit_matrix_columns(sorted_list: List) -> List[List]:
     group_count = 0
     previous_element = sorted_list[0]
     for point in sorted_list:
-        if point[0] - previous_element[0] < similarity_diff:
+        if point["coordinates"][0] - previous_element["coordinates"][0] < similarity_diff:
             coordinates_matrix[group_count].append(point)
             previous_element = point
         else:
@@ -100,7 +100,22 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
         if score > recognition_threshold and class_id in [0, 1, 2, 3]:
-            center_of_objects.append(get_object_center_coordinates(x1, y1, x2, y2))
+            if class_id == 0:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "RED",
+                     "type": "Storage"})
+            elif class_id == 1:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "EMPTY",
+                     "type": "Storage"})
+            elif class_id == 2:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "BLUE",
+                     "type": "Storage"})
+            elif class_id == 3:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "WHITE",
+                     "type": "Storage"})
     end_time = time.time()
     elapsed_detection_time = math.ceil((end_time - start_time) * 1000)
     return coordinates_to_matrix(center_of_objects)
@@ -115,6 +130,19 @@ def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
         if score > recognition_threshold and class_id in [4, 5, 6]:
+            if class_id == 4:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "WHITE",
+                     "type": "Workpiece"})
+            elif class_id == 5:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "BLUE",
+                     "type": "Workpiece"})
+            elif class_id == 6:
+                center_of_objects.append(
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "RED",
+                     "type": "Workpiece"})
+
             center_of_objects.append((get_object_center_coordinates(x1, y1, x2, y2), score))
     end_time = time.time()
     elapsed_detection_time = math.ceil((end_time - start_time) * 1000)

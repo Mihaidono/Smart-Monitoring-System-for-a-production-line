@@ -49,7 +49,7 @@ def sleep_monitoring(sleep_time: int) -> None:
 
 
 def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
-    if ((prev_frame_workpiece is tuple and crt_frame_workpiece is not tuple) or
+    if ((prev_frame_workpiece is dict and crt_frame_workpiece is not dict) or
             (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
              and crt_frame_workpiece == 0 and prev_frame_workpiece == 0)):
         return True
@@ -170,7 +170,7 @@ def survey_delivery_process_routine():
                 standby_seconds_count = 0
 
                 crt_height, crt_width, _ = img.shape
-                center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
+                center_workpiece_in_frame(detected_object["coordinates"], img_width=crt_width, img_height=crt_height)
 
 
 def camera_timeout_routine():
