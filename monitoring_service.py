@@ -193,7 +193,9 @@ def camera_timeout_routine():
 def update_json_message():
     global previous_timestamp
     global json_mqtt_data
-    msg = subscribe.simple("i/cam")
+
+    msg = subscribe.simple("i/cam", hostname=txt_broker_address, port=port_used, client_id=client_txt_name,
+                           keepalive=keep_alive, auth={'username': username, 'password': passwd})
     json_message = json.loads(msg.payload)
     if "data" in json_message and "ts" in json_message:
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -221,9 +223,6 @@ username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
 client_txt_name = "MonitoringService"
-client_txt = mqtt.Client(client_id=client_txt_name)
-client_txt.on_connect = on_connect_txt
-client_txt.on_disconnect = on_disconnect
 
 routines = {
     RoutineStatus.INITIALIZING: initialization_routine,
@@ -231,18 +230,6 @@ routines = {
     RoutineStatus.SURVEYING_DELIVERY_PROCESS: survey_delivery_process_routine,
     RoutineStatus.TIMED_OUT: camera_timeout_routine
 }
-
-try:
-    client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    client_txt.loop_start()
-except TimeoutError as ex:
-    print(f'{client_txt_name} failed to connect to TXT: {ex}')
-    client_txt.disconnect()
-    exit(-1)
-except Exception as ex:
-    print(f'{client_txt_name} failed to continue because of {ex}')
-    client_txt.disconnect()
-    exit(-1)
 
 while True:
     routines[current_routine]()
