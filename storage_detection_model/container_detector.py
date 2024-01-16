@@ -121,7 +121,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
     return coordinates_to_matrix(center_of_objects)
 
 
-def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
+def identify_workpiece(image: cv2.typing.MatLike) -> None | dict:
     global elapsed_detection_time
 
     start_time = time.time()
@@ -131,17 +131,17 @@ def identify_workpiece(image: cv2.typing.MatLike) -> None | tuple:
         x1, y1, x2, y2, score, class_id = result
         if score > recognition_threshold and class_id in [4, 5, 6]:
             if class_id == 4:
-                center_of_objects.append(
+                center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "WHITE",
-                     "type": "Workpiece"})
+                     "type": "Workpiece"}, score))
             elif class_id == 5:
-                center_of_objects.append(
+                center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "BLUE",
-                     "type": "Workpiece"})
+                     "type": "Workpiece"}, score))
             elif class_id == 6:
-                center_of_objects.append(
+                center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "RED",
-                     "type": "Workpiece"})
+                     "type": "Workpiece"}, score))
 
             center_of_objects.append((get_object_center_coordinates(x1, y1, x2, y2), score))
     end_time = time.time()

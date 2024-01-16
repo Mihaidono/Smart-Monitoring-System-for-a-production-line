@@ -96,24 +96,16 @@ def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, im
             y_img_center_coord + y_quarter_value > workpiece_coordinates[1] > y_img_center_coord - y_quarter_value:
         return
 
-    if workpiece_coordinates[0] > x_img_center_coord + x_img_center_coord / 2:
+    if workpiece_coordinates[0] > x_img_center_coord + x_quarter_value:
         camera_control.move_camera_right_10_degrees()
-    elif workpiece_coordinates[0] < x_img_center_coord - x_img_center_coord / 2:
-        camera_control.move_camera_left_10_degrees()
-    elif workpiece_coordinates[0] > x_img_center_coord:
-        camera_control.move_camera_right_20_degrees()
-    elif workpiece_coordinates[0] < x_img_center_coord:
+    elif workpiece_coordinates[0] < x_img_center_coord - x_quarter_value:
         camera_control.move_camera_left_20_degrees()
 
-    if workpiece_coordinates[1] > y_img_center_coord + y_img_center_coord / 2:
-        camera_control.move_camera_down_10_degrees()
-    elif workpiece_coordinates[1] < y_img_center_coord - y_img_center_coord / 2:
-        camera_control.move_camera_up_10_degrees()
-    elif workpiece_coordinates[1] > y_img_center_coord:
+    if workpiece_coordinates[1] > y_img_center_coord + y_quarter_value:
         camera_control.move_camera_down_20_degrees()
-    elif workpiece_coordinates[1] < y_img_center_coord:
-        camera_control.move_camera_up_20_degrees()
-    camera_control.wait_camera_to_stabilize()
+    elif workpiece_coordinates[1] < y_img_center_coord - y_quarter_value:
+        camera_control.move_camera_up_10_degrees()
+    time.sleep(1)
 
 
 def initiate_camera_position():
@@ -165,7 +157,7 @@ def survey_delivery_process_routine():
                     sleep_monitoring(1000)
                     continue
                 standby_seconds_count = 0
-
+                #TODO: incerc sa pastrez predictia si asteptat pana nu se mai misca camera
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object["coordinates"], img_width=crt_width, img_height=crt_height)
 
