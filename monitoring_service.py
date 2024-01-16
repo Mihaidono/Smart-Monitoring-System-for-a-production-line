@@ -25,7 +25,6 @@ class RoutineStatus:
 
 
 camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
-is_camera_moving = True
 
 previous_timestamp = datetime.utcnow()
 
@@ -90,14 +89,12 @@ def has_container_moved(filled_coordinate_matrix: List[List]):
 
 
 def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
-    global is_camera_moving
-    is_camera_moving = True
     x_img_center_coord, y_img_center_coord = img_width / 2, img_height / 2
-    x_tpt_value = 0.1 * x_img_center_coord
-    y_tpt_value = 0.1 * y_img_center_coord
+    x_quarter_value = x_img_center_coord / 2
+    y_quarter_value = y_img_center_coord / 2
 
-    if x_img_center_coord + x_tpt_value > workpiece_coordinates[0] > x_img_center_coord - x_tpt_value and \
-            y_img_center_coord + y_tpt_value > workpiece_coordinates[1] > y_img_center_coord - y_tpt_value:
+    if x_img_center_coord + x_quarter_value > workpiece_coordinates[0] > x_img_center_coord - x_quarter_value and \
+            y_img_center_coord + y_quarter_value > workpiece_coordinates[1] > y_img_center_coord - y_quarter_value:
         return
 
     if workpiece_coordinates[0] > x_img_center_coord + x_img_center_coord / 2:
@@ -105,34 +102,27 @@ def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, im
     elif workpiece_coordinates[0] < x_img_center_coord - x_img_center_coord / 2:
         camera_control.move_camera_left_10_degrees()
     elif workpiece_coordinates[0] > x_img_center_coord:
-        camera_control.move_camera_right_5_degrees()
+        camera_control.move_camera_right_20_degrees()
     elif workpiece_coordinates[0] < x_img_center_coord:
-        camera_control.move_camera_left_5_degrees()
+        camera_control.move_camera_left_20_degrees()
 
     if workpiece_coordinates[1] > y_img_center_coord + y_img_center_coord / 2:
         camera_control.move_camera_down_10_degrees()
     elif workpiece_coordinates[1] < y_img_center_coord - y_img_center_coord / 2:
         camera_control.move_camera_up_10_degrees()
     elif workpiece_coordinates[1] > y_img_center_coord:
-        camera_control.move_camera_down_5_degrees()
+        camera_control.move_camera_down_20_degrees()
     elif workpiece_coordinates[1] < y_img_center_coord:
-        camera_control.move_camera_up_5_degrees()
-
-    is_camera_moving = False
+        camera_control.move_camera_up_20_degrees()
+    camera_control.wait_camera_to_stabilize()
 
 
 def initiate_camera_position():
-    global is_camera_moving
-    is_camera_moving = True
     camera_control.set_camera_position_default()
-    is_camera_moving = False
 
 
 def process_start_camera_position():
-    global is_camera_moving
-    is_camera_moving = True
     camera_control.set_camera_position_to_process_start()
-    is_camera_moving = False
 
 
 def initialization_routine():
@@ -147,7 +137,7 @@ def survey_bay_routine():
     global current_routine
     while True:
         update_json_message()
-        if json_mqtt_data and is_camera_moving is False:
+        if json_mqtt_data:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
                 coordinates_matrix = container_detector.identify_container_units(img)
@@ -166,7 +156,7 @@ def survey_delivery_process_routine():
     standby_seconds_count = 0
     while True:
         update_json_message()
-        if json_mqtt_data and is_camera_moving is False:
+        if json_mqtt_data:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
                 detected_object = container_detector.identify_workpiece(img)
@@ -181,7 +171,6 @@ def survey_delivery_process_routine():
 
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object, img_width=crt_width, img_height=crt_height)
-                sleep_monitoring(1000)
 
 
 def camera_timeout_routine():
