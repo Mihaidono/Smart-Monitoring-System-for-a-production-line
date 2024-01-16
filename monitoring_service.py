@@ -193,7 +193,7 @@ def camera_timeout_routine():
 def update_json_message():
     global previous_timestamp
     global json_mqtt_data
-    msg = subscribe.simple("i/cam", txt_broker_address)
+    msg = subscribe.simple("i/cam")
     json_message = json.loads(msg.payload)
     if "data" in json_message and "ts" in json_message:
         current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
