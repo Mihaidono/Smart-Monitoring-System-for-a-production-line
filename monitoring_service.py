@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import threading
 import time
 from datetime import datetime
 from typing import List
@@ -24,6 +25,9 @@ class RoutineStatus:
 
 
 camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
+standby_seconds_count = 0
+
+detection_event = threading.Event()
 
 previous_timestamp = datetime.utcnow()
 
@@ -33,18 +37,6 @@ reoccurrence_matrix = np.zeros((3, 3))
 json_mqtt_data = {}
 
 current_routine = RoutineStatus.INITIALIZING
-
-
-def sleep_monitoring(sleep_time: int) -> None:
-    """
-    Function works with milliseconds, it takes the time you want to sleep the monitoring thread and subtracts the
-    processing time to fulfil exactly the time you need
-    :param sleep_time: milliseconds of time you want monitoring thread to sleep
-    :return:
-    """
-    if container_detector.elapsed_detection_time > sleep_time:
-        return
-    time.sleep((sleep_time - container_detector.elapsed_detection_time) / 1000)
 
 
 def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
@@ -138,26 +130,40 @@ def survey_bay_routine():
                     break
 
 
+def camera_timeout_counter():
+    global current_routine
+    global standby_seconds_count
+    timeout = False
+    detection_event.set()
+    while not detection_event.is_set():
+        standby_seconds_count += 1
+        time.sleep(1)
+        if standby_seconds_count >= camera_standby_timer:
+            timeout = True
+            break
+    if timeout:
+        current_routine = RoutineStatus.TIMED_OUT
+
+
 def survey_delivery_process_routine():
     global current_routine
+    global standby_seconds_count
     print("Starting surveillance of the in-delivery workpiece")
     process_start_camera_position()
-    standby_seconds_count = 0
+    countdown_running = False
+
     while True:
         update_json_message()
         if json_mqtt_data:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
                 detected_object = container_detector.identify_workpiece(img)
-                if detected_object is None:
-                    standby_seconds_count += 1
-                    if standby_seconds_count == camera_standby_timer:
-                        current_routine = RoutineStatus.TIMED_OUT
-                        break
-                    sleep_monitoring(1000)
+                if detected_object is None and countdown_running is not True:
+                    threading.Thread(target=camera_timeout_counter(), daemon=True).start()
                     continue
                 standby_seconds_count = 0
-                #TODO: incerc sa pastrez predictia si asteptat pana nu se mai misca camera
+                detection_event.clear()
+                countdown_running = True
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object["coordinates"], img_width=crt_width, img_height=crt_height)
 
