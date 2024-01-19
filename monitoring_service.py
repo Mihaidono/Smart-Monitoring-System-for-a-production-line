@@ -142,6 +142,8 @@ def camera_timeout_counter():
             timeout = True
             break
     if timeout:
+        standby_seconds_count = 0
+        detection_event.clear()
         current_routine = RoutineStatus.TIMED_OUT
 
 
@@ -160,10 +162,11 @@ def survey_delivery_process_routine():
                 detected_object = container_detector.identify_workpiece(img)
                 if detected_object is None and countdown_running is not True:
                     threading.Thread(target=camera_timeout_counter(), daemon=True).start()
+                    countdown_running = True
                     continue
                 standby_seconds_count = 0
                 detection_event.clear()
-                countdown_running = True
+                countdown_running = False
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object["coordinates"], img_width=crt_width, img_height=crt_height)
 
