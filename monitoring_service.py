@@ -112,14 +112,6 @@ class MonitoringService:
                 self.json_mqtt_data = json_message
                 self.previous_timestamp = current_timestamp
 
-    @staticmethod
-    def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
-        if ((prev_frame_workpiece is dict and crt_frame_workpiece is not dict) or
-                (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
-                 and crt_frame_workpiece == 0 and prev_frame_workpiece == 0)):
-            return True
-        return False
-
     def decode_image_from_base64(self) -> cv2.typing.MatLike:
         image_data = base64.b64decode(self.json_mqtt_data['data'].split(',', 1)[-1].strip())
         image_np = np.frombuffer(image_data, np.uint8)
@@ -142,6 +134,25 @@ class MonitoringService:
         self.prev_frame_with_detected_objects = filled_coordinate_matrix
         if any(3 in column for column in self.reoccurrence_matrix):
             self.reoccurrence_matrix = np.zeros((3, 3))
+            return True
+        return False
+
+    def start_monitoring(self):
+        routines = {
+            RoutineStatus.INITIALIZING: self.initialization_routine,
+            RoutineStatus.SURVEYING_BAY: self.survey_bay_routine,
+            RoutineStatus.SURVEYING_DELIVERY_PROCESS: self.survey_delivery_process_routine,
+            RoutineStatus.TIMED_OUT: self.camera_timeout_routine
+        }
+
+        while True:
+            routines[self.current_routine]()
+
+    @staticmethod
+    def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
+        if ((prev_frame_workpiece is dict and crt_frame_workpiece is not dict) or
+                (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
+                 and crt_frame_workpiece == 0 and prev_frame_workpiece == 0)):
             return True
         return False
 
@@ -173,17 +184,6 @@ class MonitoringService:
     @staticmethod
     def process_start_camera_position():
         camera_control.set_camera_position_to_process_start()
-
-    def start_monitoring(self):
-        routines = {
-            RoutineStatus.INITIALIZING: self.initialization_routine,
-            RoutineStatus.SURVEYING_BAY: self.survey_bay_routine,
-            RoutineStatus.SURVEYING_DELIVERY_PROCESS: self.survey_delivery_process_routine,
-            RoutineStatus.TIMED_OUT: self.camera_timeout_routine
-        }
-
-        while True:
-            routines[self.current_routine]()
 
 
 if __name__ == "__main__":
