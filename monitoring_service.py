@@ -191,25 +191,13 @@ def update_json_message():
             previous_timestamp = current_timestamp
 
 
-def on_disconnect(client, userdata, rc=0):
-    print(f"Disconnected {client_txt_name} result code " + str(rc))
-    client.loop_stop()
-
-
-def on_connect_txt(client, userdata, flags, rc):
-    if rc == 0:
-        print(f"Successfully connected client {client_txt_name} to TXT Controller")
-        client.connected_flag = True
-
-
+client_txt_name = "MonitoringService"
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
-txt_topics_to_subscribe = os.getenv("TXT_CONTROLLER_SUBSCRIBED_TOPICS").split(',')
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
 username = os.getenv('TXT_USERNAME')
 passwd = os.getenv('TXT_PASSWD')
 
-client_txt_name = "MonitoringService"
 
 routines = {
     RoutineStatus.INITIALIZING: initialization_routine,
