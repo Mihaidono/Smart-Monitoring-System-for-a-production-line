@@ -133,40 +133,40 @@ def survey_bay_routine():
 def camera_timeout_counter():
     global current_routine
     global standby_seconds_count
-    timeout = False
+
     detection_event.set()
-    while not detection_event.is_set():
+    while detection_event.is_set():
         standby_seconds_count += 1
         time.sleep(1)
         if standby_seconds_count >= camera_standby_timer:
-            timeout = True
+            standby_seconds_count = 0
+            detection_event.clear()
+            current_routine = RoutineStatus.TIMED_OUT
             break
-    if timeout:
-        standby_seconds_count = 0
-        detection_event.clear()
-        current_routine = RoutineStatus.TIMED_OUT
 
 
 def survey_delivery_process_routine():
     global current_routine
     global standby_seconds_count
+
     print("Starting surveillance of the in-delivery workpiece")
     process_start_camera_position()
     countdown_running = False
-
     while True:
         update_json_message()
         if json_mqtt_data:
             img = decode_image_from_base64(json_mqtt_data)
             if img is not None:
                 detected_object = container_detector.identify_workpiece(img)
-                if detected_object is None and countdown_running is not True:
-                    threading.Thread(target=camera_timeout_counter(), daemon=True).start()
-                    countdown_running = True
+                if detected_object is None:
+                    if countdown_running is not True:
+                        threading.Thread(target=camera_timeout_counter, daemon=True).start()
+                        countdown_running = True
                     continue
                 standby_seconds_count = 0
                 detection_event.clear()
                 countdown_running = False
+
                 crt_height, crt_width, _ = img.shape
                 center_workpiece_in_frame(detected_object["coordinates"], img_width=crt_width, img_height=crt_height)
 
