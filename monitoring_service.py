@@ -26,50 +26,50 @@ class RoutineStatus:
 
 class MonitoringService:
     def __init__(self):
-        self.detection_event = threading.Event()
-        self.camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
-        self.standby_seconds_count = 0
+        self._detection_event = threading.Event()
+        self._camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
+        self._standby_seconds_count = 0
 
-        self.prev_frame_with_detected_objects = []
-        self.reoccurrence_matrix = np.zeros((3, 3))
+        self._prev_frame_with_detected_objects = []
+        self._reoccurrence_matrix = np.zeros((3, 3))
 
-        self.json_mqtt_data = {}
-        self.previous_timestamp = datetime.utcnow()
+        self._json_mqtt_data = {}
+        self._previous_timestamp = datetime.utcnow()
 
-        self.current_routine = RoutineStatus.INITIALIZING
-        self.client_txt_name = "MonitoringService"
-        self.txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
-        self.port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
-        self.keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
-        self.username = os.getenv('TXT_USERNAME')
-        self.passwd = os.getenv('TXT_PASSWD')
+        self._current_routine = RoutineStatus.INITIALIZING
+        self._CLIENT_TXT_NAME = "MonitoringService"
+        self._TXT_BROKER_ADDRESS = os.getenv("TXT_CONTROLLER_ADDRESS")
+        self._PORT_USED = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
+        self._KEEP_ALIVE = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
+        self._USERNAME = os.getenv('TXT_USERNAME')
+        self._PASSWD = os.getenv('TXT_PASSWD')
 
     def initialization_routine(self):
         self.initiate_camera_position()
-        self.prev_frame_with_detected_objects = []
-        self.current_routine = RoutineStatus.SURVEYING_BAY
+        self._prev_frame_with_detected_objects = []
+        self._current_routine = RoutineStatus.SURVEYING_BAY
 
     def survey_bay_routine(self):
         while True:
             self.update_json_message()
-            if self.json_mqtt_data:
+            if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
                 if img is not None:
                     coordinates_matrix = container_detector.identify_container_units(img)
                     filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
                     if self.has_container_moved(filled_coordinates_matrix):
-                        self.current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                        self._current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
                         break
 
     def camera_timeout_counter(self):
-        self.detection_event.set()
-        while self.detection_event.is_set():
-            self.standby_seconds_count += 1
+        self._detection_event.set()
+        while self._detection_event.is_set():
+            self._standby_seconds_count += 1
             time.sleep(1)
-            if self.standby_seconds_count >= self.camera_standby_timer:
-                self.standby_seconds_count = 0
-                self.detection_event.clear()
-                self.current_routine = RoutineStatus.TIMED_OUT
+            if self._standby_seconds_count >= self._camera_standby_timer:
+                self._standby_seconds_count = 0
+                self._detection_event.clear()
+                self._current_routine = RoutineStatus.TIMED_OUT
                 break
 
     def survey_delivery_process_routine(self):
@@ -78,7 +78,7 @@ class MonitoringService:
         countdown_running = False
         while True:
             self.update_json_message()
-            if self.json_mqtt_data:
+            if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
                 if img is not None:
                     detected_object = container_detector.identify_workpiece(img)
@@ -87,8 +87,8 @@ class MonitoringService:
                             threading.Thread(target=self.camera_timeout_counter, daemon=True).start()
                             countdown_running = True
                         continue
-                    self.standby_seconds_count = 0
-                    self.detection_event.clear()
+                    self._standby_seconds_count = 0
+                    self._detection_event.clear()
                     countdown_running = False
 
                     crt_height, crt_width, _ = img.shape
@@ -97,43 +97,43 @@ class MonitoringService:
 
     def camera_timeout_routine(self):
         print("Object lost from field of view. Returning to bay")
-        self.current_routine = RoutineStatus.INITIALIZING
+        self._current_routine = RoutineStatus.INITIALIZING
 
     def update_json_message(self):
 
-        msg = subscribe.simple("i/cam", hostname=self.txt_broker_address, port=self.port_used,
-                               client_id=self.client_txt_name,
-                               keepalive=self.keep_alive,
-                               auth={'username': self.username, 'password': self.passwd})
+        msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
+                               client_id=self._CLIENT_TXT_NAME,
+                               keepalive=self._KEEP_ALIVE,
+                               auth={'_USERNAME': self._USERNAME, 'password': self._PASSWD})
         json_message = json.loads(msg.payload)
         if "data" in json_message and "ts" in json_message:
             current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
-            if self.previous_timestamp < current_timestamp:
-                self.json_mqtt_data = json_message
-                self.previous_timestamp = current_timestamp
+            if self._previous_timestamp < current_timestamp:
+                self._json_mqtt_data = json_message
+                self._previous_timestamp = current_timestamp
 
     def decode_image_from_base64(self) -> cv2.typing.MatLike:
-        image_data = base64.b64decode(self.json_mqtt_data['data'].split(',', 1)[-1].strip())
+        image_data = base64.b64decode(self._json_mqtt_data['data'].split(',', 1)[-1].strip())
         image_np = np.frombuffer(image_data, np.uint8)
         return cv2.imdecode(image_np, cv2.IMREAD_COLOR)
 
     def has_container_moved(self, filled_coordinate_matrix: List[List]):
 
-        if len(self.prev_frame_with_detected_objects) == 0:
-            self.prev_frame_with_detected_objects = filled_coordinate_matrix
+        if len(self._prev_frame_with_detected_objects) == 0:
+            self._prev_frame_with_detected_objects = filled_coordinate_matrix
             return False
 
         for idx in range(0, len(filled_coordinate_matrix)):
             for jdx in range(0, len(filled_coordinate_matrix)):
-                if self.check_container_movement(self.prev_frame_with_detected_objects[idx][jdx],
+                if self.check_container_movement(self._prev_frame_with_detected_objects[idx][jdx],
                                                  filled_coordinate_matrix[idx][jdx]):
-                    self.reoccurrence_matrix[idx][jdx] += 1
+                    self._reoccurrence_matrix[idx][jdx] += 1
                 else:
-                    self.reoccurrence_matrix[idx][jdx] = 0
+                    self._reoccurrence_matrix[idx][jdx] = 0
 
-        self.prev_frame_with_detected_objects = filled_coordinate_matrix
-        if any(3 in column for column in self.reoccurrence_matrix):
-            self.reoccurrence_matrix = np.zeros((3, 3))
+        self._prev_frame_with_detected_objects = filled_coordinate_matrix
+        if any(3 in column for column in self._reoccurrence_matrix):
+            self._reoccurrence_matrix = np.zeros((3, 3))
             return True
         return False
 
@@ -146,7 +146,7 @@ class MonitoringService:
         }
 
         while True:
-            routines[self.current_routine]()
+            routines[self._current_routine]()
 
     @staticmethod
     def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
