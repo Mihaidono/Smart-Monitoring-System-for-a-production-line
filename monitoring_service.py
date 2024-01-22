@@ -56,10 +56,11 @@ class MonitoringService:
                 img = self.decode_image_from_base64()
                 if img is not None:
                     coordinates_matrix = container_detector.identify_container_units(img)
-                    filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-                    if self.has_container_moved(filled_coordinates_matrix):
-                        self._current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
-                        break
+                    if coordinates_matrix:
+                        filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
+                        if self.has_container_moved(filled_coordinates_matrix):
+                            self._current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                            break
 
     def camera_timeout_counter(self):
         self._detection_event.set()

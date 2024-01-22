@@ -91,7 +91,7 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
     model.train(data=config_file, epochs=number_of_epochs)
 
 
-def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
+def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | None:
     global elapsed_detection_time
 
     start_time = time.time()
@@ -118,7 +118,11 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List]:
                      "type": "Storage"})
     end_time = time.time()
     elapsed_detection_time = math.ceil((end_time - start_time) * 1000)
-    return coordinates_to_matrix(center_of_objects)
+    try:
+        return coordinates_to_matrix(center_of_objects)
+    except Exception as ex:
+        print("Error retrieving the warehouse matrix")
+    return None
 
 
 def identify_workpiece(image: cv2.typing.MatLike) -> None | dict:
