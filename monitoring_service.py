@@ -66,11 +66,6 @@ class MonitoringService:
         while self._detection_event.is_set():
             self._standby_seconds_count += 1
             time.sleep(1)
-            if self._standby_seconds_count >= self._camera_standby_timer:
-                self._standby_seconds_count = 0
-                self._detection_event.clear()
-                self._current_routine = RoutineStatus.TIMED_OUT
-                break
 
     def survey_delivery_process_routine(self):
         print("Starting surveillance of the in-delivery workpiece")
@@ -86,13 +81,19 @@ class MonitoringService:
                         if countdown_running is not True:
                             threading.Thread(target=self.camera_timeout_counter, daemon=True).start()
                             countdown_running = True
+                        if self._standby_seconds_count >= self._camera_standby_timer:
+                            self._standby_seconds_count = 0
+                            self._current_routine = RoutineStatus.TIMED_OUT
+                            self._detection_event.clear()
+                            break
                         continue
                     self._standby_seconds_count = 0
                     self._detection_event.clear()
                     countdown_running = False
 
                     crt_height, crt_width, _ = img.shape
-                    self.center_workpiece_in_frame(detected_object["coordinates"], img_width=crt_width,
+                    self.center_workpiece_in_frame(detected_object["coordinates"],
+                                                   img_width=crt_width,
                                                    img_height=crt_height)
 
     def camera_timeout_routine(self):
@@ -104,7 +105,7 @@ class MonitoringService:
         msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
                                client_id=self._CLIENT_TXT_NAME,
                                keepalive=self._KEEP_ALIVE,
-                               auth={'_USERNAME': self._USERNAME, 'password': self._PASSWD})
+                               auth={'username': self._USERNAME, 'password': self._PASSWD})
         json_message = json.loads(msg.payload)
         if "data" in json_message and "ts" in json_message:
             current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
