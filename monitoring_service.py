@@ -161,23 +161,22 @@ class MonitoringService:
     @staticmethod
     def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
         x_img_center_coord, y_img_center_coord = img_width / 2, img_height / 2
-        x_quarter_value = x_img_center_coord / 2
-        y_quarter_value = y_img_center_coord / 2
+        x_percent_value = img_width * 0.4
+        y_percent_value = img_height * 0.8
 
-        if x_img_center_coord + x_quarter_value > workpiece_coordinates[0] > x_img_center_coord - x_quarter_value and \
-                y_img_center_coord + y_quarter_value > workpiece_coordinates[1] > y_img_center_coord - y_quarter_value:
+        if x_img_center_coord + x_percent_value > workpiece_coordinates[0] > x_img_center_coord - x_percent_value and \
+                y_img_center_coord + y_percent_value > workpiece_coordinates[1] > y_img_center_coord - y_percent_value:
             return
 
-        if workpiece_coordinates[0] > x_img_center_coord + x_quarter_value:
-            camera_control.move_camera_right_10_degrees()
-        elif workpiece_coordinates[0] < x_img_center_coord - x_quarter_value:
-            camera_control.move_camera_left_20_degrees()
-
-        if workpiece_coordinates[1] > y_img_center_coord + y_quarter_value:
+        if workpiece_coordinates[1] > y_img_center_coord + y_percent_value:
             camera_control.move_camera_down_20_degrees()
-        elif workpiece_coordinates[1] < y_img_center_coord - y_quarter_value:
+        elif workpiece_coordinates[1] < y_img_center_coord - y_percent_value:
             camera_control.move_camera_up_10_degrees()
-        time.sleep(1)
+
+        if workpiece_coordinates[0] > x_img_center_coord + x_percent_value:
+            camera_control.move_camera_right_10_degrees()
+        elif workpiece_coordinates[0] < x_img_center_coord - x_percent_value:
+            camera_control.move_camera_left_10_degrees()
 
     @staticmethod
     def initiate_camera_position():

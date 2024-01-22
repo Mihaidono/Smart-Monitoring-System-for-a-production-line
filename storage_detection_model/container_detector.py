@@ -18,7 +18,8 @@ except Exception as e:
     print(e)
     exit(-1)
 
-recognition_threshold = float(os.getenv('RECOGNITION_THRESHOLD'))
+container_recognition_threshold = float(os.getenv('CONTAINER_RECOGNITION_THRESHOLD'))
+workpiece_recognition_threshold = float(os.getenv('WORKPIECE_RECOGNITION_THRESHOLD'))
 
 elapsed_detection_time = 0
 
@@ -99,7 +100,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
-        if score > recognition_threshold and class_id in [0, 1, 2, 3]:
+        if score > container_recognition_threshold and class_id in [0, 1, 2, 3]:
             if class_id == 0:
                 center_of_objects.append(
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "RED",
@@ -121,7 +122,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
     try:
         return coordinates_to_matrix(center_of_objects)
     except Exception as ex:
-        print("Error retrieving the warehouse matrix")
+        print("Error retrieving the warehouse matrix: ", ex)
     return None
 
 
@@ -133,7 +134,7 @@ def identify_workpiece(image: cv2.typing.MatLike) -> None | dict:
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
-        if score > recognition_threshold and class_id in [4, 5, 6]:
+        if score > workpiece_recognition_threshold and class_id in [4, 5, 6]:
             if class_id == 4:
                 center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "WHITE",
