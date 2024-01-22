@@ -160,3 +160,4 @@ storage_detection_model/datasets
 storage_detection_model/runs
 test_script.py
 sampled_images/
+camera_output_test.py
