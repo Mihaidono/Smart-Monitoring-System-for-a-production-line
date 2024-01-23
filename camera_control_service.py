@@ -174,10 +174,14 @@ def set_camera_position_stop():
     time.sleep(0.5)
 
 
+def correct_if_drifted():
+    pass
+
+
 def set_camera_position_default():
     print("Setting camera position to default ...")
-    if round(current_position['tilt'], 7) == round(home_position_coord[0], 7) and \
-            round(current_position['pan'], 7) == round(home_position_coord[1], 7):
+    if round(current_position['tilt'], 3) == round(home_position_coord[0], 3) and \
+            round(current_position['pan'], 3) == round(home_position_coord[1], 3):
         move_camera_left_5_degrees()
 
     set_camera_position_home()

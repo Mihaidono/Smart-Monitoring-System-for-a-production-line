@@ -1,6 +1,6 @@
 path: C:\projects\Smart-Monitoring-System-for-a-production-line\storage_detection_model\datasets
 train: images\train
-val: images\train # de schimbat validation images in imaginile din folderul meu extern
+val: images\train
 
 # Classes
 names:
