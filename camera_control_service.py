@@ -14,6 +14,11 @@ current_position = {}
 home_position_coord = (-0.06000000238418579, 0.09981644153594971)
 
 
+class FischertechnikModuleLocations:
+    #TODO: de adaugat numele + coordonatele / sa gasesc o cale cum sa pun limitele pentru zone care nu tin de margini
+    pass
+
+
 def detect_camera_movement() -> bool:
     global previous_position
     global current_position
