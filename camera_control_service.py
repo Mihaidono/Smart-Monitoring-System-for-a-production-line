@@ -212,19 +212,19 @@ def set_camera_position_stop():
 
 def correct_if_drifted_from_warehouse():
     global current_position
-    while FischertechnikModuleLocations.WAREHOUSE[0] + 0.07 <= round(current_position['pan'], 3):
+    while FischertechnikModuleLocations.WAREHOUSE[0] + 0.05 <= round(current_position['pan'], 3):
         move_camera_left_2_degrees()
         time.sleep(1)
 
-    while round(current_position['pan'], 3) <= FischertechnikModuleLocations.WAREHOUSE[0] - 0.07:
+    while round(current_position['pan'], 3) <= FischertechnikModuleLocations.WAREHOUSE[0] - 0.05:
         move_camera_right_2_degrees()
         time.sleep(1)
 
-    while FischertechnikModuleLocations.WAREHOUSE[1] + 0.07 <= round(current_position['tilt'], 3):
+    while FischertechnikModuleLocations.WAREHOUSE[1] + 0.05 <= round(current_position['tilt'], 3):
         move_camera_down_2_degrees()
         time.sleep(1)
 
-    while round(current_position['tilt'], 3) <= FischertechnikModuleLocations.WAREHOUSE[1] - 0.07:
+    while round(current_position['tilt'], 3) <= FischertechnikModuleLocations.WAREHOUSE[1] - 0.05:
         move_camera_right_2_degrees()
         time.sleep(1)
 
