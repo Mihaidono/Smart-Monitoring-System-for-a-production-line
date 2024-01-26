@@ -37,7 +37,6 @@ reference_matrix, similarity_diff = get_local_config_from_yaml()
 
 
 def coordinates_to_matrix(coordinates: List):
-    global reference_matrix
     if len(coordinates) == 0:
         return []
     x_sorted_coordinates = sorted(coordinates, key=lambda x: x["coordinates"][0])
