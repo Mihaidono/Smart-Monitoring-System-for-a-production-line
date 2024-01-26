@@ -181,6 +181,7 @@ class MonitoringService:
     @staticmethod
     def initiate_camera_position():
         camera_control.set_camera_position_default()
+        camera_control.correct_if_drifted_from_warehouse()
 
     @staticmethod
     def process_start_camera_position():

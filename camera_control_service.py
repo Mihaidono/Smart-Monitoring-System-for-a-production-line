@@ -8,15 +8,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-previous_position = {}
-current_position = {}
-
-home_position_coord = (-0.06000000238418579, 0.09981644153594971)
-
 
 class FischertechnikModuleLocations:
-    #TODO: de adaugat numele + coordonatele / sa gasesc o cale cum sa pun limitele pentru zone care nu tin de margini
-    pass
+    HOME = (0.102, -0.064)
+    WAREHOUSE = (0.995, -0.242)
+    PROCESSING_STATION = (0.330, -0.242)
+    SORTING_LINE = (-0.392, -0.379)
+    SHIPPING = (-0.057, -0.154)
+
+
+previous_position = {}
+current_position = {}
+current_module = FischertechnikModuleLocations.HOME
 
 
 def detect_camera_movement() -> bool:
@@ -41,6 +44,34 @@ def wait_camera_to_stabilize():
             standby_count += 1
         if standby_count == 3:
             break
+
+
+def move_camera_left_2_degrees():
+    client_txt.publish('o/ptu',
+                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
+                                   'degree': 2}))
+    time.sleep(0.5)
+
+
+def move_camera_right_2_degrees():
+    client_txt.publish('o/ptu',
+                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_right',
+                                   'degree': 2}))
+    time.sleep(0.5)
+
+
+def move_camera_up_2_degrees():
+    client_txt.publish('o/ptu',
+                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_up',
+                                   'degree': 2}))
+    time.sleep(0.5)
+
+
+def move_camera_down_2_degrees():
+    client_txt.publish('o/ptu',
+                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_down',
+                                   'degree': 2}))
+    time.sleep(0.5)
 
 
 def move_camera_left_5_degrees():
@@ -179,14 +210,29 @@ def set_camera_position_stop():
     time.sleep(0.5)
 
 
-def correct_if_drifted():
-    pass
+def correct_if_drifted_from_warehouse():
+    global current_position
+    while FischertechnikModuleLocations.WAREHOUSE[0] + 0.07 <= round(current_position['pan'], 3):
+        move_camera_left_2_degrees()
+        time.sleep(1)
+
+    while round(current_position['pan'], 3) <= FischertechnikModuleLocations.WAREHOUSE[0] - 0.07:
+        move_camera_right_2_degrees()
+        time.sleep(1)
+
+    while FischertechnikModuleLocations.WAREHOUSE[1] + 0.07 <= round(current_position['tilt'], 3):
+        move_camera_down_2_degrees()
+        time.sleep(1)
+
+    while round(current_position['tilt'], 3) <= FischertechnikModuleLocations.WAREHOUSE[1] - 0.07:
+        move_camera_right_2_degrees()
+        time.sleep(1)
 
 
 def set_camera_position_default():
     print("Setting camera position to default ...")
-    if round(current_position['tilt'], 3) == round(home_position_coord[0], 3) and \
-            round(current_position['pan'], 3) == round(home_position_coord[1], 3):
+    if round(current_position['tilt'], 3) == round(FischertechnikModuleLocations.HOME[0], 3) and \
+            round(current_position['pan'], 3) == round(FischertechnikModuleLocations.HOME[1], 3):
         move_camera_left_5_degrees()
 
     set_camera_position_home()
