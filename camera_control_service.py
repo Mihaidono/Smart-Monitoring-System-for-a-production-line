@@ -22,6 +22,32 @@ current_position = {}
 current_module = FischertechnikModuleLocations.HOME
 
 
+def update_current_module():
+    global current_module
+    if FischertechnikModuleLocations.WAREHOUSE[0] - 0.05 <= round(current_position['pan'], 3) <= \
+            FischertechnikModuleLocations.WAREHOUSE[0] + 0.05 and FischertechnikModuleLocations.WAREHOUSE[1] - 0.05 <= \
+            round(current_position['tilt'], 3) <= FischertechnikModuleLocations.WAREHOUSE[1] + 0.05:
+        current_module = FischertechnikModuleLocations.WAREHOUSE
+        return
+
+    if FischertechnikModuleLocations.SORTING_LINE[0] - 0.05 <= round(current_position['pan'], 3) <= \
+            FischertechnikModuleLocations.SORTING_LINE[0] + 0.05 and \
+            FischertechnikModuleLocations.SORTING_LINE[1] - 0.05 <= \
+            round(current_position['tilt'], 3) <= FischertechnikModuleLocations.SORTING_LINE[1] + 0.05:
+        current_module = FischertechnikModuleLocations.SORTING_LINE
+        return
+
+    if FischertechnikModuleLocations.SHIPPING[0] - 0.05 <= round(current_position['pan'], 3) <= \
+            FischertechnikModuleLocations.SHIPPING[0] + 0.05 and FischertechnikModuleLocations.SHIPPING[1] - 0.05 <= \
+            round(current_position['tilt'], 3) <= FischertechnikModuleLocations.SHIPPING[1] + 0.05:
+        current_module = FischertechnikModuleLocations.SHIPPING
+        return
+
+    if round(current_position['pan'], 3) <= FischertechnikModuleLocations.PROCESSING_STATION[0]:
+        current_module = FischertechnikModuleLocations.PROCESSING_STATION
+        return
+
+
 def detect_camera_movement() -> bool:
     global previous_position
     global current_position
@@ -251,6 +277,7 @@ def on_connect_txt(client, userdata, flags, rc):
 def on_message_txt(client, userdata, msg):
     global current_position
     current_position = json.loads(msg.payload)
+    update_current_module()
 
 
 def on_disconnect(client, userdata, rc=0):
