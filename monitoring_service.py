@@ -22,6 +22,7 @@ class RoutineStatus:
     SURVEYING_BAY = 1
     SURVEYING_DELIVERY_PROCESS = 2
     TIMED_OUT = 3
+    DELIVERY_SUCCESSFUL = 4
 
 
 class MonitoringService:
@@ -43,6 +44,55 @@ class MonitoringService:
         self._KEEP_ALIVE = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
         self._USERNAME = os.getenv('TXT_USERNAME')
         self._PASSWD = os.getenv('TXT_PASSWD')
+
+        self._is_camera_delayed = False
+        self._detection_count_per_module = 0
+
+    def progress_camera_position(self):
+        if camera_control.current_module != camera_control.FischertechnikModuleLocations.SHIPPING:
+            if camera_control.current_module == camera_control.FischertechnikModuleLocations.PROCESSING_STATION and \
+                    self._detection_count_per_module == 1:
+                camera_control.move_camera_down_20_degrees()
+                camera_control.move_camera_down_20_degrees()
+                camera_control.move_camera_down_20_degrees()
+                camera_control.move_camera_left_20_degrees()
+                camera_control.wait_camera_to_stabilize()
+                return
+
+            if camera_control.current_module == camera_control.FischertechnikModuleLocations.PROCESSING_STATION and \
+                    self._detection_count_per_module == 2:
+                camera_control.move_camera_left_20_degrees()
+                camera_control.move_camera_left_10_degrees()
+                camera_control.move_camera_up_20_degrees()
+                camera_control.move_camera_up_20_degrees()
+                camera_control.move_camera_up_10_degrees()
+                camera_control.wait_camera_to_stabilize()
+                return
+
+            if camera_control.current_module == camera_control.FischertechnikModuleLocations.SORTING_LINE and \
+                    self._detection_count_per_module == 3:
+                camera_control.move_camera_right_10_degrees()
+                camera_control.move_camera_up_20_degrees()
+                camera_control.wait_camera_to_stabilize()
+                self._detection_count_per_module = 0
+                return
+
+    def check_if_camera_has_delay(self):
+        time_array = []
+        for _ in range(5):
+            msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
+                                   client_id=self._CLIENT_TXT_NAME,
+                                   keepalive=self._KEEP_ALIVE,
+                                   auth={'username': self._USERNAME, 'password': self._PASSWD})
+            json_message = json.loads(msg.payload)
+            time_array.append(json_message['ts'])
+
+        datetime_array = [datetime.fromisoformat(timestamp) for timestamp in time_array]
+        time_diffs = [datetime_array[i + 1] - datetime_array[i] for i in range(len(datetime_array) - 1)]
+        for diff in time_diffs:
+            if diff.total_seconds() > 1:
+                return True
+        return False
 
     def initialization_routine(self):
         self.initiate_camera_position()
@@ -87,18 +137,35 @@ class MonitoringService:
                             self._current_routine = RoutineStatus.TIMED_OUT
                             self._detection_event.clear()
                             break
+                        if self._is_camera_delayed:
+                            self._detection_count_per_module = 0
                         continue
                     self._standby_seconds_count = 0
                     self._detection_event.clear()
                     countdown_running = False
 
-                    crt_height, crt_width, _ = img.shape
-                    self.center_workpiece_in_frame(detected_object["coordinates"],
-                                                   img_width=crt_width,
-                                                   img_height=crt_height)
+                    if self._is_camera_delayed:
+                        self._detection_count_per_module += 1
+                        self.progress_camera_position()
+                        if self._detection_count_per_module == 5:
+                            self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+                    else:
+                        if self._detection_count_per_module == 5:
+                            self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+
+                        crt_height, crt_width, _ = img.shape
+                        self.center_workpiece_in_frame(detected_object["coordinates"],
+                                                       img_width=crt_width,
+                                                       img_height=crt_height)
+                        if camera_control.current_module == camera_control.FischertechnikModuleLocations.SHIPPING:
+                            self._detection_count_per_module += 1
 
     def camera_timeout_routine(self):
         print("Object lost from field of view. Returning to bay")
+        self._current_routine = RoutineStatus.INITIALIZING
+
+    def successful_delivery_routine(self):
+        print("Successfully delivered workpiece! Returning to bay")
         self._current_routine = RoutineStatus.INITIALIZING
 
     def update_json_message(self):
@@ -144,9 +211,11 @@ class MonitoringService:
             RoutineStatus.INITIALIZING: self.initialization_routine,
             RoutineStatus.SURVEYING_BAY: self.survey_bay_routine,
             RoutineStatus.SURVEYING_DELIVERY_PROCESS: self.survey_delivery_process_routine,
-            RoutineStatus.TIMED_OUT: self.camera_timeout_routine
+            RoutineStatus.TIMED_OUT: self.camera_timeout_routine,
+            RoutineStatus.DELIVERY_SUCCESSFUL: self.successful_delivery_routine
         }
 
+        self._is_camera_delayed = self.check_if_camera_has_delay()
         while True:
             routines[self._current_routine]()
 
@@ -162,14 +231,14 @@ class MonitoringService:
     def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
         x_img_center_coord, y_img_center_coord = img_width / 2, img_height / 2
         x_percent_value = img_width * 0.4
-        y_percent_value = img_height * 0.8
+        y_percent_value = img_height * 0.4
 
         if x_img_center_coord + x_percent_value > workpiece_coordinates[0] > x_img_center_coord - x_percent_value and \
                 y_img_center_coord + y_percent_value > workpiece_coordinates[1] > y_img_center_coord - y_percent_value:
             return
 
         if workpiece_coordinates[1] > y_img_center_coord + y_percent_value:
-            camera_control.move_camera_down_20_degrees()
+            camera_control.move_camera_down_10_degrees()
         elif workpiece_coordinates[1] < y_img_center_coord - y_percent_value:
             camera_control.move_camera_up_10_degrees()
 
