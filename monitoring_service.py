@@ -49,8 +49,10 @@ class MonitoringService:
         self._detection_count_per_module = 0
 
     def progress_camera_position(self):
-        if camera_control.current_module != camera_control.FischertechnikModuleLocations.SHIPPING:
-            if camera_control.current_module == camera_control.FischertechnikModuleLocations.PROCESSING_STATION and \
+        if camera_control.is_module_equal(camera_control.current_module,
+                                          camera_control.FischertechnikModuleLocations.SHIPPING) is False:
+            if camera_control.is_module_equal(camera_control.current_module,
+                                              camera_control.FischertechnikModuleLocations.PROCESSING_STATION) and \
                     self._detection_count_per_module == 1:
                 camera_control.move_camera_down_20_degrees()
                 camera_control.move_camera_down_20_degrees()
@@ -59,7 +61,8 @@ class MonitoringService:
                 camera_control.wait_camera_to_stabilize()
                 return
 
-            if camera_control.current_module == camera_control.FischertechnikModuleLocations.PROCESSING_STATION and \
+            if camera_control.is_module_equal(camera_control.current_module,
+                                              camera_control.FischertechnikModuleLocations.PROCESSING_STATION) and \
                     self._detection_count_per_module == 2:
                 camera_control.move_camera_left_20_degrees()
                 camera_control.move_camera_left_10_degrees()
@@ -69,7 +72,8 @@ class MonitoringService:
                 camera_control.wait_camera_to_stabilize()
                 return
 
-            if camera_control.current_module == camera_control.FischertechnikModuleLocations.SORTING_LINE and \
+            if camera_control.is_module_equal(camera_control.current_module,
+                                              camera_control.FischertechnikModuleLocations.SORTING_LINE) and \
                     self._detection_count_per_module == 3:
                 camera_control.move_camera_right_10_degrees()
                 camera_control.move_camera_up_20_degrees()

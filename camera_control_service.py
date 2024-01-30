@@ -14,12 +14,20 @@ class FischertechnikModuleLocations:
     WAREHOUSE = (0.995, -0.242)
     PROCESSING_STATION = (0.330, -0.242)
     SORTING_LINE = (-0.229, -0.358)
-    SHIPPING = (-0.057, -0.154)
+    SHIPPING = (-0.117, -0.135)
 
 
 previous_position = {}
 current_position = {}
 current_module = FischertechnikModuleLocations.HOME
+
+
+def is_module_equal(module1, module2):
+    if abs(module1[0] - module2[0]) > 0.05:
+        return False
+    elif abs(module1[1] - module2[1]) > 0.05:
+        return False
+    return True
 
 
 def update_current_module():
