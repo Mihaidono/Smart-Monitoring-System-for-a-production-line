@@ -57,6 +57,8 @@ class MonitoringService:
                 camera_control.move_camera_down_20_degrees()
                 camera_control.move_camera_down_20_degrees()
                 camera_control.move_camera_down_20_degrees()
+                camera_control.wait_camera_to_stabilize()
+
                 camera_control.move_camera_left_20_degrees()
                 camera_control.wait_camera_to_stabilize()
                 return
@@ -66,6 +68,8 @@ class MonitoringService:
                     self._detection_count_per_module == 2:
                 camera_control.move_camera_left_20_degrees()
                 camera_control.move_camera_left_10_degrees()
+                camera_control.wait_camera_to_stabilize()
+
                 camera_control.move_camera_up_20_degrees()
                 camera_control.move_camera_up_20_degrees()
                 camera_control.move_camera_up_10_degrees()
@@ -76,6 +80,8 @@ class MonitoringService:
                                               camera_control.FischertechnikModuleLocations.SORTING_LINE) and \
                     self._detection_count_per_module == 3:
                 camera_control.move_camera_right_10_degrees()
+                camera_control.wait_camera_to_stabilize()
+
                 camera_control.move_camera_up_20_degrees()
                 camera_control.wait_camera_to_stabilize()
                 self._detection_count_per_module = 0
