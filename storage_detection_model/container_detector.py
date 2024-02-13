@@ -95,7 +95,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
     global elapsed_detection_time
 
     start_time = time.time()
-    results = trained_model(image, verbose=False)[0]
+    results = trained_model(image, verbose=True)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
