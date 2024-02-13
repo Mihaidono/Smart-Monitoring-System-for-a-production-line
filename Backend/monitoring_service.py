@@ -57,10 +57,11 @@ class MonitoringService:
                 camera_control.move_camera_down_20_degrees()
                 camera_control.move_camera_down_20_degrees()
                 camera_control.move_camera_down_20_degrees()
-                time.sleep(2)
+                camera_control.wait_camera_to_stabilize()
 
                 camera_control.move_camera_left_20_degrees()
                 camera_control.wait_camera_to_stabilize()
+                print("Moved at PROCESSING STATION Module")
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
@@ -72,6 +73,7 @@ class MonitoringService:
                 camera_control.move_camera_up_20_degrees()
                 camera_control.move_camera_up_10_degrees()
                 camera_control.wait_camera_to_stabilize()
+                print("Moved at SORTING LINE Module")
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
@@ -81,6 +83,7 @@ class MonitoringService:
                 camera_control.move_camera_up_20_degrees()
                 camera_control.wait_camera_to_stabilize()
                 self._detection_count_per_module = 0
+                print("Moved at SHIPPING Module")
                 return
 
     def check_if_camera_has_delay(self):
@@ -143,8 +146,6 @@ class MonitoringService:
                             self._current_routine = RoutineStatus.TIMED_OUT
                             self._detection_event.clear()
                             break
-                        if self._is_camera_delayed:
-                            self._detection_count_per_module = 0
                         continue
                     self._standby_seconds_count = 0
                     self._detection_event.clear()
@@ -152,23 +153,28 @@ class MonitoringService:
 
                     if self._is_camera_delayed:
                         self._detection_count_per_module += 1
-                        self.progress_camera_position()
                         if self._detection_count_per_module == 5:
                             self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+                            break
+                        else:
+                            self.progress_camera_position()
                     else:
                         if self._detection_count_per_module == 5:
                             self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+                            break
 
                         crt_height, crt_width, _ = img.shape
                         self.center_workpiece_in_frame(detected_object["coordinates"],
                                                        img_width=crt_width,
                                                        img_height=crt_height)
-                        if camera_control.current_module == camera_control.FischertechnikModuleLocations.SHIPPING:
+                        if camera_control.is_module_equal(camera_control.current_module,
+                                                          camera_control.FischertechnikModuleLocations.SHIPPING):
                             self._detection_count_per_module += 1
 
     def camera_timeout_routine(self):
         print("Object lost from field of view. Returning to bay")
         self._current_routine = RoutineStatus.INITIALIZING
+        self._detection_count_per_module = 0
 
     def successful_delivery_routine(self):
         print("Successfully delivered workpiece! Returning to bay")
