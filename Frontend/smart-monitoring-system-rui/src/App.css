@@ -3,6 +3,8 @@
   flex-direction: row;
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 
@@ -68,11 +70,13 @@
 .home-main-container {
   width: 100%;
   margin: 0;
-  padding: 10px,20px;
+  padding: 10px;
 }
 
 /*--------------------------- SETTINGS PAGE SECTION ---------------------------*/
 
 .settings-main-container {
   width: 100%;
+  margin: 0;
+  padding: 10px;
 }
