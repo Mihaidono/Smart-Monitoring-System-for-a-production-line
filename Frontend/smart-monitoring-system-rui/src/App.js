@@ -3,17 +3,31 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faCog, faArrowAltCircleLeft, faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 
-function NavigationSideMenu() {
+const AvailablePages = {
+  HOME: 1,
+  SETTINGS: 2,
+};
+
+function NavigationSideMenu({ setActivePage }) {
   const [expanded, setExpanded] = useState(false);
 
   const toggleNavbar = () => {
     setExpanded(!expanded);
   };
 
+  const goToHomePage = () => {
+    setActivePage(1);
+  }
+
+  const goToSettingsPage = () => {
+    setActivePage(2);
+  }
+
+
   return (
     <div className={`navbar ${expanded ? 'expanded' : ''}`}>
       <li>
-        <button>
+        <button onClick={goToHomePage}>
           <div className='side-menu-button-content'>
             <FontAwesomeIcon icon={faHome} size='2x' />
             <p>{expanded ? "Home" : ''}</p>
@@ -21,7 +35,7 @@ function NavigationSideMenu() {
         </button>
       </li>
       <li>
-        <button>
+        <button onClick={goToSettingsPage}>
           <div className='side-menu-button-content'>
             <FontAwesomeIcon icon={faCog} size='2x' />
             <p>{expanded ? 'Settings' : ''}</p>
@@ -37,4 +51,39 @@ function NavigationSideMenu() {
   );
 }
 
-export default NavigationSideMenu;
+function SettingsMenu() {
+  return (
+    <div className='settings-main-container'>
+      <p>Settings works!</p>
+    </div>
+  );
+}
+
+function HomePageMenu() {
+  return (
+    <div className='home-main-container'>
+      <p>Home works!</p>
+    </div>
+  );
+}
+
+export default function App() {
+  const [currentActivePage, setCurrentPage] = useState(AvailablePages.HOME);
+
+  const renderActivePage = () => {
+    switch (currentActivePage) {
+      case AvailablePages.HOME:
+        return <HomePageMenu />;
+      case AvailablePages.SETTINGS:
+        return <SettingsMenu />;
+      default:
+        return null;
+    }
+  };
+  return (
+    <div className='base-container'>
+      <NavigationSideMenu setActivePage={setCurrentPage}/>
+      {renderActivePage()}
+    </div>
+  );
+}
