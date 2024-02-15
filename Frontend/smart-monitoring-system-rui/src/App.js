@@ -16,7 +16,7 @@ function NavigationSideMenu() {
         <button>
           <div className='side-menu-button-content'>
             <FontAwesomeIcon icon={faHome} size='2x' />
-            <p>{expanded ? "Home" : ""}</p>
+            <p>{expanded ? "Home" : ''}</p>
           </div>
         </button>
       </li>
@@ -24,7 +24,7 @@ function NavigationSideMenu() {
         <button>
           <div className='side-menu-button-content'>
             <FontAwesomeIcon icon={faCog} size='2x' />
-            <p>{expanded ? 'Settings' : ""}</p>
+            <p>{expanded ? 'Settings' : ''}</p>
           </div>
         </button>
       </li>
