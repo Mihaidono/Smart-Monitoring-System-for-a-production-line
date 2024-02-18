@@ -270,5 +270,6 @@ class MonitoringService:
 
 
 if __name__ == "__main__":
+    camera_control.start_camera_control_service()
     surveillance_system = MonitoringService()
     surveillance_system.start_monitoring()
