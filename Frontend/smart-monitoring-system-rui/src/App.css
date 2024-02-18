@@ -1,3 +1,4 @@
+/*#region GENERAL STYLING*/
 .base-container {
   display: flex;
   flex-direction: row;
@@ -7,8 +8,22 @@
   height: 100%;
 }
 
+.smui-button {
+  padding: 10px;
+  border-radius: 100px;
+  background-color: var(--highlightColor);
+  border: 2px solid var(--highlightColor);
+  cursor: pointer;
+  color: #fff;
+  font-size: 12px;
+}
 
-/*--------------------------- NAVBAR SECTION ---------------------------*/
+.smui-button:hover {
+  background-color: var(--buttonHoverColor);
+}
+/*#endregion*/
+
+/*#region NAVIGATION SIDEBAR*/
 .navbar {
   list-style-type: none;
   margin: 0;
@@ -63,9 +78,9 @@
     margin-left: 20px;
   }
 }
+/*#endregion*/
 
-
-/*--------------------------- HOME PAGE SECTION ---------------------------*/
+/*#region HOME PAGE*/
 
 .home-main-container {
   width: 100%;
@@ -73,10 +88,55 @@
   padding: 10px;
 }
 
-/*--------------------------- SETTINGS PAGE SECTION ---------------------------*/
+/*#region Camera control buttons*/
+
+.camera-buttons-container {
+  width: 300px;
+  text-align: center;
+  padding: 10px;
+}
+
+.main-movement-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 200px;
+  margin: auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+#movement-up-button {
+  grid-area: 1 / 2 / 1 / 2;
+}
+
+#movement-down-button {
+  grid-area: 3 / 2 / 3 / 2;
+}
+
+#movement-left-button {
+  grid-area: 2 / 1 / 2 / 1;
+}
+
+#movement-right-button {
+  grid-area: 2 / 3 / 2 / 3;
+}
+
+.secondary-movement-buttons button {
+  margin: 10px;
+  justify-content: space-between;
+}
+/*#endregion*/
+
+/*#endregion*/
+
+/*#region SETTINGS PAGE*/
 
 .settings-main-container {
   width: 100%;
   margin: 0;
   padding: 10px;
 }
+/*#endregion*/
