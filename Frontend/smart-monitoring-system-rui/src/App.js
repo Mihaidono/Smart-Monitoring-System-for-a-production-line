@@ -74,6 +74,8 @@ function SettingsMenu() {
 }
 
 function HomePageMenu() {
+  var cameraFeedSource = null;
+
   return (
     <div className="home-main-container">
       <div className="camera-buttons-container">
@@ -127,6 +129,12 @@ function HomePageMenu() {
             <FontAwesomeIcon icon={faAngleDoubleRight} size="2x" />
           </button>
         </div>
+      </div>
+      <div className="image-display-container">
+        <img alt="Camera Feed" src={cameraFeedSource} />
+      </div>
+      <div className="process-overview-container">
+        <p>nimic</p>
       </div>
     </div>
   );
