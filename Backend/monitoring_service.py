@@ -12,6 +12,7 @@ import paho.mqtt.subscribe as subscribe
 from dotenv import load_dotenv
 
 import camera_control_service as camera_control
+from camera_control_service import CameraDegrees, CameraDirections, FischertechnikModuleLocations
 from storage_detection_model import container_detector
 
 load_dotenv()
@@ -50,37 +51,37 @@ class MonitoringService:
 
     def progress_camera_position(self):
         if camera_control.is_module_equal(camera_control.current_module,
-                                          camera_control.FischertechnikModuleLocations.SHIPPING) is False:
+                                          FischertechnikModuleLocations.SHIPPING) is False:
             if camera_control.is_module_equal(camera_control.current_module,
-                                              camera_control.FischertechnikModuleLocations.PROCESSING_STATION) and \
+                                              FischertechnikModuleLocations.PROCESSING_STATION) and \
                     self._detection_count_per_module == 1:
-                camera_control.move_camera_down_20_degrees()
-                camera_control.move_camera_down_20_degrees()
-                camera_control.move_camera_down_20_degrees()
+                camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
+                camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
+                camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
                 camera_control.wait_camera_to_stabilize()
 
-                camera_control.move_camera_left_20_degrees()
+                camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
                 camera_control.wait_camera_to_stabilize()
                 print("Moved at PROCESSING STATION Module")
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
-                                              camera_control.FischertechnikModuleLocations.PROCESSING_STATION) and \
+                                              FischertechnikModuleLocations.PROCESSING_STATION) and \
                     self._detection_count_per_module == 2:
-                camera_control.move_camera_left_20_degrees()
-                camera_control.move_camera_left_10_degrees()
-                camera_control.move_camera_up_20_degrees()
-                camera_control.move_camera_up_20_degrees()
-                camera_control.move_camera_up_10_degrees()
+                camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
+                camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TEN)
+                camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
+                camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
+                camera_control.move_camera(CameraDirections.UP, CameraDegrees.TEN)
                 camera_control.wait_camera_to_stabilize()
                 print("Moved at SORTING LINE Module")
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
-                                              camera_control.FischertechnikModuleLocations.SORTING_LINE) and \
+                                              FischertechnikModuleLocations.SORTING_LINE) and \
                     self._detection_count_per_module == 3:
-                camera_control.move_camera_right_10_degrees()
-                camera_control.move_camera_up_20_degrees()
+                camera_control.move_camera(CameraDirections.RIGHT, CameraDegrees.TEN)
+                camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
                 camera_control.wait_camera_to_stabilize()
                 self._detection_count_per_module = 0
                 print("Moved at SHIPPING Module")
@@ -168,7 +169,7 @@ class MonitoringService:
                                                        img_width=crt_width,
                                                        img_height=crt_height)
                         if camera_control.is_module_equal(camera_control.current_module,
-                                                          camera_control.FischertechnikModuleLocations.SHIPPING):
+                                                          FischertechnikModuleLocations.SHIPPING):
                             self._detection_count_per_module += 1
 
     def camera_timeout_routine(self):
@@ -250,14 +251,14 @@ class MonitoringService:
             return
 
         if workpiece_coordinates[1] > y_img_center_coord + y_percent_value:
-            camera_control.move_camera_down_10_degrees()
+            camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TEN)
         elif workpiece_coordinates[1] < y_img_center_coord - y_percent_value:
-            camera_control.move_camera_up_10_degrees()
+            camera_control.move_camera(CameraDirections.UP, CameraDegrees.TEN)
 
         if workpiece_coordinates[0] > x_img_center_coord + x_percent_value:
-            camera_control.move_camera_right_10_degrees()
+            camera_control.move_camera(CameraDirections.RIGHT, CameraDegrees.TEN)
         elif workpiece_coordinates[0] < x_img_center_coord - x_percent_value:
-            camera_control.move_camera_left_10_degrees()
+            camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TEN)
 
     @staticmethod
     def initiate_camera_position():

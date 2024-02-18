@@ -2,6 +2,7 @@ import json
 import os
 import time
 from datetime import datetime
+from enum import Enum
 
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
@@ -9,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class FischertechnikModuleLocations:
+class FischertechnikModuleLocations(Enum):
     HOME = (0.102, -0.064)
     WAREHOUSE = (0.995, -0.242)
     PROCESSING_STATION = (0.330, -0.242)
@@ -17,9 +18,29 @@ class FischertechnikModuleLocations:
     SHIPPING = (-0.117, -0.135)
 
 
+class CameraDirections(Enum):
+    LEFT = 'relmove_left'
+    RIGHT = 'relmove_right'
+    UP = 'relmove_up'
+    DOWN = 'relmove_down'
+    MAX_RIGHT = 'end_pan'
+    MAX_LEFT = 'start_pan'
+    HOME = 'home'
+
+
+class CameraDegrees(Enum):
+    TWENTY = 20
+    TEN = 10
+    FIVE = 5
+    TWO = 2
+
+
 previous_position = {}
 current_position = {}
 current_module = FischertechnikModuleLocations.HOME
+
+client_txt = None
+client_txt_name = "CameraControlService"
 
 
 def is_module_equal(module1, module2):
@@ -80,184 +101,41 @@ def wait_camera_to_stabilize():
             break
 
 
-def move_camera_left_2_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
-                                   'degree': 2}))
-    time.sleep(0.5)
-
-
-def move_camera_right_2_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_right',
-                                   'degree': 2}))
-    time.sleep(0.5)
-
-
-def move_camera_up_2_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_up',
-                                   'degree': 2}))
-    time.sleep(0.5)
-
-
-def move_camera_down_2_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_down',
-                                   'degree': 2}))
-    time.sleep(0.5)
-
-
-def move_camera_left_5_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
-                                   'degree': 5}))
-    time.sleep(1)
-
-
-def move_camera_right_5_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_right',
-                                   'degree': 5}))
-    time.sleep(1)
-
-
-def move_camera_up_5_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_up',
-                            'degree': 5}))
-    time.sleep(1)
-
-
-def move_camera_down_5_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_down',
-                            'degree': 5}))
-    time.sleep(1)
-
-
-def move_camera_left_10_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': 'relmove_left',
-                            'degree': 10}))
-    time.sleep(1)
-
-
-def move_camera_right_10_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_right',
-                            'degree': 10}))
-    time.sleep(1)
-
-
-def move_camera_up_10_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_up', 'degree': 10}))
-    time.sleep(1)
-
-
-def move_camera_down_10_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_down',
-                            'degree': 10}))
-    time.sleep(1)
-
-
-def move_camera_left_20_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_left',
-                            'degree': 20}))
-    time.sleep(1)
-
-
-def move_camera_right_20_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_right',
-                            'degree': 20}))
-    time.sleep(1)
-
-
-def move_camera_up_20_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            'cmd': 'relmove_up',
-                            'degree': 20}))
-    time.sleep(1)
-
-
-def move_camera_down_20_degrees():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime(
-                               "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'relmove_down', 'degree': 20}))
-    time.sleep(1)
-
-
-def move_camera_right_max():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime(
-                               "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'end_pan'}))
-    time.sleep(0.5)
-
-
-def move_camera_left_max():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime(
-                               "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'start_pan'}))
-    time.sleep(0.5)
-
-
-def set_camera_position_home():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime(
-                               "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'home'}))
-    time.sleep(0.5)
-
-
-def set_camera_position_stop():
-    client_txt.publish('o/ptu',
-                       json.dumps(
-                           {'ts': datetime.utcnow().strftime(
-                               "%Y-%m-%dT%H:%M:%S.%fZ"),
-                               'cmd': 'stop'}))
-    time.sleep(0.5)
+def move_camera(direction: CameraDirections, degrees: CameraDegrees = None):
+    if direction == CameraDirections.HOME:
+        client_txt.publish('o/ptu',
+                           json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': direction}))
+        time.sleep(0.5)
+    elif direction == CameraDirections.MAX_LEFT:
+        client_txt.publish('o/ptu',
+                           json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': direction}))
+        time.sleep(0.5)
+    elif direction == CameraDirections.MAX_RIGHT:
+        client_txt.publish('o/ptu',
+                           json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': direction}))
+        time.sleep(0.5)
+    else:
+        client_txt.publish('o/ptu',
+                           json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': direction,
+                                       'degree': degrees}))
+        time.sleep(1)
 
 
 def set_camera_position_default():
     print("Setting camera position to default ...")
     if round(current_position['tilt'], 3) == round(FischertechnikModuleLocations.HOME[0], 3) and \
             round(current_position['pan'], 3) == round(FischertechnikModuleLocations.HOME[1], 3):
-        move_camera_left_5_degrees()
+        move_camera(CameraDirections.LEFT, CameraDegrees.FIVE)
 
-    set_camera_position_home()
+    move_camera(CameraDirections.HOME)
     wait_camera_to_stabilize()
 
-    move_camera_right_max()
+    move_camera(CameraDirections.MAX_RIGHT)
     wait_camera_to_stabilize()
 
-    move_camera_down_10_degrees()
-    move_camera_down_5_degrees()
+    move_camera(CameraDirections.DOWN, CameraDegrees.TEN)
+    move_camera(CameraDirections.DOWN, CameraDegrees.FIVE)
+
     wait_camera_to_stabilize()
     print("Default position assumed")
 
@@ -269,9 +147,10 @@ def get_camera_position():
 
 
 def set_camera_position_to_process_start():
-    move_camera_left_20_degrees()
-    move_camera_left_20_degrees()
-    move_camera_left_20_degrees()
+    move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
+    move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
+    move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
+
     wait_camera_to_stabilize()
 
 
@@ -293,27 +172,34 @@ def on_disconnect(client, userdata, rc=0):
     client.loop_stop()
 
 
-txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
-port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
-keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
-username = os.getenv('TXT_USERNAME')
-passwd = os.getenv('TXT_PASSWD')
+def start_camera_control_service():
+    global client_txt
+    global client_txt_name
 
-client_txt_name = "CameraControlService"
-client_txt = mqtt.Client(client_id=client_txt_name)
-client_txt.on_connect = on_connect_txt
-client_txt.on_message = on_message_txt
-client_txt.on_disconnect = on_disconnect
-client_txt.username_pw_set(username=username, password=passwd)
+    txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
+    port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
+    keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
+    username = os.getenv('TXT_USERNAME')
+    passwd = os.getenv('TXT_PASSWD')
 
-try:
-    client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
-    client_txt.loop_start()
-except TimeoutError as ex:
-    print(f'{client_txt_name} failed to connect to TXT: {ex}')
-    client_txt.disconnect()
-    exit(-1)
-except Exception as ex:
-    print(f'{client_txt_name} failed to continue because of {ex}')
-    client_txt.disconnect()
-    exit(-1)
+    client_txt = mqtt.Client(client_id=client_txt_name)
+    client_txt.on_connect = on_connect_txt
+    client_txt.on_message = on_message_txt
+    client_txt.on_disconnect = on_disconnect
+    client_txt.username_pw_set(username=username, password=passwd)
+
+    try:
+        client_txt.connect(host=txt_broker_address, port=port_used, keepalive=keep_alive)
+        client_txt.loop_start()
+    except TimeoutError as ex:
+        print(f'{client_txt_name} failed to connect to TXT: {ex}')
+        client_txt.disconnect()
+        raise Exception("Camera control client got disconnected")
+    except Exception as ex:
+        print(f'{client_txt_name} failed to continue because of {ex}')
+        client_txt.disconnect()
+        raise Exception("Camera control client got disconnected")
+
+
+if __name__ == "__main__":
+    start_camera_control_service()
