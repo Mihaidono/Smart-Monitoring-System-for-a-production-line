@@ -49,6 +49,10 @@ class MonitoringService:
         self._is_camera_delayed = False
         self._detection_count_per_module = 0
 
+    @property
+    def json_mqtt_data(self):
+        return self._json_mqtt_data
+
     def progress_camera_position(self):
         if camera_control.is_module_equal(camera_control.current_module,
                                           FischertechnikModuleLocations.SHIPPING) is False:
@@ -267,9 +271,3 @@ class MonitoringService:
     @staticmethod
     def process_start_camera_position():
         camera_control.set_camera_position_to_process_start()
-
-
-if __name__ == "__main__":
-    camera_control.start_camera_control_service()
-    surveillance_system = MonitoringService()
-    surveillance_system.start_monitoring()

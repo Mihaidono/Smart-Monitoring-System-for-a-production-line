@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -13,6 +13,7 @@ import {
   faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
+import axios from 'axios';
 
 const AvailablePages = {
   HOME: 1,
@@ -75,6 +76,24 @@ function SettingsMenu() {
 
 function HomePageMenu() {
   var cameraFeedSource = null;
+  const [cameraFeedSource, setCameraFeedSource] = useState(null);
+
+  useEffect(() => {
+    const fetchVideoData = async () => {
+      try {
+        const response = await axios.get('http://your-backend-url/your-video-endpoint');
+        setCameraFeedSource(response.data);
+      } catch (error) {
+        console.error('Error fetching video data:', error);
+      }
+    };
+
+    fetchVideoData();
+
+    const intervalId = setInterval(fetchVideoData, 200);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="home-main-container">
@@ -139,6 +158,8 @@ function HomePageMenu() {
     </div>
   );
 }
+
+
 
 export default function App() {
   const [currentActivePage, setCurrentPage] = useState(AvailablePages.HOME);
