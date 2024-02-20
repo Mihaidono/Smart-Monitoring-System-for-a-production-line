@@ -13,7 +13,7 @@ import {
   faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
-import axios from 'axios';
+import axios from "axios";
 
 const AvailablePages = {
   HOME: 1,
@@ -75,16 +75,18 @@ function SettingsMenu() {
 }
 
 function HomePageMenu() {
-  var cameraFeedSource = null;
+  var warehouseStock = ["Puck1", "Puck2", "Puck3"];
   const [cameraFeedSource, setCameraFeedSource] = useState(null);
 
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
-        const response = await axios.get('http://your-backend-url/your-video-endpoint');
+        const response = await axios.get(
+          "http://your-backend-url/your-video-endpoint"
+        );
         setCameraFeedSource(response.data);
       } catch (error) {
-        console.error('Error fetching video data:', error);
+        console.error("Error fetching video data:", error);
       }
     };
 
@@ -155,11 +157,14 @@ function HomePageMenu() {
       <div className="process-overview-container">
         <p>nimic</p>
       </div>
+      <div className="warehouse-display">
+        {warehouseStock.map((element) => (
+          <div className="warehouse-item">{element}</div> // de adaugat improvementuri + cum arata obiectele + styling
+        ))}
+      </div>
     </div>
   );
 }
-
-
 
 export default function App() {
   const [currentActivePage, setCurrentPage] = useState(AvailablePages.HOME);

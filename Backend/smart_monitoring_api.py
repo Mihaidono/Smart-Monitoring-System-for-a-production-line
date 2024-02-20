@@ -49,9 +49,6 @@ async def get_image():
     return response
 
 
-
-
-
 if __name__ == "__main__":
     camera_control.start_camera_control_service()
     import uvicorn

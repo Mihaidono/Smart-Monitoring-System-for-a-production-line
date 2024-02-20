@@ -2,7 +2,6 @@ import json
 import os
 import time
 from datetime import datetime
-from enum import Enum
 
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
@@ -10,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class FischertechnikModuleLocations(Enum):
+class FischertechnikModuleLocations:
     HOME = (0.102, -0.064)
     WAREHOUSE = (0.995, -0.242)
     PROCESSING_STATION = (0.330, -0.242)
@@ -18,7 +17,7 @@ class FischertechnikModuleLocations(Enum):
     SHIPPING = (-0.117, -0.135)
 
 
-class CameraDirections(Enum):
+class CameraDirections:
     LEFT = 'relmove_left'
     RIGHT = 'relmove_right'
     UP = 'relmove_up'
@@ -28,7 +27,7 @@ class CameraDirections(Enum):
     HOME = 'home'
 
 
-class CameraDegrees(Enum):
+class CameraDegrees:
     TWENTY = 20
     TEN = 10
     FIVE = 5
@@ -101,7 +100,7 @@ def wait_camera_to_stabilize():
             break
 
 
-def move_camera(direction: CameraDirections, degrees: CameraDegrees = None):
+def move_camera(direction: CameraDirections | str, degrees: CameraDegrees | int = None):
     if direction == CameraDirections.HOME:
         client_txt.publish('o/ptu',
                            json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'cmd': direction}))
@@ -199,7 +198,3 @@ def start_camera_control_service():
         print(f'{client_txt_name} failed to continue because of {ex}')
         client_txt.disconnect()
         raise Exception("Camera control client got disconnected")
-
-
-if __name__ == "__main__":
-    start_camera_control_service()
