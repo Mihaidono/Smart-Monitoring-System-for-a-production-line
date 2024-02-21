@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./CameraFeed.css";
 
-const baseUrl = `${process.env.BACKEND_API_BASE_URL}:${process.env.BACKEND_API_PORT}`;
+const baseUrl = `http://${process.env.REACT_APP_BACKEND_API_BASE_URL}:${process.env.REACT_APP_BACKEND_API_PORT}`;
 
 function CameraFeed() {
   const [cameraFeedSource, setCameraFeedSource] = useState(null);
@@ -24,11 +24,10 @@ function CameraFeed() {
 
     fetchVideoData();
 
-    const intervalId = setInterval(fetchVideoData, 1000);
+    const interval = setInterval(fetchVideoData, 1000);
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(interval);
   }, []);
-
   return (
     <div className="image-display-container">
       <img alt="Camera Feed" src={cameraFeedSource} />
