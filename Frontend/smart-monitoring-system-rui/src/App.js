@@ -1,27 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { WarehouseContainerDTO } from "./models/WarehouseContainer";
 import {
   faHome,
   faCog,
   faArrowAltCircleLeft,
   faArrowAltCircleRight,
-  faArrowUp,
-  faArrowDown,
-  faArrowLeft,
-  faArrowRight,
-  faAngleDoubleLeft,
-  faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
-import axios from "axios";
+import CameraButtons from "./components/CameraButtons/CameraButtons";
+import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
+import CameraFeed from "./components/CameraFeed/CameraFeed";
+import WarehouseDisplay from "./components/WarehouseDisplay/WarehouseDisplay";
 
 const AvailablePages = {
   HOME: 1,
   SETTINGS: 2,
 };
-
-const baseUrl = `${process.env.BACKEND_API_BASE_URL}:${process.env.BACKEND_API_PORT}`;
 
 function NavigationSideMenu({ setActivePage }) {
   const [expanded, setExpanded] = useState(false);
@@ -73,142 +67,6 @@ function SettingsMenu() {
   return (
     <div className="settings-main-container">
       <p>Settings works!</p>
-    </div>
-  );
-}
-
-function CameraFeed() {
-  const [cameraFeedSource, setCameraFeedSource] = useState(null);
-  const sentError = useRef(false);
-
-  useEffect(() => {
-    const fetchVideoData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/get_image`);
-        setCameraFeedSource(response.data.data);
-        sentError.current = false;
-      } catch (error) {
-        if (!sentError.current) {
-          console.error("Error fetching video data:", error);
-          sentError.current = true;
-        }
-      }
-    };
-
-    fetchVideoData();
-
-    const intervalId = setInterval(fetchVideoData, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-    <div className="image-display-container">
-      <img alt="Camera Feed" src={cameraFeedSource} />
-    </div>
-  );
-}
-
-function CameraButtons() {
-  return (
-    <div className="camera-buttons-container">
-      <div className="main-movement-buttons">
-        <button
-          id="movement-up-button"
-          className="smui-button"
-          title="Move camera up"
-        >
-          <FontAwesomeIcon icon={faArrowUp} size="2x" />
-        </button>
-        <button
-          id="movement-down-button"
-          className="smui-button"
-          title="Move camera down"
-        >
-          <FontAwesomeIcon icon={faArrowDown} size="2x" />
-        </button>
-        <button
-          id="movement-left-button"
-          className="smui-button"
-          title="Move camera left"
-        >
-          <FontAwesomeIcon icon={faArrowLeft} size="2x" />
-        </button>
-        <button
-          id="movement-right-button"
-          className="smui-button"
-          title="Move camera right"
-        >
-          <FontAwesomeIcon icon={faArrowRight} size="2x" />
-        </button>
-      </div>
-      <div className="secondary-movement-buttons">
-        <button
-          className="smui-button"
-          title="Move camera to maximum range left"
-        >
-          <FontAwesomeIcon icon={faAngleDoubleLeft} size="2x" />
-        </button>
-        <button
-          className="smui-button"
-          title="Move camera to the home position"
-        >
-          <FontAwesomeIcon icon={faHome} size="2x" />
-        </button>
-        <button
-          className="smui-button"
-          title="Move camera to maximum range right"
-        >
-          <FontAwesomeIcon icon={faAngleDoubleRight} size="2x" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function WarehouseDisplay() {
-  const [warehouseStock, setWarehouseStock] = useState([]);
-  const sentError = useRef(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/get_warehouse_inventory`);
-        const containersData = response.data.containers.map((container) => {
-          return new WarehouseContainerDTO(
-            container.coordinates,
-            container.color,
-            container.type
-          );
-        });
-        setWarehouseStock(containersData);
-        sentError.current = false;
-      } catch (error) {
-        if (!sentError.current) {
-          console.error("Error fetching warehouse inventory:", error);
-          sentError.current = true;
-        }
-      }
-    };
-
-    const intervalId = setInterval(fetchData, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  return (
-    <div className="warehouse-display">
-      {warehouseStock.map((container) => (
-        <div className="warehouse-item">{container.coordinates}</div>
-      ))}
-    </div>
-  );
-}
-
-function ProcessOverview() {
-  return (
-    <div className="process-overview-container">
-      <p>nimic</p>
     </div>
   );
 }
