@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { WarehouseContainerDTO } from "./models/WarehouseContainer";
 import {
   faHome,
   faCog,
@@ -96,7 +97,7 @@ function CameraFeed() {
 
     fetchVideoData();
 
-    const intervalId = setInterval(fetchVideoData, 500);
+    const intervalId = setInterval(fetchVideoData, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -173,7 +174,14 @@ function WarehouseDisplay() {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${baseUrl}/get_warehouse_inventory`);
-        setWarehouseStock(response.data.containers);
+        const containersData = response.data.containers.map((container) => {
+          return new WarehouseContainerDTO(
+            container.coordinates,
+            container.color,
+            container.type
+          );
+        });
+        setWarehouseStock(containersData);
         sentError.current = false;
       } catch (error) {
         if (!sentError.current) {
@@ -183,15 +191,15 @@ function WarehouseDisplay() {
       }
     };
 
-    const intervalId = setInterval(fetchData, 2500);
+    const intervalId = setInterval(fetchData, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div className="warehouse-display">
-      {warehouseStock.map((element) => (
-        <div className="warehouse-item">{element}</div> // de adaugat improvementuri + cum arata obiectele + styling
+      {warehouseStock.map((container) => (
+        <div className="warehouse-item">{container.coordinates}</div>
       ))}
     </div>
   );
