@@ -1,14 +1,12 @@
-import json
-import os
-
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 import camera_control_service as camera_control
-from monitoring_service import MonitoringService
 from camera_control_service import CameraDirections, CameraDegrees
+from monitoring_service import MonitoringService
 
 load_dotenv()
 
@@ -40,13 +38,32 @@ async def move_camera(control_message: CameraControlMessage):
             "additional_info": "Unable to access camera",
         }
         raise HTTPException(status_code=500, detail=error_details)
-    return f"Camera moved by {control_message.degrees} degrees to {control_message.direction}"
+    response = f"Camera moved by {control_message.degrees} degrees to {control_message.direction}"
+    return JSONResponse(content=response, status_code=200)
 
 
 @smart_monitoring_app.get('/get_image')
 async def get_image():
     response = {"data": surveillance_system.json_mqtt_data['data']}
-    return response
+    return JSONResponse(content=response, status_code=200)
+
+
+@smart_monitoring_app.get('get_warehouse_inventory')
+async def get_warehouse_inventory():
+    response = {"containers": surveillance_system.warehouse_containers}
+    return JSONResponse(content=response, status_code=200)
+
+
+@smart_monitoring_app.get('get_current_module')
+async def get_current_module():
+    response = {"current_module": camera_control.current_module}
+    return JSONResponse(content=response, status_code=200)
+
+
+@smart_monitoring_app.get('get_process_state')
+async def get_process_state():
+    response = {"started": surveillance_system.process_started}
+    return JSONResponse(content=response, status_code=200)
 
 
 if __name__ == "__main__":

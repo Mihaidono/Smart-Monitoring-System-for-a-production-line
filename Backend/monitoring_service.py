@@ -32,6 +32,7 @@ class MonitoringService:
         self._camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
         self._standby_seconds_count = 0
 
+        self._warehouse_containers = []
         self._prev_frame_with_detected_objects = []
         self._reoccurrence_matrix = np.zeros((3, 3))
 
@@ -39,6 +40,8 @@ class MonitoringService:
         self._previous_timestamp = datetime.utcnow()
 
         self._current_routine = RoutineStatus.INITIALIZING
+        self._process_started = False
+
         self._CLIENT_TXT_NAME = "MonitoringService"
         self._TXT_BROKER_ADDRESS = os.getenv("TXT_CONTROLLER_ADDRESS")
         self._PORT_USED = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
@@ -48,6 +51,14 @@ class MonitoringService:
 
         self._is_camera_delayed = False
         self._detection_count_per_module = 0
+
+    @property
+    def process_started(self):
+        return self._process_started
+
+    @property
+    def warehouse_containers(self):
+        return self._warehouse_containers
 
     @property
     def json_mqtt_data(self):
@@ -121,9 +132,10 @@ class MonitoringService:
                 if img is not None:
                     coordinates_matrix = container_detector.identify_container_units(img)
                     if coordinates_matrix:
-                        filled_coordinates_matrix = container_detector.get_missing_storage_spaces(coordinates_matrix)
-                        if self.has_container_moved(filled_coordinates_matrix):
+                        self._warehouse_containers = container_detector.get_missing_storage_spaces(coordinates_matrix)
+                        if self.has_container_moved(self._warehouse_containers):
                             self._current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                            self._process_started = True
                             break
 
     def camera_timeout_counter(self):
@@ -180,10 +192,12 @@ class MonitoringService:
         print("Object lost from field of view. Returning to bay")
         self._current_routine = RoutineStatus.INITIALIZING
         self._detection_count_per_module = 0
+        self._process_started = False
 
     def successful_delivery_routine(self):
         print("Successfully delivered workpiece! Returning to bay")
         self._current_routine = RoutineStatus.INITIALIZING
+        self._process_started = False
 
     def update_json_message(self):
 
