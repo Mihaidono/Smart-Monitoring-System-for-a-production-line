@@ -1,3 +1,5 @@
+from threading import Thread
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,8 +25,14 @@ smart_monitoring_app.add_middleware(
 
 
 class CameraControlMessage(BaseModel):
-    degrees: CameraDegrees
-    direction: CameraDirections
+    degrees: int
+    direction: str
+
+
+def start_uvicorn():
+    import uvicorn
+
+    uvicorn.run(smart_monitoring_app, host='0.0.0.0', port=8000)
 
 
 @smart_monitoring_app.post("/move_camera")
@@ -48,19 +56,19 @@ async def get_image():
     return JSONResponse(content=response, status_code=200)
 
 
-@smart_monitoring_app.get('get_warehouse_inventory')
+@smart_monitoring_app.get('/get_warehouse_inventory')
 async def get_warehouse_inventory():
     response = {"containers": surveillance_system.warehouse_containers}
     return JSONResponse(content=response, status_code=200)
 
 
-@smart_monitoring_app.get('get_current_module')
+@smart_monitoring_app.get('/get_current_module')
 async def get_current_module():
     response = {"current_module": camera_control.current_module}
     return JSONResponse(content=response, status_code=200)
 
 
-@smart_monitoring_app.get('get_process_state')
+@smart_monitoring_app.get('/get_process_state')
 async def get_process_state():
     response = {"started": surveillance_system.process_started}
     return JSONResponse(content=response, status_code=200)
@@ -68,7 +76,8 @@ async def get_process_state():
 
 if __name__ == "__main__":
     camera_control.start_camera_control_service()
-    import uvicorn
 
-    uvicorn.run(smart_monitoring_app, host='0.0.0.0', port=8000)
+    uvicorn_thread = Thread(target=start_uvicorn)
+    uvicorn_thread.start()
+
     surveillance_system.start_monitoring()
