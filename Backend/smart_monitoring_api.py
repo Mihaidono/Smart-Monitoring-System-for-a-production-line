@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 import camera_control_service as camera_control
-from camera_control_service import CameraDirections, CameraDegrees
 from monitoring_service import MonitoringService
 
 load_dotenv()

@@ -99,7 +99,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
                      "type": "Storage"})
             elif class_id == 1:
                 center_of_objects.append(
-                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "EMPTY",
+                    {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "GRAY",
                      "type": "Storage"})
             elif class_id == 2:
                 center_of_objects.append(
