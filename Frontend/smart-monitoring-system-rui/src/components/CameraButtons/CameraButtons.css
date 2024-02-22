@@ -1,39 +1,44 @@
 .camera-buttons-container {
-    width: 300px;
-    height: 250px;
-    text-align: center;
-    padding: 10px;
-  }
-  
-  .main-movement-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    row-gap: 10px;
-    column-gap: 10px;
-    width: 200px;
-    margin: auto;
-    margin-bottom: 10px;
-    margin-top: 10px;
-  }
-  
-  #movement-up-button {
-    grid-area: 1 / 2 / 1 / 2;
-  }
-  
-  #movement-down-button {
-    grid-area: 3 / 2 / 3 / 2;
-  }
-  
-  #movement-left-button {
-    grid-area: 2 / 1 / 2 / 1;
-  }
-  
-  #movement-right-button {
-    grid-area: 2 / 3 / 2 / 3;
-  }
-  
-  .secondary-movement-buttons button {
-    margin: 10px;
-    justify-content: space-between;
-  }
+  width: 300px;
+  height: 250px;
+  text-align: center;
+  padding: 10px;
+}
+
+.main-movement-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 200px;
+  margin: auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+#degrees-selection {
+  text-align: right;
+  grid-area: 2 / 2 / 2 / 2;
+}
+
+#movement-up-button {
+  grid-area: 1 / 2 / 1 / 2;
+}
+
+#movement-down-button {
+  grid-area: 3 / 2 / 3 / 2;
+}
+
+#movement-left-button {
+  grid-area: 2 / 1 / 2 / 1;
+}
+
+#movement-right-button {
+  grid-area: 2 / 3 / 2 / 3;
+}
+
+.secondary-movement-buttons button {
+  margin: 10px;
+  justify-content: space-between;
+}
