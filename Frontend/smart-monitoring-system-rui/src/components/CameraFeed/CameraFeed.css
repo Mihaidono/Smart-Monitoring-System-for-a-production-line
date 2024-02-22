@@ -6,4 +6,5 @@
   border-radius: 15px; /* Optional: Add border-radius for rounded corners */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  text-align: center;
 }
