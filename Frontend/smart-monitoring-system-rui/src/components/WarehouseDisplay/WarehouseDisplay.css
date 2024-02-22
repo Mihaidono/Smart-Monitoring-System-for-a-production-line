@@ -1,17 +1,39 @@
 .warehouse-display {
+  background-color: var(--mainColor);
+  border-radius: 10px;
+  padding: 0;
+  padding-left: 3em;
+  padding-right: 3em;
+  color: #fff;
+  min-width: 25em;
+  margin:1em;
+  text-align: center;
+}
+
+.warehouse-display-label {
+  text-align: center;
+  margin-top:1em;
+}
+.warehouse-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  row-gap: 15px;
-  column-gap: 15px;
-  margin:15px;
+  gap: 2em;
+  padding: 1em;
+  text-align: center;
+}
+
+.warehouse-container {
+  padding: 0.6em;
+  border: 2px solid var(--secondaryColor);
 }
 
 .warehouse-container-icon {
-
+  padding: 5px;
 }
 
 .warehouse-container-coordinates-label {
   margin: 0;
   text-align: center;
+  padding: 0.4em;
 }
