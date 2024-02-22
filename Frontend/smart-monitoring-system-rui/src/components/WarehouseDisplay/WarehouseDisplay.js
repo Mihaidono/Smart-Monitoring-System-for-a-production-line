@@ -3,7 +3,11 @@ import axios from "axios";
 import "./WarehouseDisplay.css";
 import { WarehouseContainerDTO } from "../../models/WarehouseContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHockeyPuck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHockeyPuck,
+  faBoxOpen,
+  faX,
+} from "@fortawesome/free-solid-svg-icons";
 
 const baseUrl = `http://${process.env.REACT_APP_BACKEND_API_BASE_URL}:${process.env.REACT_APP_BACKEND_API_PORT}`;
 
@@ -49,12 +53,28 @@ function WarehouseDisplay() {
         {warehouseStock.map((row) =>
           row.map((element) => (
             <div className="warehouse-container">
-              <FontAwesomeIcon
-                className="warehouse-container-icon"
-                icon={faHockeyPuck}
-                size="4x"
-                style={{ color: element.color }}
-              />
+              {!element.color ? (
+                <FontAwesomeIcon
+                  className="warehouse-container-icon"
+                  icon={faX}
+                  size="4x"
+                  style={{ color: "gray" }}
+                />
+              ) : element.color.toLowerCase() === "gray" ? (
+                <FontAwesomeIcon
+                  className="warehouse-container-icon"
+                  icon={faBoxOpen}
+                  size="4x"
+                  style={{ color: element.color }}
+                />
+              ) : (
+                <FontAwesomeIcon
+                  className="warehouse-container-icon"
+                  icon={faHockeyPuck}
+                  size="4x"
+                  style={{ color: element.color }}
+                />
+              )}
               <p className="warehouse-container-coordinates-label">
                 {element.coordinates &&
                 element.coordinates[0] !== undefined &&

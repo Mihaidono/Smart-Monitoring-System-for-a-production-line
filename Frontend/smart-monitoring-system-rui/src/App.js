@@ -74,10 +74,13 @@ function SettingsMenu() {
 function HomePageMenu() {
   return (
     <div className="home-main-container">
-      <CameraButtons />
-      <CameraFeed />
-      <ProcessOverview />
+      <div className="camera-control">
+        <h1 className="camera-control-label">Camera Control</h1>
+        <CameraFeed />
+        <CameraButtons />
+      </div>
       <WarehouseDisplay />
+      <ProcessOverview />
     </div>
   );
 }
