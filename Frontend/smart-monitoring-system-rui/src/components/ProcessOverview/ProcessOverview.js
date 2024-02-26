@@ -1,27 +1,29 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTruck,
-  faWarehouse,
-  faIndustry,
-} from "@fortawesome/free-solid-svg-icons";
+import React from "react";
+import FactoryIcon from "@mui/icons-material/Factory";
+import CallSplitIcon from "@mui/icons-material/CallSplit";
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import "./ProcessOverview.css";
 
 function ProcessOverview() {
-  const processes = {
-    1: <FontAwesomeIcon icon={faWarehouse} size="2x" />,
-    2: <FontAwesomeIcon icon={faIndustry} size="2x" />,
-    3: <FontAwesomeIcon icon={faTruck} size="2x" />,
-  };
+  const icons = [
+    { icon: <FactoryIcon />, label: "Warehouse" },
+    { icon: <PrecisionManufacturingIcon />, label: "Processing Station" },
+    { icon: <CallSplitIcon />, label: "Sorting Line" },
+    { icon: <LocalShippingIcon />, label: "Delivery" },
+  ];
+
   return (
-    <div className="process-overview-container">
-      <div className="processes">
-        {Object.keys(processes).map((processKey) => (
-          <div className="process">{processes[processKey]}</div>
-        ))}
-      </div>
-      <div className="progress-arrow"></div>
+    <div>
+      {icons.map((element) => {
+        return (
+          <div>
+            {element.icon}
+            {element.label}
+          </div>
+        );
+      })}
     </div>
   );
 }
-
 export default ProcessOverview;

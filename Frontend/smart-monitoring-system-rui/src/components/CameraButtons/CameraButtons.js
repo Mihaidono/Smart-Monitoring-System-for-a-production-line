@@ -118,10 +118,7 @@ function CameraButtons() {
           className="smui-button"
           title="Move camera to the home position"
           onClick={() =>
-            moveCameraButtonHandle(
-              cameraMovementDegrees,
-              CameraDirections.HOME
-            )
+            moveCameraButtonHandle(cameraMovementDegrees, CameraDirections.HOME)
           }
         >
           <FontAwesomeIcon icon={faHome} size="2x" />

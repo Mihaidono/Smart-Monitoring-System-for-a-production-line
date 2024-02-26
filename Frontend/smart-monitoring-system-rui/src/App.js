@@ -7,10 +7,9 @@ import {
   faArrowAltCircleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
-import CameraButtons from "./components/CameraButtons/CameraButtons";
 import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
-import CameraFeed from "./components/CameraFeed/CameraFeed";
 import WarehouseDisplay from "./components/WarehouseDisplay/WarehouseDisplay";
+import CameraControl from "./components/CameraControl/CameraControl";
 
 const AvailablePages = {
   HOME: 1,
@@ -74,11 +73,7 @@ function SettingsMenu() {
 function HomePageMenu() {
   return (
     <div className="home-main-container">
-      <div className="camera-control">
-        <h1 className="camera-control-label">Camera Control</h1>
-        <CameraFeed />
-        <CameraButtons />
-      </div>
+      <CameraControl />
       <WarehouseDisplay />
       <ProcessOverview />
     </div>

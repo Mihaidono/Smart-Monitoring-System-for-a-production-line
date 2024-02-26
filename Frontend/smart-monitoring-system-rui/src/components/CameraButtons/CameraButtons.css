@@ -1,8 +1,10 @@
 .camera-buttons-container {
   width: 300px;
-  height: 250px;
+  height: fit-content;
   text-align: center;
   padding: 10px;
+  display:flex;
+  flex-direction: column;
 }
 
 .main-movement-buttons {
@@ -15,11 +17,13 @@
   margin: auto;
   margin-bottom: 10px;
   margin-top: 10px;
+  justify-content: center;
 }
 
 #degrees-selection {
   text-align: right;
   grid-area: 2 / 2 / 2 / 2;
+  font-size: 1em;
 }
 
 #movement-up-button {
@@ -38,7 +42,11 @@
   grid-area: 2 / 3 / 2 / 3;
 }
 
+.secondary-movement-buttons {
+  margin: 10px;
+}
+
 .secondary-movement-buttons button {
   margin: 10px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
