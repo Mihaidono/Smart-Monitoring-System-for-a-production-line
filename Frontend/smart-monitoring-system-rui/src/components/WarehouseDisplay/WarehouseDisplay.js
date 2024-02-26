@@ -48,11 +48,11 @@ function WarehouseDisplay() {
 
   return (
     <div className="warehouse-display">
-      <h2 className="warehouse-display-label">High-Bay Warehouse</h2>
+      <h1 className="warehouse-display-label">High-Bay Warehouse</h1>
       <div className="warehouse-grid">
         {warehouseStock.map((row) =>
           row.map((element) => (
-            <div className="warehouse-container">
+            <button className="warehouse-container">
               {!element.color ? (
                 <FontAwesomeIcon
                   className="warehouse-container-icon"
@@ -83,7 +83,7 @@ function WarehouseDisplay() {
                    y: ${element.coordinates[1].toFixed(0)}`
                   : "Missing"}
               </p>
-            </div>
+            </button>
           ))
         )}
       </div>
