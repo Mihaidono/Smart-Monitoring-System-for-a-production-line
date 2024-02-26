@@ -3,7 +3,7 @@
   height: fit-content;
   text-align: center;
   padding: 10px;
-  display:flex;
+  display: flex;
   flex-direction: column;
 }
 
@@ -21,7 +21,7 @@
 }
 
 #degrees-selection {
-  text-align: right;
+  text-align: center;
   grid-area: 2 / 2 / 2 / 2;
   font-size: 1em;
 }
@@ -44,9 +44,10 @@
 
 .secondary-movement-buttons {
   margin: 10px;
+  display: flex;
+  flex-direction: row;
 }
 
 .secondary-movement-buttons button {
   margin: 10px;
-  justify-content: space-evenly;
 }
