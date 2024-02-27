@@ -3,6 +3,7 @@ import axios from "axios";
 import "./WarehouseDisplay.css";
 import { WarehouseContainerDTO } from "../../models/WarehouseContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Skeleton } from "@mui/material";
 import {
   faHockeyPuck,
   faBoxOpen,
@@ -50,42 +51,53 @@ function WarehouseDisplay() {
     <div className="warehouse-display">
       <h1 className="warehouse-display-label">High-Bay Warehouse</h1>
       <div className="warehouse-grid">
-        {warehouseStock.map((row) =>
-          row.map((element) => (
-            <button className="warehouse-container">
-              {!element.color ? (
-                <FontAwesomeIcon
-                  className="warehouse-container-icon"
-                  icon={faX}
-                  size="4x"
-                  style={{ color: "gray" }}
-                />
-              ) : element.color.toLowerCase() === "gray" ? (
-                <FontAwesomeIcon
-                  className="warehouse-container-icon"
-                  icon={faBoxOpen}
-                  size="4x"
-                  style={{ color: element.color }}
-                />
-              ) : (
-                <FontAwesomeIcon
-                  className="warehouse-container-icon"
-                  icon={faHockeyPuck}
-                  size="4x"
-                  style={{ color: element.color }}
-                />
-              )}
-              <p className="warehouse-container-coordinates-label">
-                {element.coordinates &&
-                element.coordinates[0] !== undefined &&
-                element.coordinates[1] !== undefined
-                  ? `x: ${element.coordinates[0].toFixed(0)},
+        {warehouseStock.length !== 0
+          ? warehouseStock.map((row) =>
+              row.map((element) => (
+                <button className="warehouse-container">
+                  {!element.color ? (
+                    <FontAwesomeIcon
+                      className="warehouse-container-icon"
+                      icon={faX}
+                      size="4x"
+                      style={{ color: "gray" }}
+                    />
+                  ) : element.color.toLowerCase() === "gray" ? (
+                    <FontAwesomeIcon
+                      className="warehouse-container-icon"
+                      icon={faBoxOpen}
+                      size="4x"
+                      style={{ color: element.color }}
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      className="warehouse-container-icon"
+                      icon={faHockeyPuck}
+                      size="4x"
+                      style={{ color: element.color }}
+                    />
+                  )}
+                  <p className="warehouse-container-coordinates-label">
+                    {element.coordinates &&
+                    element.coordinates[0] !== undefined &&
+                    element.coordinates[1] !== undefined
+                      ? `x: ${element.coordinates[0].toFixed(0)},
                    y: ${element.coordinates[1].toFixed(0)}`
-                  : "Missing"}
-              </p>
-            </button>
-          ))
-        )}
+                      : "Missing"}
+                  </p>
+                </button>
+              ))
+            )
+          : Array.from({ length: 3 }).map((_) =>
+              Array.from({ length: 3 }).map((_) => (
+                <Skeleton
+                  className="skeleton-item"
+                  variant="rounded"
+                  width={110}
+                  height={110}
+                />
+              ))
+            )}
       </div>
     </div>
   );
