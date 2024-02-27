@@ -40,6 +40,7 @@ function ProcessOverview() {
 
   return (
     <div className="process-overview-container">
+      <div className="circle"></div>
       <div className="overview-circular-container">
         {icons.map((step, index) => (
           <div id={`step-item-${index}`} className="overview-step-container">
