@@ -1,0 +1,64 @@
+.process-overview-container {
+  background-color: var(--mainColor);
+  border-radius: 15px;
+  padding: 1em;
+  margin: 1em;
+  height: fit-content;
+}
+
+.overview-circular-container {
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  justify-content: center;
+}
+
+.circle {
+  border: 3px solid var(--secondaryColor);
+  border-radius: 100%;
+}
+
+.overview-step-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+.step-item-icon {
+  border: 2px solid #ababab;
+  color: #ababab;
+  padding: 15px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.step-item-label {
+  font-size: 0.7em;
+  color: #ababab;
+  margin: 2px;
+}
+
+#step-item-0 {
+  grid-area: 3 / 2 / 3 / 2;
+}
+
+#step-item-1 {
+  grid-area: 2 / 1 / 2 / 1;
+}
+
+#step-item-2 {
+  grid-area: 1 / 2 / 1 / 2;
+}
+
+#step-item-3 {
+  grid-area: 2 / 3 / 2 / 3;
+}
+
+#step-item-4 {
+  grid-area: 2 / 2 / 2 / 2;
+}
