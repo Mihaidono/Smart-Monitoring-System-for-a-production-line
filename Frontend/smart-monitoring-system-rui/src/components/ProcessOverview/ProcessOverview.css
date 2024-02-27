@@ -14,11 +14,6 @@
   justify-content: center;
 }
 
-.circle {
-  border: 3px solid var(--secondaryColor);
-  border-radius: 100%;
-}
-
 .overview-step-container {
   display: flex;
   flex-direction: column;

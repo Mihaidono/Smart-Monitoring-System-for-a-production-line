@@ -4,6 +4,7 @@ import CallSplitIcon from "@mui/icons-material/CallSplit";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
+import ShortcutIcon from "@mui/icons-material/Shortcut";
 import "./ProcessOverview.css";
 import axios from "axios";
 
@@ -39,7 +40,6 @@ function ProcessOverview() {
 
   return (
     <div className="process-overview-container">
-      <div className="circle"></div>
       <div className="overview-circular-container">
         {icons.map((step, index) => (
           <div id={`step-item-${index}`} className="overview-step-container">
