@@ -25,9 +25,9 @@
   transform: translate(-50%, -50%);
   width: 225px;
   height: 190px;
-  border: 2px solid #ababab;
+  border: 2px solid var(--defaultStateColor);
   border-radius: 50%;
-  outline: 2px solid #ababab;
+  outline: 2px solid var(--defaultStateColor);
   outline-offset: 8px;
   z-index: 1;
 }
@@ -41,8 +41,8 @@
 }
 
 .step-item-icon {
-  border: 2px solid #ababab;
-  color: #ababab;
+  border: 2px solid var(--defaultStateColor);
+  color: var(--defaultStateColor);
   padding: 16px;
   border-radius: 100%;
   display: flex;
@@ -53,7 +53,7 @@
 
 .step-item-label {
   font-size: 0.7em;
-  color: #ababab;
+  color: var(--defaultStateColor);
   margin: 2px;
 }
 
