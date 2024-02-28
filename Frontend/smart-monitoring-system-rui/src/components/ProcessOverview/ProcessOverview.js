@@ -39,6 +39,7 @@ function ProcessOverview() {
 
   return (
     <div className="process-overview-container">
+      <h1 className="process-overview-label">Workpiece Overview</h1>
       <div className="circle"></div>
       <div className="overview-circular-container">
         {icons.map((step, index) => (

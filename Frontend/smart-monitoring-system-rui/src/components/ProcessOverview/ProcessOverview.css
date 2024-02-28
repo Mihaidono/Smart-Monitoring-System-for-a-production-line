@@ -5,6 +5,14 @@
   margin: 1em;
   height: fit-content;
   position: relative;
+  width: 500px;
+}
+
+.process-overview-label {
+  text-align: center;
+  color: #fff;
+  margin: 0;
+  margin-bottom: 20px;
 }
 
 .overview-circular-container {
@@ -20,11 +28,11 @@
 
 .circle {
   position: absolute;
-  top: 48%;
-  left: 50%;
+  top: 55%;
+  left: 51.2%;
   transform: translate(-50%, -50%);
-  width: 225px;
-  height: 190px;
+  width: 240px;
+  height: 194px;
   border: 2px solid var(--defaultStateColor);
   border-radius: 50%;
   outline: 2px solid var(--defaultStateColor);
@@ -40,6 +48,29 @@
   margin: 10px;
 }
 
+.overview-step-container:nth-child(4n-2) {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    margin: 10px;
+    text-align: center;
+  }
+}
+.overview-step-container:nth-child(4n) {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    margin: 10px;
+    text-align: center;
+  }
+}
+
 .step-item-icon {
   border: 2px solid var(--defaultStateColor);
   color: var(--defaultStateColor);
@@ -52,7 +83,7 @@
 }
 
 .step-item-label {
-  font-size: 0.7em;
+  font-size: 0.8em;
   color: var(--defaultStateColor);
   margin: 2px;
 }
