@@ -12,6 +12,8 @@ import {
 
 const baseUrl = `http://${process.env.REACT_APP_BACKEND_API_BASE_URL}:${process.env.REACT_APP_BACKEND_API_PORT}`;
 
+function OrderWorkpiece(index) {}
+
 function WarehouseDisplay() {
   const [warehouseStock, setWarehouseStock] = useState([]);
   const sentError = useRef(false);
@@ -38,6 +40,7 @@ function WarehouseDisplay() {
         if (!sentError.current) {
           console.error("Error fetching warehouse inventory:", error);
           sentError.current = true;
+          setWarehouseStock([]);
         }
       }
     };
@@ -93,8 +96,9 @@ function WarehouseDisplay() {
                 <Skeleton
                   className="skeleton-item"
                   variant="rounded"
-                  width={110}
-                  height={110}
+                  width={105.63}
+                  height={101.56}
+                  sx={{ bgcolor: "var(--buttonHoverColor)" }}
                 />
               ))
             )}
