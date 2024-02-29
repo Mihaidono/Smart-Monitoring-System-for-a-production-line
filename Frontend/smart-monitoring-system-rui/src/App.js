@@ -1,82 +1,27 @@
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faCog,
-  faArrowAltCircleLeft,
-  faArrowAltCircleRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { Grid, Stack } from "@mui/material";
 import "./App.css";
-import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
-import WarehouseDisplay from "./components/WarehouseDisplay/WarehouseDisplay";
 import CameraControl from "./components/CameraControl/CameraControl";
-
-const AvailablePages = {
-  HOME: 1,
-  SETTINGS: 2,
-};
-
-function NavigationSideMenu({ setActivePage }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleNavbar = () => {
-    setExpanded(!expanded);
-  };
-
-  const goToHomePage = () => {
-    setActivePage(AvailablePages.HOME);
-  };
-
-  const goToSettingsPage = () => {
-    setActivePage(AvailablePages.SETTINGS);
-  };
-
-  return (
-    <ul className={`navbar ${expanded ? "expanded" : ""}`}>
-      <li>
-        <button onClick={goToHomePage}>
-          <div className="side-menu-button-content">
-            <FontAwesomeIcon icon={faHome} size="2x" />
-            <p>{expanded ? "Home" : ""}</p>
-          </div>
-        </button>
-      </li>
-      <li>
-        <button onClick={goToSettingsPage}>
-          <div className="side-menu-button-content">
-            <FontAwesomeIcon icon={faCog} size="2x" />
-            <p>{expanded ? "Settings" : ""}</p>
-          </div>
-        </button>
-      </li>
-      <li>
-        <button onClick={toggleNavbar}>
-          {expanded ? (
-            <FontAwesomeIcon icon={faArrowAltCircleLeft} size="2x" />
-          ) : (
-            <FontAwesomeIcon icon={faArrowAltCircleRight} size="2x" />
-          )}
-        </button>
-      </li>
-    </ul>
-  );
-}
+import Navbar from "./components/NavigationBar/Navbar";
+import { AvailablePages } from "./config/enum/AvailablePages";
 
 function SettingsMenu() {
   return (
-    <div className="settings-main-container">
-      <p>Settings works!</p>
-    </div>
+    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <Grid item xs={4} sm={6} md={6} lg={4}>
+        <p>Settings works</p>
+      </Grid>
+    </Grid>
   );
 }
 
 function HomePageMenu() {
   return (
-    <div className="home-main-container">
-      <CameraControl />
-      <WarehouseDisplay />
-      <ProcessOverview />
-    </div>
+    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <Grid item xs={4} sm={6} md={6} lg={4}>
+        <p>Home works</p>
+      </Grid>
+    </Grid>
   );
 }
 
@@ -94,9 +39,13 @@ export default function App() {
     }
   };
   return (
-    <div className="base-container">
-      <NavigationSideMenu setActivePage={setCurrentPage} />
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      spacing={{ xs: 1, sm: 2, md: 4 }}
+      sx={{backgroundColor:"var(--primaryColor)"}}
+    >
+      <Navbar setActivePage={setCurrentPage} />
       {renderActivePage()}
-    </div>
+    </Stack>
   );
 }
