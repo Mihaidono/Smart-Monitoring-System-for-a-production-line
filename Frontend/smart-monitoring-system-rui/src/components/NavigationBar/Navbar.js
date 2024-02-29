@@ -13,11 +13,24 @@ const NavbarButton = styled(Button)(() => ({
   color: "#fff",
   paddingTop: "15px",
   paddingBottom: "15px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+
   "&:hover": {
     backgroundColor: "var(--secondaryColor)",
   },
   "&.active": {
     backgroundColor: "var(--mainColorToggled)",
+  },
+
+  "& .MuiSvgIcon-root": {
+    marginBottom: "4px",
+  },
+
+  "& .MuiTypography-root": {
+    marginTop: "4px",
   },
 }));
 
