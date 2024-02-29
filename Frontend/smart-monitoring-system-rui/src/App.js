@@ -3,7 +3,7 @@ import { Grid, Stack } from "@mui/material";
 import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
 import Navbar from "./components/NavigationBar/Navbar";
-import { AvailablePages } from "./config/enum/AvailablePages";
+import { AvailablePages } from "./config/enums/AvailablePages";
 
 function SettingsMenu() {
   return (

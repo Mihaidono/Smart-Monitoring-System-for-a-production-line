@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AvailablePages } from "../../config/enum/AvailablePages";
+import { AvailablePages } from "../../config/enums/AvailablePages";
 import { Stack, IconButton, Typography, Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
