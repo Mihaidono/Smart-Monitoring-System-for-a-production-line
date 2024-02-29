@@ -1,4 +1,4 @@
-export default CameraDirections = {
+export const CameraDirections = {
   LEFT: "relmove_left",
   RIGHT: "relmove_right",
   UP: "relmove_up",
