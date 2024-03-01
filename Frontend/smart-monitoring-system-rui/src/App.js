@@ -17,7 +17,11 @@ function SettingsMenu() {
 
 function HomePageMenu() {
   return (
-    <Grid container rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 1 }}>
+    <Grid
+      container
+      rowSpacing={{ xs: 2, sm: 3 }}
+      columnSpacing={{ xs: 0.5, sm: 2 }}
+    >
       <Grid item xs={12} sm={6}>
         <CameraControl />
       </Grid>
@@ -41,7 +45,7 @@ export default function App() {
   return (
     <Stack
       direction={{ xs: "column", sm: "row" }}
-      spacing={{ xs: 1, sm: 2, md: 4 }}
+      spacing={{ xs: 1, sm: 2 }}
       sx={{ backgroundColor: "var(--primaryColor)" }}
     >
       <Navbar setActivePage={setCurrentPage} />

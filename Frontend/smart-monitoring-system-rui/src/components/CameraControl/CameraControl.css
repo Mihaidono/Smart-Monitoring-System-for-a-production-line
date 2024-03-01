@@ -1,0 +1,16 @@
+.camera-control-container {
+  background-color: var(--containerColor);
+  border-radius: 5px;
+}
+
+.automation-switch-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.camera-control-buttons {
+  justify-content: center;
+  align-items: center;
+}

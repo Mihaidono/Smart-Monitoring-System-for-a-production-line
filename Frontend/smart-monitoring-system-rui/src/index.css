@@ -15,7 +15,8 @@ code {
 
 :root {
   --mainColor: #2c3e50;
-  --mainColorToggled:#1e2935;
+  --mainColorToggled: #1e2935;
+  --containerColor: #f0ffff;
   --primaryColor: #e5e5e5;
   --secondaryColor: #18bc9c;
   --buttonHoverColor: #0f7864;

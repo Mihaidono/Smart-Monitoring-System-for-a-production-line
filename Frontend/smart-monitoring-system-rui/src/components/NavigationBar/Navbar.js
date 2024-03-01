@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { AvailablePages } from "../../config/enums/AvailablePages";
-import { Stack, IconButton, Typography, Button } from "@mui/material";
+import { Stack, IconButton, Typography, Button, styled } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
-import { styled } from "@mui/material/styles";
 
 import "./Navbar.css";
 
