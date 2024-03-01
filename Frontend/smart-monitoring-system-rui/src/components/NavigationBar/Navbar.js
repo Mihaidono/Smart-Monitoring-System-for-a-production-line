@@ -53,7 +53,7 @@ function Navbar({ setActivePage }) {
       className="navbar"
       sx={{
         height: { xs: "100%", sm: "100vh" },
-        width: { xs: "100%", sm: expanded ? "12em" : "6em" },
+        width: { xs: "100%", sm: expanded ? "12em" : "5em" },
         justifyContent: { xs: "space-evenly", sm: "flex-start" },
       }}
     >

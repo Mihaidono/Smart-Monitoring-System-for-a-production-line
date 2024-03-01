@@ -17,8 +17,8 @@ function SettingsMenu() {
 
 function HomePageMenu() {
   return (
-    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-      <Grid item xs={4} sm={6} md={6} lg={4}>
+    <Grid container rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 1 }}>
+      <Grid item xs={12} sm={6}>
         <CameraControl />
       </Grid>
     </Grid>
