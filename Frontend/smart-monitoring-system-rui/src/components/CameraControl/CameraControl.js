@@ -34,6 +34,9 @@ const CameraControlButton = styled(Button)(() => ({
   alignItems: "center",
   height: "100%",
 
+  width: "70px",
+  height: "40px",
+
   "&:hover": {
     backgroundColor: "var(--secondaryColor)",
   },
@@ -151,11 +154,12 @@ function CameraControl() {
             label="Degrees"
             onChange={degreesChangedHandle}
             sx={{
-              width: 64,
-              height: 36,
-              border: "1px solid var(--mainColor)",
+              width: 70,
+              height: 40,
+              border: "2px solid var(--mainColor)",
               color: "var(--mainColor)",
             }}
+            
           >
             <MenuItem value={2}>2</MenuItem>
             <MenuItem value={5}>5</MenuItem>
@@ -237,7 +241,7 @@ function CameraControl() {
               sx={{
                 width: "100%",
                 height: "100%",
-                backgroundColor:"#f3f2f2"
+                backgroundColor: "#f3f2f2",
               }}
             />
           )}

@@ -18,9 +18,8 @@ code {
   --mainColorToggled: #1e2935;
   --primaryColor: #e5e5e5;
   --secondaryColor: #18bc9c;
-  --buttonHoverColor: #0f7864;
   --defaultStateColor: #ababab;
-  --warningColor: #e74c3c;
-  --pendingColor: #f39c12;
-  --successColor: #5cb85c;
+  --warningStateColor: #e74c3c;
+  --pendingStateColor: #f39c12;
+  --successStateColor: #5cb85c;
 }
