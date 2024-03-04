@@ -32,8 +32,6 @@ const CameraControlButton = styled(Button)(() => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  height: "100%",
-
   width: "70px",
   height: "40px",
 
@@ -159,7 +157,6 @@ function CameraControl() {
               border: "2px solid var(--mainColor)",
               color: "var(--mainColor)",
             }}
-            
           >
             <MenuItem value={2}>2</MenuItem>
             <MenuItem value={5}>5</MenuItem>
