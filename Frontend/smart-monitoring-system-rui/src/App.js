@@ -22,7 +22,13 @@ function HomePageMenu() {
       rowSpacing={{ xs: 2, sm: 3 }}
       columnSpacing={{ xs: 0.5, sm: 2 }}
     >
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        margin={{ xs: "10px", sm: "5px" }}
+        overflow="hidden"
+      >
         <CameraControl />
       </Grid>
     </Grid>
@@ -43,11 +49,7 @@ export default function App() {
     }
   };
   return (
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      spacing={{ xs: 1, sm: 2 }}
-      sx={{ backgroundColor: "var(--primaryColor)" }}
-    >
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2 }}>
       <Navbar setActivePage={setCurrentPage} />
       {renderActivePage()}
     </Stack>

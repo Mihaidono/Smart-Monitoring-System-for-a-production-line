@@ -20,6 +20,7 @@ import {
   Select,
   MenuItem,
   Skeleton,
+  Box,
 } from "@mui/material";
 
 const baseUrl = `http://${process.env.REACT_APP_BACKEND_API_BASE_URL}:${process.env.REACT_APP_BACKEND_API_PORT}`;
@@ -31,6 +32,7 @@ const CameraControlButton = styled(Button)(() => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  height: "100%",
 
   "&:hover": {
     backgroundColor: "var(--secondaryColor)",
@@ -117,20 +119,31 @@ function CameraControl() {
         container
         rowSpacing={1}
         xs={12}
-        sm={6}
-        className="camera-control-buttons"
+        md={6}
+        sx={{ justifyContent: "center", alignItems: "center", padding: "15px" }}
       >
-        <Grid item xs={12}>
+        <Grid
+          container
+          sx={{ justifyContent: "center", alignItems: "center" }}
+          item
+          xs={12}
+        >
           <CameraControlButton>
             <KeyboardArrowUpOutlinedIcon />
           </CameraControlButton>
         </Grid>
-        <Grid item xs={4}>
+        <Grid
+          container
+          justifyContent="flex-end"
+          alignItems="center"
+          item
+          xs={4}
+        >
           <CameraControlButton>
             <KeyboardArrowLeftOutlinedIcon />
           </CameraControlButton>
         </Grid>
-        <Grid item xs={4}>
+        <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <Select
             labelId="degrees-helper"
             id="degrees-helper"
@@ -138,7 +151,7 @@ function CameraControl() {
             label="Degrees"
             onChange={degreesChangedHandle}
             sx={{
-              width: 70,
+              width: 64,
               height: 36,
               border: "1px solid var(--mainColor)",
               color: "var(--mainColor)",
@@ -150,38 +163,85 @@ function CameraControl() {
             <MenuItem value={20}>20</MenuItem>
           </Select>
         </Grid>
-        <Grid item xs={4}>
+        <Grid
+          container
+          justifyContent="flex-start"
+          alignItems="center"
+          item
+          xs={4}
+        >
           <CameraControlButton>
             <KeyboardArrowRightOutlinedIcon />
           </CameraControlButton>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+          item
+          xs={12}
+        >
           <CameraControlButton>
             <KeyboardArrowDownOutlinedIcon />
           </CameraControlButton>
         </Grid>
-        <Grid item xs={4}>
+        <Grid
+          container
+          justifyContent="flex-end"
+          alignItems="center"
+          item
+          xs={4}
+        >
           <CameraControlButton>
             <KeyboardDoubleArrowLeftOutlinedIcon />
           </CameraControlButton>
         </Grid>
-        <Grid item xs={4}>
+        <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <CameraControlButton>
             <HomeOutlinedIcon />
           </CameraControlButton>
         </Grid>
-        <Grid item xs={4}>
+        <Grid
+          container
+          justifyContent="flex-start"
+          alignItems="center"
+          item
+          xs={4}
+        >
           <CameraControlButton>
             <KeyboardDoubleArrowRightOutlinedIcon />
           </CameraControlButton>
         </Grid>
       </Grid>
-      <Grid item xs={12} md={6}>
-        {cameraFeedSource ? (
-          <img src={cameraFeedSource} />
-        ) : (
-          <Skeleton variant="rectangular" animation="wave" />
-        )}
+      <Grid item xs={12} md={6} padding="15px">
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            border: "2px solid var(--mainColor)", // Set your desired border styles
+            borderRadius: 8, // Optional: Add border radius for rounded corners
+            overflow: "hidden", // Ensure content within the box does not overflow
+          }}
+        >
+          {cameraFeedSource ? (
+            <img
+              src={cameraFeedSource}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              alt="Camera Feed"
+            />
+          ) : (
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{
+                width: "100%",
+                height: "100%",
+                backgroundColor:"#f3f2f2"
+              }}
+            />
+          )}
+        </Box>
       </Grid>
     </Grid>
   );
