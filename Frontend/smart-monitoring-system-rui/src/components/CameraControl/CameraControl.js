@@ -156,14 +156,8 @@ function CameraControl() {
               height: 40,
               border: "2px solid var(--mainColor)",
               color: "var(--mainColor)",
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "transparent",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "transparent",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "transparent",
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none",
               },
             }}
           >
