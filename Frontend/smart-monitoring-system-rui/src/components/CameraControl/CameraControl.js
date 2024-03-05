@@ -58,7 +58,7 @@ function CameraControl() {
       );
       console.log(response.data);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.message);
     }
   };
 
@@ -74,7 +74,7 @@ function CameraControl() {
         sentError.current = false;
       } catch (error) {
         if (!sentError.current) {
-          console.error("Error fetching video data:", error);
+          console.error("Error fetching video data:", error.message);
           sentError.current = true;
         }
       }
@@ -129,7 +129,14 @@ function CameraControl() {
           item
           xs={12}
         >
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.UP,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <KeyboardArrowUpOutlinedIcon />
           </CameraControlButton>
         </Grid>
@@ -140,7 +147,14 @@ function CameraControl() {
           item
           xs={4}
         >
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.LEFT,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <KeyboardArrowLeftOutlinedIcon />
           </CameraControlButton>
         </Grid>
@@ -174,7 +188,14 @@ function CameraControl() {
           item
           xs={4}
         >
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.RIGHT,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <KeyboardArrowRightOutlinedIcon />
           </CameraControlButton>
         </Grid>
@@ -186,7 +207,14 @@ function CameraControl() {
           item
           xs={12}
         >
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.DOWN,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <KeyboardArrowDownOutlinedIcon />
           </CameraControlButton>
         </Grid>
@@ -197,12 +225,26 @@ function CameraControl() {
           item
           xs={4}
         >
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.MAX_LEFT,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <KeyboardDoubleArrowLeftOutlinedIcon />
           </CameraControlButton>
         </Grid>
         <Grid container justifyContent="center" alignItems="center" item xs={4}>
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.HOME,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <HomeOutlinedIcon />
           </CameraControlButton>
         </Grid>
@@ -213,7 +255,14 @@ function CameraControl() {
           item
           xs={4}
         >
-          <CameraControlButton>
+          <CameraControlButton
+            onClick={() => {
+              moveCameraButtonHandle(
+                CameraDirections.RIGHT,
+                cameraMovementDegrees
+              );
+            }}
+          >
             <KeyboardDoubleArrowRightOutlinedIcon />
           </CameraControlButton>
         </Grid>
