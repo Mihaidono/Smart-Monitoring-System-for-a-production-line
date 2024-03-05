@@ -146,16 +146,25 @@ function CameraControl() {
         </Grid>
         <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <Select
-            labelId="degrees-helper"
             id="degrees-helper"
             value={cameraMovementDegrees}
             label="Degrees"
             onChange={degreesChangedHandle}
+            displayEmpty
             sx={{
               width: 70,
               height: 40,
               border: "2px solid var(--mainColor)",
               color: "var(--mainColor)",
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "transparent",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "transparent",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "transparent",
+              },
             }}
           >
             <MenuItem value={2}>2</MenuItem>
@@ -215,14 +224,22 @@ function CameraControl() {
           </CameraControlButton>
         </Grid>
       </Grid>
-      <Grid item xs={12} md={6} padding="15px">
+      <Grid
+        item
+        container
+        xs={12}
+        md={6}
+        padding="15px"
+        alignContent="center"
+        justifyContent="center"
+      >
         <Box
           sx={{
-            width: "100%",
-            height: "100%",
-            border: "2px solid var(--mainColor)", // Set your desired border styles
-            borderRadius: 8, // Optional: Add border radius for rounded corners
-            overflow: "hidden", // Ensure content within the box does not overflow
+            width: "320px",
+            height: "240px",
+            border: "2px solid var(--mainColor)",
+            borderRadius: 5,
+            overflow: "hidden",
           }}
         >
           {cameraFeedSource ? (
