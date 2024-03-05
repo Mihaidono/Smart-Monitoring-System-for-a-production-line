@@ -19,16 +19,16 @@ function HomePageMenu() {
   return (
     <Grid
       container
-      rowSpacing={{ xs: 2, sm: 3 }}
+      rowSpacing={{ xs: 2 }}
       justifyContent="center"
       padding="20px"
       paddingTop="30px"
       paddingBottom="30px"
     >
-      <Grid item xs={12} lg={6} padding="10px">
+      <Grid item xs={12} lg={6} padding="10px" height="fit-content">
         <CameraControl />
       </Grid>
-      <Grid item xs={12} lg={6} padding="10px">
+      <Grid item xs={12} lg={6} padding="10px" height="fit-content">
         <WarehouseDisplay />
       </Grid>
     </Grid>

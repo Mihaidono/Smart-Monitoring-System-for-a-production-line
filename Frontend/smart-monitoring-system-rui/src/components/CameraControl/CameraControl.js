@@ -23,9 +23,11 @@ import {
   Box,
 } from "@mui/material";
 
-const CameraControlButton = styled(Button)(() => ({
-  color: "#fff",
-  backgroundColor: "var(--mainColor)",
+const CameraControlButton = styled(Button)(({ isProcessAutomated }) => ({
+  color: isProcessAutomated ? "var(--defaultStateColor)" : "#fff",
+  backgroundColor: isProcessAutomated
+    ? "var(--mainColorToggled)"
+    : "var(--mainColor)",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -34,7 +36,9 @@ const CameraControlButton = styled(Button)(() => ({
   height: "40px",
 
   "&:hover": {
-    backgroundColor: "var(--secondaryColor)",
+    backgroundColor: isProcessAutomated
+      ? "var(--mainColorToggled)"
+      : "var(--secondaryColor)",
   },
 }));
 
@@ -128,11 +132,14 @@ function CameraControl() {
           xs={12}
         >
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.UP
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.UP
+                );
+              }
             }}
           >
             <KeyboardArrowUpOutlinedIcon />
@@ -146,11 +153,14 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.LEFT
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.LEFT
+                );
+              }
             }}
           >
             <KeyboardArrowLeftOutlinedIcon />
@@ -158,6 +168,7 @@ function CameraControl() {
         </Grid>
         <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <Select
+            disabled={isProcessAutomated}
             id="degrees-helper"
             value={cameraMovementDegrees}
             label="Degrees"
@@ -187,11 +198,14 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.RIGHT
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.RIGHT
+                );
+              }
             }}
           >
             <KeyboardArrowRightOutlinedIcon />
@@ -206,11 +220,14 @@ function CameraControl() {
           xs={12}
         >
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.DOWN
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.DOWN
+                );
+              }
             }}
           >
             <KeyboardArrowDownOutlinedIcon />
@@ -224,11 +241,14 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.MAX_LEFT
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.MAX_LEFT
+                );
+              }
             }}
           >
             <KeyboardDoubleArrowLeftOutlinedIcon />
@@ -236,11 +256,14 @@ function CameraControl() {
         </Grid>
         <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.HOME
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.HOME
+                );
+              }
             }}
           >
             <HomeOutlinedIcon />
@@ -254,11 +277,14 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
+            isProcessAutomated={isProcessAutomated}
             onClick={() => {
-              moveCameraButtonHandle(
-                cameraMovementDegrees,
-                CameraDirections.RIGHT
-              );
+              if (!isProcessAutomated) {
+                moveCameraButtonHandle(
+                  cameraMovementDegrees,
+                  CameraDirections.RIGHT
+                );
+              }
             }}
           >
             <KeyboardDoubleArrowRightOutlinedIcon />
