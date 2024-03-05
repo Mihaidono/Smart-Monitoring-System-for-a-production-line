@@ -112,11 +112,12 @@ function CameraControl() {
           </Typography>
         </div>
       </Grid>
-      <Grid item xs={12} md={6} textAlign={{ xs: "center", md: "left" }}>
+      <Grid item container xs={12} md={4} justifyContent="center">
         <Typography variant="h5" color="var(--mainColor)">
           Camera Control
         </Typography>
       </Grid>
+      <Grid item container sm={0} md={4} justifyContent="center"></Grid>
       <Grid
         item
         container
