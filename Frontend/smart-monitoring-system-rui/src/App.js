@@ -3,11 +3,11 @@ import { Grid, Stack } from "@mui/material";
 import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
 import Navbar from "./components/NavigationBar/Navbar";
+import WarehouseDisplay from "./components/Warehouse/WarehouseDisplay";
 import { AvailablePages } from "./config/enums/AvailablePages";
-
 function SettingsMenu() {
   return (
-    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+    <Grid container rowSpacing={1}>
       <Grid item xs={4} sm={6} md={6} lg={4}>
         <p>Settings works</p>
       </Grid>
@@ -20,16 +20,16 @@ function HomePageMenu() {
     <Grid
       container
       rowSpacing={{ xs: 2, sm: 3 }}
-      columnSpacing={{ xs: 0.5, sm: 2 }}
+      justifyContent="center"
+      padding="20px"
+      paddingTop="30px"
+      paddingBottom="30px"
     >
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        margin={{ xs: "10px", sm: "5px" }}
-        overflow="hidden"
-      >
+      <Grid item xs={12} lg={6} padding="10px">
         <CameraControl />
+      </Grid>
+      <Grid item xs={12} lg={6} padding="10px">
+        <WarehouseDisplay />
       </Grid>
     </Grid>
   );
@@ -49,7 +49,7 @@ export default function App() {
     }
   };
   return (
-    <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2 }}>
+    <Stack direction={{ xs: "column", sm: "row" }} rowSpacing={2}>
       <Navbar setActivePage={setCurrentPage} />
       {renderActivePage()}
     </Stack>

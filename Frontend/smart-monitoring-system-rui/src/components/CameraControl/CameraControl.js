@@ -10,7 +10,7 @@ import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRig
 import KeyboardArrowUpOutlinedIcon from "@mui/icons-material/KeyboardArrowUpOutlined";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import KeyboardDoubleArrowRightOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowRightOutlined";
-
+import { AvailableURLs } from "../../config/enums/AvailableURLs";
 import {
   Button,
   Grid,
@@ -22,8 +22,6 @@ import {
   Skeleton,
   Box,
 } from "@mui/material";
-
-const baseUrl = `http://${process.env.REACT_APP_BACKEND_API_BASE_URL}:${process.env.REACT_APP_BACKEND_API_PORT}`;
 
 const CameraControlButton = styled(Button)(() => ({
   color: "#fff",
@@ -53,7 +51,7 @@ function CameraControl() {
   const moveCameraButtonHandle = async (degrees, direction) => {
     try {
       const response = await axios.post(
-        `${baseUrl}/move_camera`,
+        `${AvailableURLs.BACKEND}/move_camera`,
         new CameraControlDTO(degrees, direction)
       );
       console.log(response.data);
@@ -69,7 +67,7 @@ function CameraControl() {
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/get_image`);
+        const response = await axios.get(`${AvailableURLs.BACKEND}/get_image`);
         setCameraFeedSource(response.data.data);
         sentError.current = false;
       } catch (error) {
@@ -91,8 +89,8 @@ function CameraControl() {
     <Grid
       container
       rowSpacing={1}
-      columnSpacing={{ xs: 1 }}
       className="camera-control-container"
+      padding="10px"
     >
       <Grid item xs={4}>
         <div className="automation-switch-container">

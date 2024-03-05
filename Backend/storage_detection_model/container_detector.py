@@ -96,19 +96,19 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
             if class_id == 0:
                 center_of_objects.append(
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "RED",
-                     "type": "Storage"})
+                     "type": "Red_Storage"})
             elif class_id == 1:
                 center_of_objects.append(
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "GRAY",
-                     "type": "Storage"})
+                     "type": "Empty_Storage"})
             elif class_id == 2:
                 center_of_objects.append(
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "BLUE",
-                     "type": "Storage"})
+                     "type": "Blue_Storage"})
             elif class_id == 3:
                 center_of_objects.append(
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "WHITE",
-                     "type": "Storage"})
+                     "type": "White_Storage"})
     try:
         return coordinates_to_matrix(center_of_objects)
     except Exception as ex:
@@ -125,15 +125,15 @@ def identify_workpiece(image: cv2.typing.MatLike) -> None | dict:
             if class_id == 4:
                 center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "WHITE",
-                     "type": "Workpiece"}, score))
+                     "type": "White_Workpiece"}, score))
             elif class_id == 5:
                 center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "BLUE",
-                     "type": "Workpiece"}, score))
+                     "type": "Blue_Workpiece"}, score))
             elif class_id == 6:
                 center_of_objects.append((
                     {"coordinates": get_object_center_coordinates(x1, y1, x2, y2), "color": "RED",
-                     "type": "Workpiece"}, score))
+                     "type": "Red_Workpiece"}, score))
 
             center_of_objects.append((get_object_center_coordinates(x1, y1, x2, y2), score))
     if center_of_objects:
