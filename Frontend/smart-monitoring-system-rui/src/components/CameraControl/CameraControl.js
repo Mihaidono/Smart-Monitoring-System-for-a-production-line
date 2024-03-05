@@ -130,8 +130,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.UP,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.UP
               );
             }}
           >
@@ -148,8 +148,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.LEFT,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.LEFT
               );
             }}
           >
@@ -189,8 +189,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.RIGHT,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.RIGHT
               );
             }}
           >
@@ -208,8 +208,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.DOWN,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.DOWN
               );
             }}
           >
@@ -226,8 +226,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.MAX_LEFT,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.MAX_LEFT
               );
             }}
           >
@@ -238,8 +238,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.HOME,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.HOME
               );
             }}
           >
@@ -256,8 +256,8 @@ function CameraControl() {
           <CameraControlButton
             onClick={() => {
               moveCameraButtonHandle(
-                CameraDirections.RIGHT,
-                cameraMovementDegrees
+                cameraMovementDegrees,
+                CameraDirections.RIGHT
               );
             }}
           >
