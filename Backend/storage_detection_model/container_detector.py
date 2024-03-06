@@ -76,7 +76,7 @@ def fit_matrix_columns(sorted_list: List) -> List[List]:
     return coordinates_matrix
 
 
-def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float) -> (float, float):
+def get_object_center_coordinates(x1: float, y1: float, x2: float, y2: float):
     return (x1 + x2) / 2, (y1 + y2) / 2
 
 
