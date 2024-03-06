@@ -92,9 +92,9 @@ function CameraControl() {
   return (
     <Grid
       container
-      rowSpacing={1}
       className="camera-control-container"
       padding="10px"
+      height="100%"
     >
       <Grid item xs={4}>
         <div className="automation-switch-container">

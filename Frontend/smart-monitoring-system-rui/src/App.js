@@ -25,10 +25,22 @@ function HomePageMenu() {
       paddingTop="30px"
       paddingBottom="30px"
     >
-      <Grid item xs={12} lg={6} padding="10px" height="fit-content">
+      <Grid
+        item
+        xs={12}
+        lg={6}
+        padding="10px"
+        height={{ xs: "fit-content", md: "400px" }}
+      >
         <CameraControl />
       </Grid>
-      <Grid item xs={12} lg={6} padding="10px" height="fit-content">
+      <Grid
+        item
+        xs={12}
+        lg={6}
+        padding="10px"
+        height={{ xs: "fit-content", md: "400px" }}
+      >
         <WarehouseDisplay />
       </Grid>
     </Grid>

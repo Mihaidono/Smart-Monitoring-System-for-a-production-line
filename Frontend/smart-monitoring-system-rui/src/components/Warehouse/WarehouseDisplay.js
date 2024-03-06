@@ -1,5 +1,5 @@
 import "./WarehouseDisplay.css";
-import { Button, Grid, Skeleton, Typography, Stack } from "@mui/material";
+import { Button, Grid, Skeleton, Typography, Stack, Box } from "@mui/material";
 import { AvailableURLs } from "../../config/enums/AvailableURLs";
 import { WarehouseContainerDTO } from "../../models/WarehouseContainer";
 import React, { useState, useEffect } from "react";
@@ -44,16 +44,16 @@ function WarehouseDisplay() {
   return (
     <Stack
       container
-      rowSpacing={1}
       className="warehouse-display-container"
-      padding="10px"
       justifyContent="center"
       alignItems="center"
+      height="100%"
+      padding={{xs:"20px", lg:"0px"}}
     >
       <Typography gutterBottom variant="h5" color="var(--mainColor)">
         Warehouse
       </Typography>
-      <Grid container width="80%" rowSpacing={2}>
+      <Grid container width={{ xs: "100%", sm: "90%" }}>
         {warehouseStock.length !== 0
           ? warehouseStock.map((row) =>
               row.map((element, index) => (
@@ -62,19 +62,21 @@ function WarehouseDisplay() {
                   xs={4}
                   item
                   container
-                  padding="15px"
                   alignContent="center"
                   justifyContent="center"
                 >
-                  <Button
-                    key={index}
+                  <Box
                     sx={{
-                      color: element.color,
+                      width: { xs: "85px", sm: "100px" },
+                      height: "100px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "10px",
                       backgroundColor: "var(--mainColor)",
-                      width: "100%",
-                      height: "100%",
+                      color: element.color,
+                      position: "relative",
                     }}
-                    disabled={element.color === null}
                   >
                     {element.color ? (
                       <FontAwesomeIcon
@@ -83,12 +85,34 @@ function WarehouseDisplay() {
                             ? faBoxOpen
                             : faHockeyPuck
                         }
-                        style={{ fontSize: "2rem" }}
+                        style={{
+                          fontSize: "3rem",
+                          position: "relative",
+                          zIndex: 1,
+                        }}
                       />
                     ) : (
-                      <DoDisturbIcon style={{ fontSize: "2rem" }} />
+                      <DoDisturbIcon
+                        style={{
+                          fontSize: "3rem",
+                          position: "relative",
+                          zIndex: 1,
+                        }}
+                      />
                     )}
-                  </Button>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "40%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "103%",
+                        height: "82%",
+                        backgroundColor: "var(--primaryColor)",
+                        zIndex: 0,
+                      }}
+                    />
+                  </Box>
                 </Grid>
               ))
             )
@@ -98,19 +122,30 @@ function WarehouseDisplay() {
                 xs={4}
                 item
                 container
-                padding="2px"
                 alignContent="center"
                 justifyContent="center"
               >
-                <Skeleton
-                  variant="rectangular"
-                  animation="pulse"
+                <Box
                   sx={{
-                    width: "70px",
-                    height: "70px",
-                    backgroundColor: "#f3f2f2",
+                    width: { xs: "85px", sm: "100px" },
+                    height: "100px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "10px",
                   }}
-                />
+                >
+                  <Skeleton
+                    variant="rectangular"
+                    animation="pulse"
+                    sx={{
+                      width: "80%",
+                      height: "80%",
+                      backgroundColor: "#f3f3f3",
+                      borderRadius: "10px",
+                    }}
+                  />
+                </Box>
               </Grid>
             ))}
       </Grid>
