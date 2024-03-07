@@ -4,6 +4,7 @@ import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
 import Navbar from "./components/NavigationBar/Navbar";
 import WarehouseDisplay from "./components/Warehouse/WarehouseDisplay";
+import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
 import { AvailablePages } from "./config/enums/AvailablePages";
 function SettingsMenu() {
   return (
@@ -42,6 +43,13 @@ function HomePageMenu() {
         height={{ xs: "fit-content", md: "400px" }}
       >
         <WarehouseDisplay />
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        padding="10px"
+      >
+        <ProcessOverview />
       </Grid>
     </Grid>
   );
