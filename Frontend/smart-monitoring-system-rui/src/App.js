@@ -31,7 +31,7 @@ function HomePageMenu() {
         xs={12}
         lg={6}
         padding="10px"
-        height={{ xs: "fit-content", md: "400px" }}
+        height={{ xs: "fit-content", lg: "400px" }}
       >
         <CameraControl />
       </Grid>
@@ -40,7 +40,7 @@ function HomePageMenu() {
         xs={12}
         lg={6}
         padding="10px"
-        height={{ xs: "fit-content", md: "400px" }}
+        height={{ xs: "fit-content", lg: "400px" }}
       >
         <WarehouseDisplay />
       </Grid>
