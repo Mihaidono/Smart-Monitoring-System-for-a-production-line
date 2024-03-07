@@ -121,9 +121,9 @@ def start_uvicorn():
 
 
 if __name__ == "__main__":
-    #camera_control.start_camera_control_service()
+    camera_control.start_camera_control_service()
 
     uvicorn_thread = Thread(target=start_uvicorn)
     uvicorn_thread.start()
 
-    #surveillance_system.start_monitoring()
+    surveillance_system.start_monitoring()
