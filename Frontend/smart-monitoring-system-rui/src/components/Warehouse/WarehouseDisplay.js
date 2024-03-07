@@ -1,5 +1,5 @@
 import "./WarehouseDisplay.css";
-import { Button, Grid, Skeleton, Typography, Stack, Box } from "@mui/material";
+import { Grid, Skeleton, Typography, Stack, Box } from "@mui/material";
 import { AvailableURLs } from "../../config/enums/AvailableURLs";
 import { WarehouseContainerDTO } from "../../models/WarehouseContainer";
 import React, { useState, useEffect } from "react";
@@ -48,7 +48,7 @@ function WarehouseDisplay() {
       justifyContent="center"
       alignItems="center"
       height="100%"
-      padding={{xs:"20px", lg:"0px"}}
+      padding={{ xs: "20px", lg: "0px" }}
     >
       <Typography gutterBottom variant="h5" color="var(--mainColor)">
         Warehouse
@@ -137,11 +137,11 @@ function WarehouseDisplay() {
                 >
                   <Skeleton
                     variant="rectangular"
-                    animation="pulse"
+                    animation="wave"
                     sx={{
                       width: "80%",
                       height: "80%",
-                      backgroundColor: "#f3f3f3",
+                      backgroundColor: "#f3f2f2",
                       borderRadius: "10px",
                     }}
                   />
