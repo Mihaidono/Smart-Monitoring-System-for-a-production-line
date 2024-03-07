@@ -16,27 +16,27 @@ const processSteps = [
   "Delivery",
 ];
 
-const ProcessStepsConnector = styled(StepConnector)(({ processStarted }) => ({
+const ProcessStepsConnector = styled(StepConnector)(({ deliveryProcessStarted }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
     top: 22,
   },
   [`&.${stepConnectorClasses.active}`]: {
     [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: processStarted
+      backgroundColor: deliveryProcessStarted
         ? "var(--pendingStateColor)"
         : "var(--mainColor)",
     },
   },
   [`&.${stepConnectorClasses.completed}`]: {
     [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: processStarted
+      backgroundColor: deliveryProcessStarted
         ? "var(--successStateColor)"
         : "var(--mainColor)",
     },
   },
   [`&.${stepConnectorClasses.failed}`]: {
     [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: processStarted
+      backgroundColor: deliveryProcessStarted
         ? "var(--warningStateColor)"
         : "var(--mainColor)",
     },
@@ -44,17 +44,17 @@ const ProcessStepsConnector = styled(StepConnector)(({ processStarted }) => ({
   [`& .${stepConnectorClasses.line}`]: {
     height: 3,
     border: 0,
-    backgroundColor: processStarted
+    backgroundColor: deliveryProcessStarted
       ? "var(--defaultStateColor)"
       : "var(--mainColor)",
     borderRadius: 1,
   },
 }));
 
-const ProcessStepIconRoot = styled("div")(({ ownerState, processStarted }) => ({
-  backgroundColor: processStarted
-    ? "var(--mainColor)"
-    : "var(--defaultStateColor)",
+const ProcessStepIconRoot = styled("div")(({ ownerState, deliveryProcessStarted }) => ({
+  backgroundColor: deliveryProcessStarted
+    ? "var(--defaultStateColor)"
+    : "var(--mainColor)",
   zIndex: 1,
   color: "#fff",
   width: 50,
@@ -63,29 +63,25 @@ const ProcessStepIconRoot = styled("div")(({ ownerState, processStarted }) => ({
   borderRadius: "50%",
   justifyContent: "center",
   alignItems: "center",
-  ...(ownerState.active && {
-    backgroundColor: processStarted
-      ? "var(--pendingStateColor)"
-      : "var(--defaultStateColor)",
-    borderColor: "var(--secondaryColor)",
-    boxShadow: processStarted
-      ? "0 4px 10px 0 rgba(0,0,0,.25)"
-      : "var(--defaultStateColor)",
-  }),
-  ...(ownerState.completed && {
-    backgroundColor: processStarted
-      ? "var(--successStateColor)"
-      : "var(--defaultStateColor)",
-  }),
-  ...(ownerState.failed && {
-    backgroundColor: processStarted
-      ? "var(--warningStateColor)"
-      : "var(--defaultStateColor)",
-  }),
+  ...(ownerState.active &&
+    deliveryProcessStarted && {
+      backgroundColor: "var(--pendingStateColor)",
+      boxShadow: deliveryProcessStarted
+        ? "0 4px 10px 0 rgba(0,0,0,.25)"
+        : "var(--mainColor)",
+    }),
+  ...(ownerState.completed &&
+    deliveryProcessStarted && {
+      backgroundColor: "var(--successStateColor)",
+    }),
+  ...(ownerState.failed &&
+    deliveryProcessStarted && {
+      backgroundColor: "var(--warningStateColor)",
+    }),
 }));
 
 function ProcessStepIcon(props) {
-  const { active, completed, failed, className, processStarted } = props;
+  const { active, completed, failed, className, deliveryProcessStarted } = props;
 
   const icons = {
     1: <WarehouseOutlinedIcon />,
@@ -97,7 +93,7 @@ function ProcessStepIcon(props) {
   return (
     <ProcessStepIconRoot
       ownerState={{ completed, active, failed }}
-      processStarted={processStarted}
+      deliveryProcessStarted={deliveryProcessStarted}
       className={className}
     >
       {icons[String(props.icon)]}
@@ -107,13 +103,13 @@ function ProcessStepIcon(props) {
 
 function ProcessOverview() {
   const [activeStep, setActiveStep] = useState(2);
-  const [processStarted, setProcessStarted] = useState(true);
+  const [deliveryProcessStarted, setDeliveryProcessStarted] = useState(false);
 
   return (
     <Stepper
       alternativeLabel
       activeStep={activeStep}
-      connector={<ProcessStepsConnector processStarted={processStarted} />}
+      connector={<ProcessStepsConnector deliveryProcessStarted={deliveryProcessStarted} />}
       sx={{
         backgroundColor: "var(--primaryColor)",
         padding: "20px",
@@ -124,8 +120,9 @@ function ProcessOverview() {
       {processSteps.map((label) => (
         <Step key={label}>
           <StepLabel
-            StepIconComponent={ProcessStepIcon}
-            processStarted={processStarted}
+            StepIconComponent={(props) => (
+              <ProcessStepIcon {...props} deliveryProcessStarted={deliveryProcessStarted} />
+            )}
           >
             {label}
           </StepLabel>
