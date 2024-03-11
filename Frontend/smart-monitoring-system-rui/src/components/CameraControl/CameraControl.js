@@ -22,6 +22,7 @@ import {
   Skeleton,
   Box,
 } from "@mui/material";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 const CameraControlButton = styled(Button)(({ isProcessAutomated }) => ({
   color: isProcessAutomated ? "var(--defaultStateColor)" : "#fff",
@@ -46,16 +47,22 @@ function CameraControl() {
   const [cameraFeedSource, setCameraFeedSource] = useState(null);
   const [cameraMovementDegrees, setCameraMovementDegrees] = useState(2);
   const [isProcessAutomated, setIsProcessAutomated] = useState(false);
-
-  const sentError = useRef(false);
+  const { lastMessage, readyState } = useWebSocket(
+    AvailableURLs.BACKEND_WS + "/ws_get_image"
+  );
 
   const handleAutomatedProcessToggle = () => {
     setIsProcessAutomated(!isProcessAutomated);
   };
+
+  const degreesChangedHandle = (event) => {
+    setCameraMovementDegrees(parseInt(event.target.value, 10));
+  };
+
   const moveCameraButtonHandle = async (degrees, direction) => {
     try {
       const response = await axios.post(
-        `${AvailableURLs.BACKEND}/move_camera`,
+        `${AvailableURLs.BACKEND_HTTP}/move_camera`,
         new CameraControlDTO(degrees, direction)
       );
       console.log(response.data);
@@ -64,30 +71,16 @@ function CameraControl() {
     }
   };
 
-  const degreesChangedHandle = (event) => {
-    setCameraMovementDegrees(parseInt(event.target.value, 10));
-  };
-
   useEffect(() => {
-    const fetchVideoData = async () => {
+    if (lastMessage && lastMessage.data) {
       try {
-        const response = await axios.get(`${AvailableURLs.BACKEND}/get_image`);
-        setCameraFeedSource(response.data.data);
-        sentError.current = false;
+        const data = JSON.parse(lastMessage.data);
+        setCameraFeedSource(data.data);
       } catch (error) {
-        if (!sentError.current) {
-          console.error("Error fetching video data:", error.message);
-          sentError.current = true;
-        }
+        console.log("Invalid JSON Format!");
       }
-    };
-
-    fetchVideoData();
-
-    const interval = setInterval(fetchVideoData, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+    }
+  }, [lastMessage]);
 
   return (
     <Grid

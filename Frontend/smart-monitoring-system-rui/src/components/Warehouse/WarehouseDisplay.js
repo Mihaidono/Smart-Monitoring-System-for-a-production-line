@@ -6,40 +6,33 @@ import React, { useState, useEffect } from "react";
 import { faBoxOpen, faHockeyPuck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
-import axios from "axios";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 function WarehouseDisplay() {
   const [warehouseStock, setWarehouseStock] = useState([]);
+  const { lastMessage, readyState } = useWebSocket(
+    AvailableURLs.BACKEND_WS + "/ws_get_warehouse_inventory"
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (lastMessage && lastMessage.data) {
       try {
-        const response = await axios.get(
-          `${AvailableURLs.BACKEND}/get_warehouse_inventory`
-        );
-
-        const containersData = [];
-        for (let i = 0; i < response.data.containers[0].length; i++) {
-          const innerList = response.data.containers.map((element) => {
+        const data = JSON.parse(lastMessage.data);
+        const containersData = data.containers.map((container) => {
+          return container.map((element) => {
             return new WarehouseContainerDTO(
-              element[i].coordinates,
-              element[i].color,
-              element[i].type
+              element.coordinates,
+              element.color,
+              element.type
             );
           });
-          containersData.push(innerList);
-        }
+        });
         setWarehouseStock(containersData);
       } catch (error) {
-        console.error("Error fetching warehouse inventory:", error.message);
-        setWarehouseStock([]);
+        console.log("Invalid JSON Format!");
       }
-    };
-
-    const interval = setInterval(fetchData, 1000);
-
-    return () => clearInterval(interval);
-  }, [warehouseStock]);
+    }
+  }, [lastMessage]);
 
   return (
     <Stack

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from threading import Thread
 
@@ -54,6 +55,7 @@ async def get_image(websocket: WebSocket):
         while True:
             data = {"data": surveillance_system.json_mqtt_data["data"]}
             await websocket.send_json(data)
+            await asyncio.sleep(0.5)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -70,7 +72,8 @@ async def get_warehouse_inventory(websocket: WebSocket):
 
         while True:
             data = {"containers": surveillance_system.warehouse_containers}
-            await websocket.send_text(json.dumps(data))
+            await websocket.send_json(data)
+            await asyncio.sleep(0.5)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -88,6 +91,7 @@ async def get_current_module(websocket: WebSocket):
         while True:
             data = {"current_module": camera_control.current_module}
             await websocket.send_text(json.dumps(data))
+            await asyncio.sleep(0.5)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -105,6 +109,7 @@ async def get_process_state(websocket: WebSocket):
         while True:
             data = {"started": surveillance_system.process_started}
             await websocket.send_text(json.dumps(data))
+            await asyncio.sleep(0.5)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -126,4 +131,5 @@ if __name__ == "__main__":
     uvicorn_thread = Thread(target=start_uvicorn)
     uvicorn_thread.start()
 
-    surveillance_system.start_monitoring()
+    smart_monitoring_thread = Thread(target=surveillance_system.start_monitoring)
+    smart_monitoring_thread.start()
