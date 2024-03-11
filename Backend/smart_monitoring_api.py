@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from uvicorn.protocols.utils import ClientDisconnected
 
 import camera_control_service as camera_control
 from monitoring_service import MonitoringService
@@ -56,6 +57,8 @@ async def get_image(websocket: WebSocket):
             data = {"data": surveillance_system.json_mqtt_data["data"]}
             await websocket.send_json(data)
             await asyncio.sleep(0.5)
+    except ClientDisconnected:
+        print("Client disconnected from WS Get Image")
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -74,6 +77,8 @@ async def get_warehouse_inventory(websocket: WebSocket):
             data = {"containers": surveillance_system.warehouse_containers}
             await websocket.send_json(data)
             await asyncio.sleep(0.5)
+    except ClientDisconnected:
+        print("Client disconnected from WS Get Warehouse Inventory")
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -92,6 +97,8 @@ async def get_current_module(websocket: WebSocket):
             data = {"current_module": camera_control.current_module}
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.5)
+    except ClientDisconnected:
+        print("Client disconnected from WS Get Current Module")
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -110,6 +117,8 @@ async def get_process_state(websocket: WebSocket):
             data = {"started": surveillance_system.process_started}
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.5)
+    except ClientDisconnected:
+        print("Client disconnected from WS Get Process State")
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
