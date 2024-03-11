@@ -22,7 +22,7 @@ import {
   Skeleton,
   Box,
 } from "@mui/material";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from "react-use-websocket";
 
 const CameraControlButton = styled(Button)(({ isProcessAutomated }) => ({
   color: isProcessAutomated ? "var(--defaultStateColor)" : "#fff",
@@ -41,13 +41,14 @@ const CameraControlButton = styled(Button)(({ isProcessAutomated }) => ({
       ? "var(--mainColorToggled)"
       : "var(--secondaryColor)",
   },
+  pointerEvents: isProcessAutomated ? "none" : "auto",
 }));
 
 function CameraControl() {
   const [cameraFeedSource, setCameraFeedSource] = useState(null);
   const [cameraMovementDegrees, setCameraMovementDegrees] = useState(2);
   const [isProcessAutomated, setIsProcessAutomated] = useState(false);
-  const { lastMessage, readyState } = useWebSocket(
+  const { lastMessage } = useWebSocket(
     AvailableURLs.BACKEND_WS + "/ws_get_image"
   );
 

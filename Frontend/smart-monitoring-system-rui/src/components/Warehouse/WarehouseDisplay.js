@@ -6,11 +6,11 @@ import React, { useState, useEffect } from "react";
 import { faBoxOpen, faHockeyPuck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from "react-use-websocket";
 
 function WarehouseDisplay() {
   const [warehouseStock, setWarehouseStock] = useState([]);
-  const { lastMessage, readyState } = useWebSocket(
+  const { lastMessage } = useWebSocket(
     AvailableURLs.BACKEND_WS + "/ws_get_warehouse_inventory"
   );
 
