@@ -151,7 +151,6 @@ class MonitoringService:
             if not self._process_started:
                 self._current_routine = RoutineStatus.IDLE
                 break
-            self.update_json_message()
             if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
                 if img is not None:
@@ -176,7 +175,6 @@ class MonitoringService:
             if not self._process_started:
                 self._current_routine = RoutineStatus.IDLE
                 break
-            self.update_json_message()
             if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
                 if img is not None:
@@ -216,17 +214,17 @@ class MonitoringService:
                             self._detection_count_per_module += 1
 
     def update_json_message(self):
-
-        msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
-                               client_id=self._CLIENT_TXT_NAME,
-                               keepalive=self._KEEP_ALIVE,
-                               auth={'username': self._USERNAME, 'password': self._PASSWD})
-        json_message = json.loads(msg.payload)
-        if "data" in json_message and "ts" in json_message:
-            current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
-            if self._previous_timestamp < current_timestamp:
-                self._json_mqtt_data = json_message
-                self._previous_timestamp = current_timestamp
+        while True:
+            msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
+                                   client_id=self._CLIENT_TXT_NAME,
+                                   keepalive=self._KEEP_ALIVE,
+                                   auth={'username': self._USERNAME, 'password': self._PASSWD})
+            json_message = json.loads(msg.payload)
+            if "data" in json_message and "ts" in json_message:
+                current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                if self._previous_timestamp < current_timestamp:
+                    self._json_mqtt_data = json_message
+                    self._previous_timestamp = current_timestamp
 
     def decode_image_from_base64(self) -> cv2.typing.MatLike:
         image_data = base64.b64decode(self._json_mqtt_data['data'].split(',', 1)[-1].strip())
@@ -263,6 +261,7 @@ class MonitoringService:
             RoutineStatus.DELIVERY_SUCCESSFUL: self.successful_delivery_routine
         }
 
+        threading.Thread(target=self.update_json_message, daemon=True).start()
         while True:
             routines[self._current_routine]()
 
