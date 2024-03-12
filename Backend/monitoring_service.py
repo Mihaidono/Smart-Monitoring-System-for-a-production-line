@@ -24,6 +24,7 @@ class RoutineStatus:
     SURVEYING_DELIVERY_PROCESS = 2
     TIMED_OUT = 3
     DELIVERY_SUCCESSFUL = 4
+    IDLE = 5
 
 
 class MonitoringService:
@@ -39,7 +40,7 @@ class MonitoringService:
         self._json_mqtt_data = {}
         self._previous_timestamp = datetime.utcnow()
 
-        self._current_routine = RoutineStatus.INITIALIZING
+        self._current_routine = RoutineStatus.IDLE
         self._process_started = False
 
         self._CLIENT_TXT_NAME = "MonitoringService"
@@ -55,6 +56,10 @@ class MonitoringService:
     @property
     def process_started(self):
         return self._process_started
+
+    @process_started.setter
+    def process_started(self, value):
+        self._process_started = value
 
     @property
     def warehouse_containers(self):
@@ -120,12 +125,32 @@ class MonitoringService:
         return False
 
     def initialization_routine(self):
+        self._is_camera_delayed = self.check_if_camera_has_delay()
         self.initiate_camera_position()
         self._prev_frame_with_detected_objects = []
         self._current_routine = RoutineStatus.SURVEYING_BAY
 
+    def camera_timeout_routine(self):
+        print("Object lost from field of view. Returning to bay")
+        self._current_routine = RoutineStatus.INITIALIZING
+        self._detection_count_per_module = 0
+        self._process_started = False
+
+    def successful_delivery_routine(self):
+        print("Successfully delivered workpiece! Returning to bay")
+        self._current_routine = RoutineStatus.INITIALIZING
+        self._process_started = False
+
+    def idle_routine(self):
+        while not self._process_started:
+            time.sleep(1)
+        self._current_routine = RoutineStatus.INITIALIZING
+
     def survey_bay_routine(self):
         while True:
+            if not self._process_started:
+                self._current_routine = RoutineStatus.IDLE
+                break
             self.update_json_message()
             if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
@@ -135,7 +160,6 @@ class MonitoringService:
                         self._warehouse_containers = container_detector.get_missing_storage_spaces(coordinates_matrix)
                         if self.has_container_moved(self._warehouse_containers):
                             self._current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
-                            self._process_started = True
                             break
 
     def camera_timeout_counter(self):
@@ -149,6 +173,9 @@ class MonitoringService:
         self.process_start_camera_position()
         countdown_running = False
         while True:
+            if not self._process_started:
+                self._current_routine = RoutineStatus.IDLE
+                break
             self.update_json_message()
             if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
@@ -187,17 +214,6 @@ class MonitoringService:
                         if camera_control.is_module_equal(camera_control.current_module,
                                                           FischertechnikModuleLocations.SHIPPING):
                             self._detection_count_per_module += 1
-
-    def camera_timeout_routine(self):
-        print("Object lost from field of view. Returning to bay")
-        self._current_routine = RoutineStatus.INITIALIZING
-        self._detection_count_per_module = 0
-        self._process_started = False
-
-    def successful_delivery_routine(self):
-        print("Successfully delivered workpiece! Returning to bay")
-        self._current_routine = RoutineStatus.INITIALIZING
-        self._process_started = False
 
     def update_json_message(self):
 
@@ -239,6 +255,7 @@ class MonitoringService:
 
     def start_monitoring(self):
         routines = {
+            RoutineStatus.IDLE: self.idle_routine,
             RoutineStatus.INITIALIZING: self.initialization_routine,
             RoutineStatus.SURVEYING_BAY: self.survey_bay_routine,
             RoutineStatus.SURVEYING_DELIVERY_PROCESS: self.survey_delivery_process_routine,
@@ -246,7 +263,6 @@ class MonitoringService:
             RoutineStatus.DELIVERY_SUCCESSFUL: self.successful_delivery_routine
         }
 
-        self._is_camera_delayed = self.check_if_camera_has_delay()
         while True:
             routines[self._current_routine]()
 
