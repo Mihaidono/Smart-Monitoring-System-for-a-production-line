@@ -140,5 +140,4 @@ if __name__ == "__main__":
     uvicorn_thread = Thread(target=start_uvicorn, daemon=True)
     uvicorn_thread.start()
 
-    smart_monitoring_thread = Thread(target=surveillance_system.start_monitoring)
-    smart_monitoring_thread.start()
+    surveillance_system.start_monitoring()
