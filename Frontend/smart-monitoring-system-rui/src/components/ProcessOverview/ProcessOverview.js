@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Stepper, Step, StepLabel } from "@mui/material";
 import WarehouseOutlinedIcon from "@mui/icons-material/WarehouseOutlined";
 import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";
@@ -11,6 +11,7 @@ import StepConnector, {
 import { ProcessingStates } from "../../config/enums/ProcessingStates";
 import useWebSocket from "react-use-websocket";
 import { AvailableURLs } from "../../config/enums/AvailableURLs";
+import { ProcessContext } from "../../contexts/ProcessContext";
 
 const processSteps = [
   "High-Bay Warehouse",
@@ -106,33 +107,10 @@ function ProcessStepIcon(props) {
 
 function ProcessOverview() {
   const [activeStep, setActiveStep] = useState(null);
-  const [processStarted, setProcessStarted] = useState(false);
+  const { processStarted } = useContext(ProcessContext);
   const { lastMessage: activeStepMessage } = useWebSocket(
     AvailableURLs.BACKEND_WS + "/ws_get_current_module"
   );
-  const {
-    lastMessage: processStartedMessage,
-    sendJsonMessage: sendProcessStartedMessage,
-  } = useWebSocket(AvailableURLs.BACKEND_WS + "/ws_process_state");
-
-  useEffect(() => {
-    const sendStateToBackend = async () => {
-      const data = {
-        process_started: processStarted,
-      };
-      sendProcessStartedMessage(data);
-    };
-
-    sendStateToBackend();
-    if (processStartedMessage && processStartedMessage.data) {
-      try {
-        const data = JSON.parse(processStartedMessage.data);
-        setProcessStarted(data.process_started);
-      } catch (error) {
-        console.log("Invalid JSON Format in Process State!");
-      }
-    }
-  }, [processStarted, processStartedMessage, sendProcessStartedMessage]);
 
   useEffect(() => {
     if (activeStepMessage && activeStepMessage.data) {

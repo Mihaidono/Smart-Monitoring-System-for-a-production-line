@@ -6,6 +6,9 @@ import Navbar from "./components/NavigationBar/Navbar";
 import WarehouseDisplay from "./components/Warehouse/WarehouseDisplay";
 import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
 import { AvailablePages } from "./config/enums/AvailablePages";
+import { ProcessProvider } from "./contexts/ProcessContext";
+
+
 function SettingsMenu() {
   return (
     <Grid container rowSpacing={1}>
@@ -18,40 +21,38 @@ function SettingsMenu() {
 
 function HomePageMenu() {
   return (
-    <Grid
-      container
-      rowSpacing={{ xs: 2 }}
-      justifyContent="center"
-      padding="20px"
-      paddingTop="30px"
-      paddingBottom="30px"
-    >
+    <ProcessProvider>
       <Grid
-        item
-        xs={12}
-        lg={6}
-        padding="10px"
-        height={{ xs: "fit-content", lg: "400px" }}
+        container
+        rowSpacing={{ xs: 2 }}
+        justifyContent="center"
+        padding="20px"
+        paddingTop="30px"
+        paddingBottom="30px"
       >
-        <CameraControl />
+        <Grid
+          item
+          xs={12}
+          lg={6}
+          padding="10px"
+          height={{ xs: "fit-content", lg: "400px" }}
+        >
+          <CameraControl />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          lg={6}
+          padding="10px"
+          height={{ xs: "fit-content", lg: "400px" }}
+        >
+          <WarehouseDisplay />
+        </Grid>
+        <Grid item xs={12} padding="10px">
+          <ProcessOverview />
+        </Grid>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        lg={6}
-        padding="10px"
-        height={{ xs: "fit-content", lg: "400px" }}
-      >
-        <WarehouseDisplay />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        padding="10px"
-      >
-        <ProcessOverview />
-      </Grid>
-    </Grid>
+    </ProcessProvider>
   );
 }
 

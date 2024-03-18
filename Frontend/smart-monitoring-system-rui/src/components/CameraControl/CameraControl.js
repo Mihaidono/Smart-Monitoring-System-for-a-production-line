@@ -1,5 +1,5 @@
 import "./CameraControl.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { CameraControlDTO } from "../../models/CameraControl";
 import { CameraDirections } from "../../config/enums/CameraDirections";
@@ -23,10 +23,11 @@ import {
   Box,
 } from "@mui/material";
 import useWebSocket from "react-use-websocket";
+import { ProcessContext } from "../../contexts/ProcessContext";
 
-const CameraControlButton = styled(Button)(({ isProcessAutomated }) => ({
-  color: isProcessAutomated ? "var(--defaultStateColor)" : "#fff",
-  backgroundColor: isProcessAutomated
+const CameraControlButton = styled(Button)(({ processStarted }) => ({
+  color: processStarted ? "var(--defaultStateColor)" : "#fff",
+  backgroundColor: processStarted
     ? "var(--mainColorToggled)"
     : "var(--mainColor)",
   display: "flex",
@@ -37,23 +38,24 @@ const CameraControlButton = styled(Button)(({ isProcessAutomated }) => ({
   height: "40px",
 
   "&:hover": {
-    backgroundColor: isProcessAutomated
+    backgroundColor: processStarted
       ? "var(--mainColorToggled)"
       : "var(--secondaryColor)",
   },
-  pointerEvents: isProcessAutomated ? "none" : "auto",
+  pointerEvents: processStarted ? "none" : "auto",
 }));
 
 function CameraControl() {
   const [cameraFeedSource, setCameraFeedSource] = useState(null);
   const [cameraMovementDegrees, setCameraMovementDegrees] = useState(2);
-  const [isProcessAutomated, setIsProcessAutomated] = useState(false);
+  const { processStarted, updateProcessStarted } = useContext(ProcessContext);
+
   const { lastMessage } = useWebSocket(
     AvailableURLs.BACKEND_WS + "/ws_get_image"
   );
 
   const handleAutomatedProcessToggle = () => {
-    setIsProcessAutomated(!isProcessAutomated);
+    updateProcessStarted(!processStarted);
   };
 
   const degreesChangedHandle = (event) => {
@@ -93,7 +95,7 @@ function CameraControl() {
       <Grid item xs={4}>
         <div className="automation-switch-container">
           <Switch
-            checked={isProcessAutomated}
+            checked={processStarted}
             onChange={handleAutomatedProcessToggle}
             sx={{
               "& .MuiSwitch-thumb": {
@@ -102,7 +104,7 @@ function CameraControl() {
             }}
           />
           <Typography color="var(--mainColor)" variant="body2" gutterBottom>
-            {isProcessAutomated ? "Automated" : "Manual"}
+            {processStarted ? "Automated" : "Manual"}
           </Typography>
         </div>
       </Grid>
@@ -127,9 +129,9 @@ function CameraControl() {
           xs={12}
         >
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.UP
@@ -148,9 +150,9 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.LEFT
@@ -163,7 +165,7 @@ function CameraControl() {
         </Grid>
         <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <Select
-            disabled={isProcessAutomated}
+            disabled={processStarted}
             id="degrees-helper"
             value={cameraMovementDegrees}
             label="Degrees"
@@ -193,9 +195,9 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.RIGHT
@@ -215,9 +217,9 @@ function CameraControl() {
           xs={12}
         >
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.DOWN
@@ -236,9 +238,9 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.MAX_LEFT
@@ -251,9 +253,9 @@ function CameraControl() {
         </Grid>
         <Grid container justifyContent="center" alignItems="center" item xs={4}>
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.HOME
@@ -272,9 +274,9 @@ function CameraControl() {
           xs={4}
         >
           <CameraControlButton
-            isProcessAutomated={isProcessAutomated}
+            processStarted={processStarted}
             onClick={() => {
-              if (!isProcessAutomated) {
+              if (!processStarted) {
                 moveCameraButtonHandle(
                   cameraMovementDegrees,
                   CameraDirections.RIGHT
