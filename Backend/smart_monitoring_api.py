@@ -108,13 +108,16 @@ async def get_current_module(websocket: WebSocket):
         await websocket.send_json({"error": error_details})
 
 
-@smart_monitoring_app.websocket("/ws_get_process_state")
+@smart_monitoring_app.websocket("/ws_process_state")
 async def get_process_state(websocket: WebSocket):
     try:
         await websocket.accept()
 
         while True:
-            data = {"started": surveillance_system.process_started}
+            received_data = await websocket.receive_text()
+            surveillance_system.process_started = json.loads(received_data)['process_started']
+
+            data = {"process_started": surveillance_system.process_started}
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.5)
     except ClientDisconnected:

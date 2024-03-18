@@ -29,7 +29,7 @@ function WarehouseDisplay() {
         });
         setWarehouseStock(containersData);
       } catch (error) {
-        console.log("Invalid JSON Format!");
+        console.log("Invalid JSON Format in Warehouse Display!");
       }
     }
   }, [lastMessage]);
