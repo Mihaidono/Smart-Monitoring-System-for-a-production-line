@@ -45,6 +45,7 @@ class MonitoringService:
         self._current_routine = RoutineStatus.IDLE
         self._process_started = False
         self._tracking_workpiece = False
+        self._workpiece_delivered = False
 
         self._CLIENT_TXT_NAME = "MonitoringService"
         self._TXT_BROKER_ADDRESS = os.getenv("TXT_CONTROLLER_ADDRESS")
@@ -81,7 +82,7 @@ class MonitoringService:
                                           FischertechnikModuleLocations.SHIPPING) is False:
             if camera_control.is_module_equal(camera_control.current_module,
                                               FischertechnikModuleLocations.PROCESSING_STATION) and \
-                    self._detection_count_per_module == 1:
+                    self._detection_count_per_module == 0:
                 camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
@@ -89,28 +90,33 @@ class MonitoringService:
 
                 camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
                 camera_control.wait_camera_to_stabilize()
+
+                self._detection_count_per_module += 1
                 print("Moved at PROCESSING STATION Module")
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
                                               FischertechnikModuleLocations.PROCESSING_STATION) and \
-                    self._detection_count_per_module == 2:
+                    self._detection_count_per_module == 1:
                 camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TEN)
                 camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.UP, CameraDegrees.TEN)
                 camera_control.wait_camera_to_stabilize()
+
+                self._detection_count_per_module += 1
                 print("Moved at SORTING LINE Module")
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
                                               FischertechnikModuleLocations.SORTING_LINE) and \
-                    self._detection_count_per_module == 3:
+                    self._detection_count_per_module == 2:
                 camera_control.move_camera(CameraDirections.RIGHT, CameraDegrees.TEN)
                 camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
                 camera_control.wait_camera_to_stabilize()
-                self._detection_count_per_module = 0
+
+                self._detection_count_per_module += 1
                 print("Moved at SHIPPING Module")
                 return
 
@@ -212,14 +218,14 @@ class MonitoringService:
                     countdown_running = False
 
                     if self._is_camera_delayed:
-                        self._detection_count_per_module += 1
-                        if self._detection_count_per_module == 5:
-                            self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
-                            break
-                        else:
+                        if self._detection_count_per_module < 3:
                             self.progress_camera_position()
+                        else:
+                            if self.check_delivery_status() is True:
+                                self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+                                break
                     else:
-                        if self._detection_count_per_module == 5:
+                        if self.check_delivery_status() is True:
                             self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
                             break
 
@@ -230,6 +236,13 @@ class MonitoringService:
                         if camera_control.is_module_equal(camera_control.current_module,
                                                           FischertechnikModuleLocations.SHIPPING):
                             self._detection_count_per_module += 1
+
+    def check_delivery_status(self):
+        msg = subscribe.simple("f/i/state/dso", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
+                               client_id=self._CLIENT_TXT_NAME,
+                               keepalive=self._KEEP_ALIVE,
+                               auth={'username': self._USERNAME, 'password': self._PASSWD})
+        return json.loads(msg.payload)["active"]
 
     def update_json_message(self):
         while True:
