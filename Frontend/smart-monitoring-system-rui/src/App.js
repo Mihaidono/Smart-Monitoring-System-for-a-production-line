@@ -8,7 +8,6 @@ import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
 import { AvailablePages } from "./config/enums/AvailablePages";
 import { ProcessProvider } from "./contexts/ProcessContext";
 
-
 function SettingsMenu() {
   return (
     <Grid container rowSpacing={1}>
@@ -35,7 +34,7 @@ function HomePageMenu() {
           xs={12}
           lg={6}
           padding="10px"
-          height={{ xs: "fit-content", lg: "400px" }}
+          height={{ xs: "fit-content" , lg: "500px" }}
         >
           <CameraControl />
         </Grid>
@@ -44,7 +43,7 @@ function HomePageMenu() {
           xs={12}
           lg={6}
           padding="10px"
-          height={{ xs: "fit-content", lg: "400px" }}
+          height={{ xs: "fit-content" , lg: "500px" }}
         >
           <WarehouseDisplay />
         </Grid>

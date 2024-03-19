@@ -9,6 +9,8 @@ from typing import List
 import cv2
 import numpy as np
 import paho.mqtt.subscribe as subscribe
+import paho.mqtt.publish as publish
+
 from dotenv import load_dotenv
 
 import camera_control_service as camera_control
@@ -128,6 +130,13 @@ class MonitoringService:
             if diff.total_seconds() > 1:
                 return True
         return False
+
+    def order_workpiece(self, color: str):
+        payload = json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'type': color})
+        publish.single(topic="f/o/order", payload=payload, hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
+                       client_id=self._CLIENT_TXT_NAME,
+                       keepalive=self._KEEP_ALIVE,
+                       auth={'username': self._USERNAME, 'password': self._PASSWD})
 
     def initialization_routine(self):
         self._is_camera_delayed = self.check_if_camera_has_delay()

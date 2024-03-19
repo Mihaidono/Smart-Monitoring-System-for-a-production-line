@@ -1,5 +1,13 @@
 import "./WarehouseDisplay.css";
-import { Grid, Skeleton, Typography, Stack, Box } from "@mui/material";
+import {
+  Grid,
+  Skeleton,
+  Typography,
+  Stack,
+  Box,
+  Button,
+  styled,
+} from "@mui/material";
 import { AvailableURLs } from "../../config/enums/AvailableURLs";
 import { WarehouseContainerDTO } from "../../models/WarehouseContainer";
 import React, { useState, useEffect } from "react";
@@ -7,6 +15,22 @@ import { faBoxOpen, faHockeyPuck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import useWebSocket from "react-use-websocket";
+import axios from "axios";
+
+const WarehouseButton = styled(Button)(() => ({
+  color: "#fff",
+  backgroundColor: "var(--mainColor)",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "70%",
+  height: "40px",
+
+  "&:hover": {
+    backgroundColor: "var(--secondaryColor)",
+  },
+}));
 
 function WarehouseDisplay() {
   const [warehouseStock, setWarehouseStock] = useState([]);
@@ -34,6 +58,14 @@ function WarehouseDisplay() {
       } catch (error) {}
     }
   }, [lastMessage]);
+
+  const handleWorkpieceOrder = async (color) => {
+    try {
+      await axios.get(
+        `${AvailableURLs.BACKEND_HTTP}/order_workpiece?color=${color}`
+      );
+    } catch (error) {}
+  };
 
   return (
     <Stack
@@ -142,6 +174,28 @@ function WarehouseDisplay() {
                 </Box>
               </Grid>
             ))}
+      </Grid>
+      <Grid
+        container
+        padding="40px"
+        justifyContent="space-evenly"
+        alignItems="center"
+      >
+        <Grid xs={4} item container justifyContent="center">
+          <WarehouseButton onClick={() => handleWorkpieceOrder("BLUE")}>
+            BLUE
+          </WarehouseButton>
+        </Grid>
+        <Grid xs={4} item container justifyContent="center">
+          <WarehouseButton onClick={() => handleWorkpieceOrder("WHITE")}>
+            WHITE
+          </WarehouseButton>
+        </Grid>
+        <Grid xs={4} item container justifyContent="center">
+          <WarehouseButton onClick={() => handleWorkpieceOrder("RED")}>
+            RED
+          </WarehouseButton>
+        </Grid>
       </Grid>
     </Stack>
   );

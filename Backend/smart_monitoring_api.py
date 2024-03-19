@@ -35,6 +35,21 @@ class ChangeState(BaseModel):
     new_state: bool
 
 
+@smart_monitoring_app.get("/order_workpiece")
+async def order_workpiece(color: str):
+    try:
+        surveillance_system.order_workpiece(color)
+    except Exception as e:
+        error_details = {
+            "error_type": e.__class__.__name__,
+            "error_message": str(e),
+            "additional_info": "Unable to access camera",
+        }
+        raise HTTPException(status_code=500, detail=error_details)
+    response = f"Ordered workpiece of color {color} successfully"
+    return JSONResponse(content=response, status_code=200)
+
+
 @smart_monitoring_app.post("/move_camera")
 async def move_camera(control_message: CameraControlMessage):
     try:

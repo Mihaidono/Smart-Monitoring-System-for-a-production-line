@@ -86,6 +86,7 @@ function CameraControl() {
       className="camera-control-container"
       padding="10px"
       height="100%"
+      justifyContent="center"
     >
       <Grid item xs={4}>
         <div className="automation-switch-container">
