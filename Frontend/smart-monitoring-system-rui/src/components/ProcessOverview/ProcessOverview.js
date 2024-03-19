@@ -8,7 +8,6 @@ import { styled } from "@mui/material/styles";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
-import { ProcessingStates } from "../../config/enums/ProcessingStates";
 import useWebSocket from "react-use-websocket";
 import { AvailableURLs } from "../../config/enums/AvailableURLs";
 import { ProcessContext } from "../../contexts/ProcessContext";
@@ -120,21 +119,23 @@ function ProcessOverview() {
         if (processStarted) {
           setTrackingStarted(data.tracking_workpiece);
           switch (data.current_module) {
-            case ProcessingStates.WAREHOUSE:
+            case "WAREHOUSE":
               setActiveStep(0);
               break;
-            case ProcessingStates.PROCESSING_STATION:
+            case "PROCESSING_STATION":
               setActiveStep(1);
               break;
-            case ProcessingStates.SORTING_LINE:
+            case "SORTING_LINE":
               setActiveStep(2);
               break;
-            case ProcessingStates.SHIPPING:
+            case "SHIPPING":
               setActiveStep(3);
               break;
             default:
               break;
           }
+        } else {
+          setActiveStep(null);
         }
       } catch (error) {}
     }

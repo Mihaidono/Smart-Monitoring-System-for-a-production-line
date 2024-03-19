@@ -16,6 +16,17 @@ class FischertechnikModuleLocations:
     SORTING_LINE = (-0.229, -0.358)
     SHIPPING = (-0.117, -0.135)
 
+    @classmethod
+    def get_location_name(cls, location_tuple):
+        """
+        Returns the name of the location corresponding to the given tuple.
+        If no match is found, returns None.
+        """
+        for name, value in cls.__dict__.items():
+            if isinstance(value, tuple) and value == location_tuple:
+                return name
+        return None
+
 
 class CameraDirections:
     LEFT = 'relmove_left'

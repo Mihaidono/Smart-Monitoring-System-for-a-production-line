@@ -128,8 +128,9 @@ async def get_tracking_workpiece(websocket: WebSocket):
         await websocket.accept()
 
         while True:
-            data = {"current_module": camera_control.current_module,
-                    "tracking_workpiece": surveillance_system.tracking_workpiece}
+            data = {"current_module": camera_control.FischertechnikModuleLocations.get_location_name(
+                camera_control.current_module),
+                "tracking_workpiece": surveillance_system.tracking_workpiece}
 
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.5)
