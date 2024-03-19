@@ -10,9 +10,11 @@ export const ProcessProvider = ({ children }) => {
   const updateProcessStarted = (newValue) => {
     setProcessStarted(newValue);
     const sendStateToBackend = async () => {
-      await axios.post(`${AvailableURLs.BACKEND_HTTP}/set_process_state`, {
-        new_state: newValue,
-      });
+      try {
+        await axios.post(`${AvailableURLs.BACKEND_HTTP}/set_process_state`, {
+          new_state: newValue,
+        });
+      } catch (error) {}
     };
 
     sendStateToBackend();
