@@ -31,6 +31,10 @@ class CameraControlMessage(BaseModel):
     direction: str
 
 
+class ChangeState(BaseModel):
+    new_state: bool
+
+
 @smart_monitoring_app.post("/move_camera")
 async def move_camera(control_message: CameraControlMessage):
     try:
@@ -45,6 +49,21 @@ async def move_camera(control_message: CameraControlMessage):
         }
         raise HTTPException(status_code=500, detail=error_details)
     response = f"Camera moved by {control_message.degrees} degrees to {control_message.direction}"
+    return JSONResponse(content=response, status_code=200)
+
+
+@smart_monitoring_app.post("/set_process_state")
+async def set_process_state(change_state: ChangeState):
+    try:
+        surveillance_system.process_started = change_state.new_state
+    except Exception as e:
+        error_details = {
+            "error_type": e.__class__.__name__,
+            "error_message": str(e),
+            "additional_info": "Unable to change state",
+        }
+        raise HTTPException(status_code=500, detail=error_details)
+    response = f"Process State set to {change_state.new_state}"
     return JSONResponse(content=response, status_code=200)
 
 
@@ -88,36 +107,15 @@ async def get_warehouse_inventory(websocket: WebSocket):
         await websocket.send_json({"error": error_details})
 
 
-@smart_monitoring_app.websocket("/ws_get_current_module")
-async def get_current_module(websocket: WebSocket):
+@smart_monitoring_app.websocket("/ws_delivery_info")
+async def get_tracking_workpiece(websocket: WebSocket):
     try:
         await websocket.accept()
 
         while True:
-            data = {"current_module": camera_control.current_module}
-            await websocket.send_text(json.dumps(data))
-            await asyncio.sleep(0.5)
-    except ClientDisconnected:
-        print("Client disconnected from WS Get Current Module")
-    except Exception as e:
-        error_details = {
-            "error_type": e.__class__.__name__,
-            "error_message": str(e),
-            "additional_info": "An unexpected error occurred in the WebSocket Module endpoint",
-        }
-        await websocket.send_json({"error": error_details})
+            data = {"current_module": camera_control.current_module,
+                    "tracking_workpiece": surveillance_system.tracking_workpiece}
 
-
-@smart_monitoring_app.websocket("/ws_process_state")
-async def get_process_state(websocket: WebSocket):
-    try:
-        await websocket.accept()
-
-        while True:
-            received_data = await websocket.receive_text()
-            surveillance_system.process_started = json.loads(received_data)['process_started']
-
-            data = {"process_started": surveillance_system.process_started}
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.5)
     except ClientDisconnected:

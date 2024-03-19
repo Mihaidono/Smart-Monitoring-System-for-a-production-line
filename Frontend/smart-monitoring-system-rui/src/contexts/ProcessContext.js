@@ -1,33 +1,21 @@
-import React, { createContext, useState, useEffect, useRef } from "react";
-import useWebSocket from "react-use-websocket";
+import React, { createContext, useState } from "react";
 import { AvailableURLs } from "../config/enums/AvailableURLs";
+import axios from "axios";
 
 export const ProcessContext = createContext();
 
 export const ProcessProvider = ({ children }) => {
   const [processStarted, setProcessStarted] = useState(false);
-  const prevProcessStarted = useRef(processStarted);
-
-  const { sendJsonMessage: sendProcessStartedMessage } = useWebSocket(
-    AvailableURLs.BACKEND_WS + "/ws_process_state"
-  );
-
-  useEffect(() => {
-    if (prevProcessStarted.current !== processStarted) {
-      const sendStateToBackend = async () => {
-        const data = {
-          process_started: processStarted,
-        };
-        sendProcessStartedMessage(data);
-      };
-
-      sendStateToBackend();
-      prevProcessStarted.current = processStarted;
-    }
-  }, [processStarted, sendProcessStartedMessage]);
 
   const updateProcessStarted = (newValue) => {
     setProcessStarted(newValue);
+    const sendStateToBackend = async () => {
+      await axios.post(`${AvailableURLs.BACKEND_HTTP}/set_process_state`, {
+        new_state: newValue,
+      });
+    };
+
+    sendStateToBackend();
   };
 
   return (

@@ -42,6 +42,7 @@ class MonitoringService:
 
         self._current_routine = RoutineStatus.IDLE
         self._process_started = False
+        self._tracking_workpiece = False
 
         self._CLIENT_TXT_NAME = "MonitoringService"
         self._TXT_BROKER_ADDRESS = os.getenv("TXT_CONTROLLER_ADDRESS")
@@ -60,6 +61,10 @@ class MonitoringService:
     @process_started.setter
     def process_started(self, value):
         self._process_started = value
+
+    @property
+    def tracking_workpiece(self):
+        return self._tracking_workpiece
 
     @property
     def warehouse_containers(self):
@@ -143,7 +148,7 @@ class MonitoringService:
 
     def idle_routine(self):
         while not self._process_started:
-            time.sleep(1)
+            time.sleep(0.5)
         self._current_routine = RoutineStatus.INITIALIZING
 
     def survey_bay_routine(self):
@@ -170,6 +175,7 @@ class MonitoringService:
     def survey_delivery_process_routine(self):
         print("Starting surveillance of the in-delivery workpiece")
         self.process_start_camera_position()
+        self._tracking_workpiece = True
         countdown_running = False
         while True:
             if not self._process_started:

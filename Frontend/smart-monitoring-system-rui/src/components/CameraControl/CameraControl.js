@@ -64,14 +64,11 @@ function CameraControl() {
 
   const moveCameraButtonHandle = async (degrees, direction) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${AvailableURLs.BACKEND_HTTP}/move_camera`,
         new CameraControlDTO(degrees, direction)
       );
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -79,11 +76,9 @@ function CameraControl() {
       try {
         const data = JSON.parse(lastMessage.data);
         setCameraFeedSource(data.data);
-      } catch (error) {
-        console.log("Invalid JSON Format!");
-      }
+      } catch (error) {}
     }
-  }, [lastMessage]);
+  }, [lastMessage, setCameraFeedSource]);
 
   return (
     <Grid

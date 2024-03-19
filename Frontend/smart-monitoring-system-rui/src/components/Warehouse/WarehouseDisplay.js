@@ -18,19 +18,20 @@ function WarehouseDisplay() {
     if (lastMessage && lastMessage.data) {
       try {
         const data = JSON.parse(lastMessage.data);
-        const containersData = data.containers.map((container) => {
-          return container.map((element) => {
+        const transposedData = data.containers[0].map((_, colIndex) =>
+          data.containers.map((row) => row[colIndex])
+        );
+        const containersData = transposedData.map((row) =>
+          row.map((element) => {
             return new WarehouseContainerDTO(
               element.coordinates,
               element.color,
               element.type
             );
-          });
-        });
+          })
+        );
         setWarehouseStock(containersData);
-      } catch (error) {
-        console.log("Invalid JSON Format in Warehouse Display!");
-      }
+      } catch (error) {}
     }
   }, [lastMessage]);
 

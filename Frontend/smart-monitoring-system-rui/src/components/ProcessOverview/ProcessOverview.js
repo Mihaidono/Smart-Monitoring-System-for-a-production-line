@@ -107,16 +107,18 @@ function ProcessStepIcon(props) {
 
 function ProcessOverview() {
   const [activeStep, setActiveStep] = useState(null);
+  const [trackingStarted, setTrackingStarted] = useState(null);
   const { processStarted } = useContext(ProcessContext);
-  const { lastMessage: activeStepMessage } = useWebSocket(
-    AvailableURLs.BACKEND_WS + "/ws_get_current_module"
+  const { lastMessage: deliveryInfoMessage } = useWebSocket(
+    AvailableURLs.BACKEND_WS + "/ws_delivery_info"
   );
 
   useEffect(() => {
-    if (activeStepMessage && activeStepMessage.data) {
+    if (deliveryInfoMessage && deliveryInfoMessage.data) {
       try {
-        const data = JSON.parse(activeStepMessage.data);
+        const data = JSON.parse(deliveryInfoMessage.data);
         if (processStarted) {
+          setTrackingStarted(data.tracking_workpiece);
           switch (data.current_module) {
             case ProcessingStates.WAREHOUSE:
               setActiveStep(0);
@@ -131,21 +133,18 @@ function ProcessOverview() {
               setActiveStep(3);
               break;
             default:
-              console.log("Unknown Processing Module");
               break;
           }
         }
-      } catch (error) {
-        console.log("Invalid JSON Format in Active Step!");
-      }
+      } catch (error) {}
     }
-  }, [processStarted, activeStepMessage]);
+  }, [processStarted, deliveryInfoMessage]);
 
   return (
     <Stepper
       alternativeLabel
       activeStep={activeStep}
-      connector={<ProcessStepsConnector processStarted={processStarted} />}
+      connector={<ProcessStepsConnector processStarted={trackingStarted} />}
       sx={{
         backgroundColor: "var(--primaryColor)",
         padding: { xs: "0px", sm: "20px" },
@@ -158,7 +157,7 @@ function ProcessOverview() {
         <Step key={label}>
           <StepLabel
             StepIconComponent={(props) => (
-              <ProcessStepIcon {...props} processStarted={processStarted} />
+              <ProcessStepIcon {...props} processStarted={trackingStarted} />
             )}
           >
             {label}
