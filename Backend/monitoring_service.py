@@ -140,13 +140,16 @@ class MonitoringService:
         self._current_routine = RoutineStatus.INITIALIZING
         self._detection_count_per_module = 0
         self._process_started = False
+        self._tracking_workpiece = False
 
     def successful_delivery_routine(self):
         print("Successfully delivered workpiece! Returning to bay")
         self._current_routine = RoutineStatus.INITIALIZING
         self._process_started = False
+        self._tracking_workpiece = False
 
     def idle_routine(self):
+        self._tracking_workpiece = False
         while not self._process_started:
             time.sleep(0.5)
         self._current_routine = RoutineStatus.INITIALIZING
