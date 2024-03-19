@@ -233,9 +233,6 @@ class MonitoringService:
                         self.center_workpiece_in_frame(detected_object["coordinates"],
                                                        img_width=crt_width,
                                                        img_height=crt_height)
-                        if camera_control.is_module_equal(camera_control.current_module,
-                                                          FischertechnikModuleLocations.SHIPPING):
-                            self._detection_count_per_module += 1
 
     def check_delivery_status(self):
         msg = subscribe.simple("f/i/state/dso", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
