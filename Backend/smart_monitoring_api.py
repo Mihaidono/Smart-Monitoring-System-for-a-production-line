@@ -130,10 +130,11 @@ async def get_tracking_workpiece(websocket: WebSocket):
         while True:
             data = {"current_module": camera_control.FischertechnikModuleLocations.get_location_name(
                 camera_control.current_module),
-                "tracking_workpiece": surveillance_system.tracking_workpiece}
+                "tracking_workpiece": surveillance_system.tracking_workpiece,
+                "current_routine": surveillance_system.current_routine}
 
             await websocket.send_text(json.dumps(data))
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.2)
     except ClientDisconnected:
         print("Client disconnected from WS Get Process State")
     except Exception as e:

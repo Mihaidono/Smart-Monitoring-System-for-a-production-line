@@ -66,6 +66,10 @@ class MonitoringService:
         self._process_started = value
 
     @property
+    def current_routine(self):
+        return self._current_routine
+
+    @property
     def tracking_workpiece(self):
         return self._tracking_workpiece
 
@@ -121,21 +125,24 @@ class MonitoringService:
                 return
 
     def check_if_camera_has_delay(self):
-        time_array = []
-        for _ in range(5):
-            msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
-                                   client_id=self._CLIENT_TXT_NAME,
-                                   keepalive=self._KEEP_ALIVE,
-                                   auth={'username': self._USERNAME, 'password': self._PASSWD})
-            json_message = json.loads(msg.payload)
-            time_array.append(json_message['ts'])
+        while True:
+            time_array = []
+            is_delayed_set = False
+            for _ in range(5):
+                msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
+                                       client_id=self._CLIENT_TXT_NAME,
+                                       keepalive=self._KEEP_ALIVE,
+                                       auth={'username': self._USERNAME, 'password': self._PASSWD})
+                json_message = json.loads(msg.payload)
+                time_array.append(json_message['ts'])
 
-        datetime_array = [datetime.fromisoformat(timestamp) for timestamp in time_array]
-        time_diffs = [datetime_array[i + 1] - datetime_array[i] for i in range(len(datetime_array) - 1)]
-        for diff in time_diffs:
-            if diff.total_seconds() > 1:
-                return True
-        return False
+            datetime_array = [datetime.fromisoformat(timestamp) for timestamp in time_array]
+            time_diffs = [datetime_array[i + 1] - datetime_array[i] for i in range(len(datetime_array) - 1)]
+            for diff in time_diffs:
+                if diff.total_seconds() > 1:
+                    is_delayed_set = True
+            self._is_camera_delayed = is_delayed_set
+            time.sleep(60)
 
     def order_workpiece(self, color: str):
         payload = json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'type': color})
@@ -145,23 +152,26 @@ class MonitoringService:
                        auth={'username': self._USERNAME, 'password': self._PASSWD})
 
     def initialization_routine(self):
-        self._is_camera_delayed = self.check_if_camera_has_delay()
         self.initiate_camera_position()
         self._prev_frame_with_detected_objects = []
         self._current_routine = RoutineStatus.SURVEYING_BAY
 
     def camera_timeout_routine(self):
         print("Object lost from field of view. Returning to bay")
-        self._current_routine = RoutineStatus.INITIALIZING
         self._detection_count_per_module = 0
         self._process_started = False
         self._tracking_workpiece = False
 
+        time.sleep(2)
+        self._current_routine = RoutineStatus.INITIALIZING
+
     def successful_delivery_routine(self):
         print("Successfully delivered workpiece! Returning to bay")
-        self._current_routine = RoutineStatus.INITIALIZING
         self._process_started = False
         self._tracking_workpiece = False
+
+        time.sleep(2)
+        self._current_routine = RoutineStatus.INITIALIZING
 
     def idle_routine(self):
         self._tracking_workpiece = False
@@ -290,6 +300,7 @@ class MonitoringService:
         }
 
         threading.Thread(target=self.update_json_message, daemon=True).start()
+        threading.Thread(target=self.check_if_camera_has_delay, daemon=True).start()
         while True:
             routines[self._current_routine]()
 

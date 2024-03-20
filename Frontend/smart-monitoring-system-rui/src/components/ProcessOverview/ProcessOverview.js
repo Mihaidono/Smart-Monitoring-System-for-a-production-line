@@ -11,6 +11,7 @@ import StepConnector, {
 import useWebSocket from "react-use-websocket";
 import { AvailableURLs } from "../../config/enums/AvailableURLs";
 import { ProcessContext } from "../../contexts/ProcessContext";
+import { MonitoringRoutines } from "../../config/enums/MonitoringRoutines";
 
 const processSteps = [
   "High-Bay Warehouse",
@@ -19,40 +20,38 @@ const processSteps = [
   "Delivery",
 ];
 
-const ProcessStepsConnector = styled(StepConnector)(({ processStarted }) => ({
-  [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: 22,
-  },
-  [`&.${stepConnectorClasses.active}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: processStarted
-        ? "var(--pendingStateColor)"
-        : "var(--mainColor)",
+const ProcessStepsConnector = styled(StepConnector)(
+  ({ processStarted, failedStepIndex }) => ({
+    [`&.${stepConnectorClasses.alternativeLabel}`]: {
+      top: 22,
     },
-  },
-  [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: processStarted
-        ? "var(--successStateColor)"
-        : "var(--mainColor)",
+    [`&.${stepConnectorClasses.active}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundColor:
+          failedStepIndex !== null
+            ? "var(--warningStateColor)"
+            : processStarted
+            ? "var(--pendingStateColor)"
+            : "var(--mainColor)",
+      },
     },
-  },
-  [`&.${stepConnectorClasses.failed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: processStarted
-        ? "var(--warningStateColor)"
-        : "var(--mainColor)",
+    [`&.${stepConnectorClasses.completed}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundColor: processStarted
+          ? "var(--successStateColor)"
+          : "var(--mainColor)",
+      },
     },
-  },
-  [`& .${stepConnectorClasses.line}`]: {
-    height: 3,
-    border: 0,
-    backgroundColor: processStarted
-      ? "var(--defaultStateColor)"
-      : "var(--mainColor)",
-    borderRadius: 1,
-  },
-}));
+    [`& .${stepConnectorClasses.line}`]: {
+      height: 3,
+      border: 0,
+      backgroundColor: processStarted
+        ? "var(--defaultStateColor)"
+        : "var(--mainColor)",
+      borderRadius: 1,
+    },
+  })
+);
 
 const ProcessStepIconRoot = styled("div")(({ ownerState, processStarted }) => ({
   backgroundColor: processStarted
@@ -106,6 +105,8 @@ function ProcessStepIcon(props) {
 
 function ProcessOverview() {
   const [activeStep, setActiveStep] = useState(null);
+  const [failedStepIndex, setFailedStepIndex] = useState(null);
+
   const [trackingStarted, setTrackingStarted] = useState(null);
   const { processStarted } = useContext(ProcessContext);
   const { lastMessage: deliveryInfoMessage } = useWebSocket(
@@ -117,7 +118,27 @@ function ProcessOverview() {
       try {
         const data = JSON.parse(deliveryInfoMessage.data);
         if (processStarted) {
-          setTrackingStarted(data.tracking_workpiece);
+          if (activeStep === null || activeStep === 4) {
+            setTrackingStarted(data.tracking_workpiece);
+          }
+
+          if (data.current_routine === MonitoringRoutines.DELIVERY_SUCCESSFUL) {
+            setActiveStep(4);
+          }
+
+          if (data.current_routine === MonitoringRoutines.TIMED_OUT) {
+            setFailedStepIndex(activeStep);
+          }
+        }
+      } catch (error) {}
+    }
+  }, [processStarted, activeStep, deliveryInfoMessage]);
+
+  useEffect(() => {
+    if (deliveryInfoMessage && deliveryInfoMessage.data) {
+      try {
+        const data = JSON.parse(deliveryInfoMessage.data);
+        if (trackingStarted) {
           switch (data.current_module) {
             case "WAREHOUSE":
               setActiveStep(0);
@@ -134,18 +155,21 @@ function ProcessOverview() {
             default:
               break;
           }
-        } else {
-          setActiveStep(null);
         }
       } catch (error) {}
     }
-  }, [processStarted, deliveryInfoMessage]);
+  }, [trackingStarted, activeStep, deliveryInfoMessage]);
 
   return (
     <Stepper
       alternativeLabel
       activeStep={activeStep}
-      connector={<ProcessStepsConnector processStarted={trackingStarted} />}
+      connector={
+        <ProcessStepsConnector
+          processStarted={trackingStarted}
+          failedStepIndex={failedStepIndex}
+        />
+      }
       sx={{
         backgroundColor: "var(--primaryColor)",
         padding: { xs: "0px", sm: "20px" },
@@ -154,11 +178,16 @@ function ProcessOverview() {
         borderRadius: "5px",
       }}
     >
-      {processSteps.map((label) => (
+      {processSteps.map((label, index) => (
         <Step key={label}>
           <StepLabel
             StepIconComponent={(props) => (
-              <ProcessStepIcon {...props} processStarted={trackingStarted} />
+              <ProcessStepIcon
+                {...props}
+                processStarted={trackingStarted}
+                failed={index === failedStepIndex}
+                completed={index <= activeStep - 1}
+              />
             )}
           >
             {label}

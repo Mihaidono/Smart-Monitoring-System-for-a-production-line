@@ -1,0 +1,8 @@
+export const MonitoringRoutines = {
+  INITIALIZING: 0,
+  SURVEYING_BAY: 1,
+  SURVEYING_DELIVERY_PROCESS: 2,
+  TIMED_OUT: 3,
+  DELIVERY_SUCCESSFUL: 4,
+  IDLE: 5,
+};
