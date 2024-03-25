@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Stepper, Step, StepLabel } from "@mui/material";
+import { Stepper, Step, StepLabel, Snackbar, Alert } from "@mui/material";
 import WarehouseOutlinedIcon from "@mui/icons-material/WarehouseOutlined";
 import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";
 import ForkRightOutlinedIcon from "@mui/icons-material/ForkRightOutlined";
@@ -109,9 +109,24 @@ function ProcessOverview() {
 
   const [trackingStarted, setTrackingStarted] = useState(null);
   const { processStarted } = useContext(ProcessContext);
+
+  const [openPopup, setOpenPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState(null);
+  const [popupseverity, setPopupSeverity] = useState("info");
+
   const { lastMessage: deliveryInfoMessage } = useWebSocket(
     AvailableURLs.BACKEND_WS + "/ws_delivery_info"
   );
+
+  const handlePopupClose = (event, reason) => {
+    setOpenPopup(false);
+  };
+
+  const createPopupAlert = (displayMessage, alertSeverity) => {
+    setOpenPopup(true);
+    setPopupMessage(displayMessage);
+    setPopupSeverity(alertSeverity);
+  };
 
   useEffect(() => {
     if (deliveryInfoMessage && deliveryInfoMessage.data) {
@@ -124,15 +139,27 @@ function ProcessOverview() {
 
           if (data.current_routine === MonitoringRoutines.DELIVERY_SUCCESSFUL) {
             setActiveStep(4);
+            createPopupAlert("Successfuly completed delivery!", "success");
+            setTimeout(() => {
+              setActiveStep(null);
+            }, 3000);
           }
 
           if (data.current_routine === MonitoringRoutines.TIMED_OUT) {
             setFailedStepIndex(activeStep);
+            createPopupAlert(
+              `Timed out at step ${failedStepIndex + 1} in processing `,
+              "error"
+            );
+            setTimeout(() => {
+              setActiveStep(null);
+              setFailedStepIndex(null);
+            }, 3000);
           }
         }
       } catch (error) {}
     }
-  }, [processStarted, activeStep, deliveryInfoMessage]);
+  }, [processStarted, activeStep, failedStepIndex, deliveryInfoMessage]);
 
   useEffect(() => {
     if (deliveryInfoMessage && deliveryInfoMessage.data) {
@@ -194,6 +221,16 @@ function ProcessOverview() {
           </StepLabel>
         </Step>
       ))}
+      <Snackbar open={openPopup} autoHideDuration={5000}>
+        <Alert
+          onClose={handlePopupClose}
+          severity={popupseverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {popupMessage}
+        </Alert>
+      </Snackbar>
     </Stepper>
   );
 }
