@@ -151,7 +151,7 @@ function ProcessOverview() {
           if (data.current_routine === MonitoringRoutines.TIMED_OUT) {
             setFailedStepIndex(activeStep);
             createPopupAlert(
-              `Timed out at ${processSteps[failedStepIndex]} in processing `,
+              `Timed out at ${processSteps[failedStepIndex]} module `,
               "error"
             );
             setTimeout(() => {
@@ -231,6 +231,7 @@ function ProcessOverview() {
         open={openPopup}
         autoHideDuration={5000}
         onClose={handlePopupClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert severity={popupseverity} variant="filled" sx={{ width: "100%" }}>
           {popupMessage}
