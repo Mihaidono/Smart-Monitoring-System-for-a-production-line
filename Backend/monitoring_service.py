@@ -25,8 +25,9 @@ class RoutineStatus:
     SURVEYING_BAY = 1
     SURVEYING_DELIVERY_PROCESS = 2
     TIMED_OUT = 3
-    DELIVERY_SUCCESSFUL = 4
-    IDLE = 5
+    CONFIRM_DELIVERY_STATUS = 4
+    DELIVERY_SUCCESSFUL = 5
+    IDLE = 6
 
 
 class MonitoringService:
@@ -45,7 +46,6 @@ class MonitoringService:
         self._current_routine = RoutineStatus.IDLE
         self._process_started = False
         self._tracking_workpiece = False
-        self._workpiece_delivered = False
 
         self._CLIENT_TXT_NAME = "MonitoringService"
         self._TXT_BROKER_ADDRESS = os.getenv("TXT_CONTROLLER_ADDRESS")
@@ -218,31 +218,42 @@ class MonitoringService:
                             threading.Thread(target=self.camera_timeout_counter, daemon=True).start()
                             countdown_running = True
                         if self._standby_seconds_count >= self._camera_standby_timer:
-                            self._standby_seconds_count = 0
-                            self._current_routine = RoutineStatus.TIMED_OUT
                             self._detection_event.clear()
+                            self._current_routine = RoutineStatus.TIMED_OUT
+                            self._standby_seconds_count = 0
                             break
                         continue
-                    self._standby_seconds_count = 0
                     self._detection_event.clear()
+                    self._standby_seconds_count = 0
                     countdown_running = False
 
                     if self._is_camera_delayed:
                         if self._detection_count_per_module < 3:
                             self.progress_camera_position()
                         else:
-                            if self.check_delivery_status() is True:
-                                self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
-                                break
+                            self._current_routine = RoutineStatus.CONFIRM_DELIVERY_STATUS
+                            self._standby_seconds_count = 0
+                            break
                     else:
-                        if self.check_delivery_status() is True:
-                            self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+                        if camera_control.is_module_equal(camera_control.current_module,
+                                                          FischertechnikModuleLocations.SHIPPING):
+                            self._current_routine = RoutineStatus.CONFIRM_DELIVERY_STATUS
+                            self._standby_seconds_count = 0
                             break
 
                         crt_height, crt_width, _ = img.shape
                         self.center_workpiece_in_frame(detected_object["coordinates"],
                                                        img_width=crt_width,
                                                        img_height=crt_height)
+
+    def confirm_delivery_status_routine(self):
+        print("Waiting for delivery confirmation!")
+        while True:
+            if self.check_delivery_status() is True:
+                self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
+                self._detection_event.clear()
+                self._standby_seconds_count = 0
+                break
 
     def check_delivery_status(self):
         msg = subscribe.simple("f/i/state/dso", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
@@ -295,6 +306,7 @@ class MonitoringService:
             RoutineStatus.INITIALIZING: self.initialization_routine,
             RoutineStatus.SURVEYING_BAY: self.survey_bay_routine,
             RoutineStatus.SURVEYING_DELIVERY_PROCESS: self.survey_delivery_process_routine,
+            RoutineStatus.CONFIRM_DELIVERY_STATUS: self.confirm_delivery_status_routine,
             RoutineStatus.TIMED_OUT: self.camera_timeout_routine,
             RoutineStatus.DELIVERY_SUCCESSFUL: self.successful_delivery_routine
         }

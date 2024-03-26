@@ -119,6 +119,9 @@ function ProcessOverview() {
   );
 
   const handlePopupClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
     setOpenPopup(false);
   };
 
@@ -148,7 +151,7 @@ function ProcessOverview() {
           if (data.current_routine === MonitoringRoutines.TIMED_OUT) {
             setFailedStepIndex(activeStep);
             createPopupAlert(
-              `Timed out at step ${failedStepIndex + 1} in processing `,
+              `Timed out at ${processSteps[failedStepIndex]} in processing `,
               "error"
             );
             setTimeout(() => {
@@ -156,6 +159,9 @@ function ProcessOverview() {
               setFailedStepIndex(null);
             }, 3000);
           }
+        } else {
+          setActiveStep(null);
+          setFailedStepIndex(null);
         }
       } catch (error) {}
     }
@@ -221,13 +227,12 @@ function ProcessOverview() {
           </StepLabel>
         </Step>
       ))}
-      <Snackbar open={openPopup} autoHideDuration={5000}>
-        <Alert
-          onClose={handlePopupClose}
-          severity={popupseverity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
+      <Snackbar
+        open={openPopup}
+        autoHideDuration={5000}
+        onClose={handlePopupClose}
+      >
+        <Alert severity={popupseverity} variant="filled" sx={{ width: "100%" }}>
           {popupMessage}
         </Alert>
       </Snackbar>
