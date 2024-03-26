@@ -1,0 +1,20 @@
+.navbar {
+  background-color: var(--mainColor);
+  align-items: "center";
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.navbar-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar-button-container:last-child {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin-bottom: 20px;
+}

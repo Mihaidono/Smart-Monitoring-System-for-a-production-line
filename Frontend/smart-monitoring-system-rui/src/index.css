@@ -1,19 +1,25 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-:root{
-  --mainColor:#2c3e50;
-  --secondaryColor:#18bc9c;
-  --buttonHoverColor:#0f7864;
+:root {
+  --mainColor: #2c3e50;
+  --mainColorToggled: #1e2935;
+  --primaryColor: #e5e5e5;
+  --secondaryColor: #18bc9c;
+  --defaultStateColor: #ababab;
+  --warningStateColor: #e74c3c;
+  --pendingStateColor: #f39c12;
+  --successStateColor: #5cb85c;
 }
