@@ -54,7 +54,7 @@ class MonitoringLogMessage:
 
     def __str__(self):
         return f"{self.__class__.__name__}(timestamp={self._timestamp}, message={self._message}, " \
-               f"severity={self._severity}, while_tracking={self._while_tracking}, " \
+               f"severity={self._severity.name}, while_tracking={self._while_tracking}, " \
                f"current_module={self._current_module}, current_routine={self._current_routine})"
 
 
