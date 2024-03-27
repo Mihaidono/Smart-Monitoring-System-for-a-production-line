@@ -2,7 +2,7 @@
   background-color: var(--mainColor);
   align-items: "center";
   transition: width 0.3s ease;
-  position: relative;
+  position: sticky;
 }
 
 .navbar-button-container {

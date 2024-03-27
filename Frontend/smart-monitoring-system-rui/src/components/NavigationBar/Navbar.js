@@ -54,6 +54,7 @@ function Navbar({ setActivePage }) {
         height: { xs: "100%", sm: "100vh" },
         width: { xs: "100%", sm: expanded ? "12em" : "5em" },
         justifyContent: { xs: "space-evenly", sm: "flex-start" },
+        top: { sm: "0" },
       }}
     >
       <div className="navbar-button-container">
