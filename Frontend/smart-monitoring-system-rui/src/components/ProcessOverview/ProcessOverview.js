@@ -209,6 +209,7 @@ function ProcessOverview() {
         paddingTop: { xs: "35px" },
         paddingBottom: { xs: "30px", sm: "20px" },
         borderRadius: "5px",
+        width: "100%",
       }}
     >
       {processSteps.map((label, index) => (

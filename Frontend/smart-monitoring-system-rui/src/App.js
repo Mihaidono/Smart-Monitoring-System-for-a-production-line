@@ -31,23 +31,31 @@ function HomePageMenu() {
       >
         <Grid
           item
+          container
           xs={12}
           lg={6}
           padding="10px"
-          height={{ xs: "fit-content" , lg: "500px" }}
+          height={{ xs: "fit-content", lg: "500px" }}
         >
           <CameraControl />
         </Grid>
         <Grid
           item
+          container
           xs={12}
           lg={6}
           padding="10px"
-          height={{ xs: "fit-content" , lg: "500px" }}
+          height={{ xs: "fit-content", lg: "500px" }}
         >
           <WarehouseDisplay />
         </Grid>
-        <Grid item xs={12} padding="10px">
+        <Grid
+          container
+          item
+          xs={12}
+          padding="10px"
+          height={{ xs: "fit-content" }}
+        >
           <ProcessOverview />
         </Grid>
       </Grid>

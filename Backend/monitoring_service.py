@@ -159,7 +159,6 @@ class MonitoringService:
     def camera_timeout_routine(self):
         print("Object lost from field of view. Returning to bay")
         self._detection_count_per_module = 0
-        self._process_started = False
         self._tracking_workpiece = False
 
         time.sleep(2)
@@ -167,7 +166,6 @@ class MonitoringService:
 
     def successful_delivery_routine(self):
         print("Successfully delivered workpiece! Returning to bay")
-        self._process_started = False
         self._tracking_workpiece = False
 
         time.sleep(2)

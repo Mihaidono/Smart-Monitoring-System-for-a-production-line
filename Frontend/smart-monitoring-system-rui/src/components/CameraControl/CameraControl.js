@@ -47,7 +47,7 @@ const CameraControlButton = styled(Button)(({ processStarted }) => ({
 
 function CameraControl() {
   const [cameraFeedSource, setCameraFeedSource] = useState(null);
-  const [cameraMovementDegrees, setCameraMovementDegrees] = useState(2);
+  const [cameraMovementDegrees, setCameraMovementDegrees] = useState(5);
   const { processStarted, updateProcessStarted } = useContext(ProcessContext);
 
   const { lastMessage } = useWebSocket(
