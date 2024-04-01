@@ -74,6 +74,7 @@ function WarehouseDisplay() {
       justifyContent="center"
       alignItems="center"
       height="100%"
+      width="100%"
       padding={{ xs: "20px", lg: "0px" }}
     >
       <Typography gutterBottom variant="h5" color="var(--mainColor)">
