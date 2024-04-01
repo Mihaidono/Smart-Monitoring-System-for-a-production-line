@@ -119,9 +119,10 @@ class MonitoringLogger:
                                                    while_tracking=log['while_tracking'],
                                                    severity=LogSeverity.from_value(log['severity']),
                                                    current_module=log['current_module'],
-                                                   current_routine=log['current_routine'],
-                                                   log_id=ObjectId())
+                                                   current_routine=log['current_routine']
+                                                   )
                 log_message._timestamp = log["timestamp"]
+                log_message._id = log["_id"]
                 log_messages.append(log_message)
         except Exception as e:
             print(e)
