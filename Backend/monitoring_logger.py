@@ -6,7 +6,7 @@ from typing import List
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 
 load_dotenv()
@@ -127,6 +127,24 @@ class MonitoringLogger:
             print(e)
         return log_messages
 
+    def get_logs_in_week(self, date_in_week: datetime):
+        start_of_week = date_in_week - timedelta(days=date_in_week.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+
+        return self.get_logs_in_timeframe(start_of_week, end_of_week)
+
+    def get_logs_in_month(self, year: int = None, month: int = None):
+        if year is None:
+            year = datetime.utcnow().year
+        if month is None:
+            month = datetime.utcnow().month
+
+        start_of_month = datetime(year, month, 1)
+        next_month = start_of_month.replace(month=start_of_month.month + 1)
+        end_of_month = next_month - timedelta(days=1)
+
+        return self.get_logs_in_timeframe(start_of_month, end_of_month)
+
 
 logger = MonitoringLogger()
 logex = MonitoringLogMessage(ObjectId(), "hahajjajajaja nimic12023", LogSeverity.WARNING, True, "module x", "routine y")
@@ -143,4 +161,12 @@ logex = MonitoringLogMessage(ObjectId(), "hahajjajajaja nimic12023", LogSeverity
 # pprint(logger.get_logs_in_timeframe(lw_boundary,
 #                                     up_boundary))
 
-pprint(logger.get_log_message(message="120"))
+# pprint(logger.get_log_message(message="120"))
+
+date = datetime(2024, 4, 8)
+logs_in_week = logger.get_logs_in_week(date)
+pprint(logs_in_week)
+
+print('\n==============================================================\n')
+logs_in_month = logger.get_logs_in_month(year=2024, month=2)
+pprint(logs_in_month)
