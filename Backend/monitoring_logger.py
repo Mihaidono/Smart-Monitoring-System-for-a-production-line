@@ -3,10 +3,12 @@ import os
 from enum import Enum
 from pprint import pprint
 from typing import List
+import hashlib
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
+from bson.objectid import ObjectId
 
 load_dotenv()
 
@@ -24,9 +26,10 @@ class LogSeverity(Enum):
 
 
 class MonitoringLogMessage:
-    def __init__(self, message: str, severity: LogSeverity, while_tracking=None, current_module=None,
+    def __init__(self, log_id: ObjectId, message: str, severity: LogSeverity, while_tracking=None, current_module=None,
                  current_routine=None
                  ):
+        self._id = log_id
         self._timestamp = datetime.utcnow()
         self._message = message
         self._severity = severity
@@ -36,6 +39,7 @@ class MonitoringLogMessage:
 
     def get_log_data(self) -> dict:
         return {
+            '_id': self._id,
             'timestamp': self._timestamp,
             'while_tracking': self._while_tracking,
             'current_routine': self._current_routine,
@@ -47,15 +51,15 @@ class MonitoringLogMessage:
     def log_data_to_json(self):
         return json.dumps(self.get_log_data())
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}(message={self._message!r}, severity={self._severity!r}, " \
-               f"while_tracking={self._while_tracking!r}, current_module={self._current_module!r}, " \
-               f"current_routine={self._current_routine!r})"
-
     def __str__(self):
-        return f"{self.__class__.__name__}(timestamp={self._timestamp}, message={self._message}, " \
+        return f"{self.__class__.__name__}(id={self._id}, timestamp={self._timestamp}, message={self._message}, " \
                f"severity={self._severity.name}, while_tracking={self._while_tracking}, " \
                f"current_module={self._current_module}, current_routine={self._current_routine})"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(id={self._id!r},timestamp={self._timestamp!r}, message={self._message!r}, " \
+               f"severity={self._severity!r}, while_tracking={self._while_tracking!r}, " \
+               f"current_module={self._current_module!r}, current_routine={self._current_routine!r})"
 
 
 class MonitoringLogger:
@@ -67,9 +71,12 @@ class MonitoringLogger:
     def store_log_message(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
-    def get_log_message(self, severity: LogSeverity = None, while_tracking: bool = None, current_routine=None,
+    def get_log_message(self, log_id: ObjectId = None, severity: LogSeverity = None, while_tracking: bool = None,
+                        current_routine=None,
                         current_module=None) -> List:
         query = {}
+        if log_id is not None:
+            query['_id'] = log_id
         if severity is not None:
             query['severity'] = severity.value
         if while_tracking is not None:
@@ -82,12 +89,56 @@ class MonitoringLogger:
         try:
             cursor = self._collection.find(query)
             for log in cursor:
-                log_message = MonitoringLogMessage(message=log["message"], while_tracking=log['while_tracking'],
+                log_message = MonitoringLogMessage(message=log["message"],
+                                                   while_tracking=log['while_tracking'],
                                                    severity=LogSeverity.from_value(log['severity']),
                                                    current_module=log['current_module'],
-                                                   current_routine=log['current_routine'])
+                                                   current_routine=log['current_routine'],
+                                                   log_id=ObjectId(),
+                                                   )
                 log_message._timestamp = log["timestamp"]
                 log_messages.append(log_message)
         except Exception as e:
             print(e)
         return log_messages
+
+    def get_logs_in_timeframe(self, lower_boundary: datetime, upper_boundary: datetime):
+        query = {
+            'timestamp': {
+                '$gte': lower_boundary,
+                '$lte': upper_boundary
+            }
+        }
+        log_messages = []
+        try:
+            cursor = self._collection.find(query)
+            for log in cursor:
+                log_message = MonitoringLogMessage(message=log["message"],
+                                                   while_tracking=log['while_tracking'],
+                                                   severity=LogSeverity.from_value(log['severity']),
+                                                   current_module=log['current_module'],
+                                                   current_routine=log['current_routine'],
+                                                   log_id=ObjectId())
+                log_message._timestamp = log["timestamp"]
+                log_messages.append(log_message)
+        except Exception as e:
+            print(e)
+        return log_messages
+
+
+logger = MonitoringLogger()
+logex = MonitoringLogMessage(ObjectId(), "hahajjajajaja nimic12023", LogSeverity.WARNING, True, "module x", "routine y")
+
+# logger.store_log_message(logex)
+# pprint(logger.get_log_message(log_id=ObjectId("660a6383a66c4d59589e545f")))
+
+lw_boundary = datetime.utcnow().replace(hour=6)
+up_boundary = datetime.utcnow().replace(hour=7, minute=33)
+print("==========================================================================================\n",
+      logger.get_logs_in_timeframe(lw_boundary,
+                                   up_boundary)[0],
+      '\n==========================================================================================\n')
+pprint(logger.get_logs_in_timeframe(lw_boundary,
+                                    up_boundary))
+
+
