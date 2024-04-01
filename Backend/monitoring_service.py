@@ -298,7 +298,11 @@ class MonitoringService:
                                                        img_height=crt_height)
 
     def confirm_delivery_status_routine(self):
-        print("Waiting for delivery confirmation!")
+        self._logger.store_log(
+            MonitoringLogMessage("Waiting for delivery confirmation!",
+                                 LogSeverity.INFO,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
         while True:
             if self.check_delivery_status() is True:
                 self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
