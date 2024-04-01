@@ -188,12 +188,12 @@ class MonitoringService:
 
     def camera_timeout_routine(self):
         self._detection_count_per_module = 0
-        self._tracking_workpiece = False
         self._logger.store_log(
             MonitoringLogMessage("Object lost from field of view!",
                                  LogSeverity.WARNING,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
+        self._tracking_workpiece = False
 
         time.sleep(2)
         self._current_routine = RoutineStatus.INITIALIZING
