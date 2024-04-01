@@ -1,7 +1,6 @@
 import json
 import os
 from enum import Enum
-from pprint import pprint
 from typing import List
 
 from pymongo import MongoClient
@@ -144,29 +143,3 @@ class MonitoringLogger:
         end_of_month = next_month - timedelta(days=1)
 
         return self.get_logs_in_timeframe(start_of_month, end_of_month)
-
-
-logger = MonitoringLogger()
-logex = MonitoringLogMessage(ObjectId(), "hahajjajajaja nimic12023", LogSeverity.WARNING, True, "module x", "routine y")
-
-# logger.store_log_message(logex)
-# pprint(logger.get_log_message(log_id=ObjectId("660a6383a66c4d59589e545f")))
-
-# lw_boundary = datetime.utcnow().replace(hour=6)
-# up_boundary = datetime.utcnow().replace(hour=7, minute=33)
-# print("==========================================================================================\n",
-#       logger.get_logs_in_timeframe(lw_boundary,
-#                                    up_boundary)[0],
-#       '\n==========================================================================================\n')
-# pprint(logger.get_logs_in_timeframe(lw_boundary,
-#                                     up_boundary))
-
-# pprint(logger.get_log_message(message="120"))
-
-date = datetime(2024, 4, 8)
-logs_in_week = logger.get_logs_in_week(date)
-pprint(logs_in_week)
-
-print('\n==============================================================\n')
-logs_in_month = logger.get_logs_in_month(year=2024, month=2)
-pprint(logs_in_month)
