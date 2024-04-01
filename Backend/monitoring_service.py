@@ -222,7 +222,7 @@ class MonitoringService:
 
     def survey_bay_routine(self):
         self._logger.store_log(
-            MonitoringLogMessage(f"Current state of the High-Bay Warehouse: {self._warehouse_containers}",
+            MonitoringLogMessage(f"Current state of the High-Bay Warehouse",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine,
