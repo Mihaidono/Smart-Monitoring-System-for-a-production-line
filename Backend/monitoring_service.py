@@ -225,7 +225,8 @@ class MonitoringService:
             MonitoringLogMessage(f"Current state of the High-Bay Warehouse: {self._warehouse_containers}",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+                                 self._current_routine,
+                                 self._warehouse_containers))
         while True:
             if not self._process_started:
                 self._current_routine = RoutineStatus.IDLE

@@ -28,7 +28,7 @@ class MonitoringLogMessage:
     def __init__(self, message: str, severity: LogSeverity, while_tracking=None,
                  current_module=None,
                  current_routine=None,
-                 additional_data: dict = None
+                 additional_data: dict | List = None
                  ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
