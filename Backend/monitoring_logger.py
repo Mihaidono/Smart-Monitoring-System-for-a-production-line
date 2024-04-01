@@ -57,9 +57,9 @@ class MonitoringLogMessage:
                f"current_module={self._current_module}, current_routine={self._current_routine})"
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(id={self._id!r},timestamp={self._timestamp!r}, message={self._message!r}, " \
-               f"severity={self._severity!r}, while_tracking={self._while_tracking!r}, " \
-               f"current_module={self._current_module!r}, current_routine={self._current_routine!r})"
+        return f"{self.__class__.__name__}(id={self._id},timestamp={self._timestamp}, message={self._message}, " \
+               f"severity={self._severity}, while_tracking={self._while_tracking}, " \
+               f"current_module={self._current_module}, current_routine={self._current_routine})"
 
 
 class MonitoringLogger:
@@ -71,7 +71,8 @@ class MonitoringLogger:
     def store_log_message(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
-    def get_log_message(self, log_id: ObjectId = None, severity: LogSeverity = None, while_tracking: bool = None,
+    def get_log_message(self, log_id: ObjectId = None, message: str = None, severity: LogSeverity = None,
+                        while_tracking: bool = None,
                         current_routine=None,
                         current_module=None) -> List:
         query = {}
@@ -85,6 +86,8 @@ class MonitoringLogger:
             query['current_routine'] = current_routine
         if current_module is not None:
             query['current_module'] = current_module
+        if message is not None:
+            query['message'] = {'$regex': message}
         log_messages = []
         try:
             cursor = self._collection.find(query)
@@ -132,13 +135,13 @@ logex = MonitoringLogMessage(ObjectId(), "hahajjajajaja nimic12023", LogSeverity
 # logger.store_log_message(logex)
 # pprint(logger.get_log_message(log_id=ObjectId("660a6383a66c4d59589e545f")))
 
-lw_boundary = datetime.utcnow().replace(hour=6)
-up_boundary = datetime.utcnow().replace(hour=7, minute=33)
-print("==========================================================================================\n",
-      logger.get_logs_in_timeframe(lw_boundary,
-                                   up_boundary)[0],
-      '\n==========================================================================================\n')
-pprint(logger.get_logs_in_timeframe(lw_boundary,
-                                    up_boundary))
+# lw_boundary = datetime.utcnow().replace(hour=6)
+# up_boundary = datetime.utcnow().replace(hour=7, minute=33)
+# print("==========================================================================================\n",
+#       logger.get_logs_in_timeframe(lw_boundary,
+#                                    up_boundary)[0],
+#       '\n==========================================================================================\n')
+# pprint(logger.get_logs_in_timeframe(lw_boundary,
+#                                     up_boundary))
 
-
+pprint(logger.get_log_message(message="120"))
