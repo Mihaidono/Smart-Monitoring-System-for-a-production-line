@@ -3,7 +3,6 @@ import os
 from enum import Enum
 from pprint import pprint
 from typing import List
-import hashlib
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
