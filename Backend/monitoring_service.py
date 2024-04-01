@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 import camera_control_service as camera_control
 from camera_control_service import CameraDegrees, CameraDirections, FischertechnikModuleLocations
 from storage_detection_model import container_detector
+from monitoring_logger import MonitoringLogger, MonitoringLogMessage, LogSeverity
 
 load_dotenv()
 
@@ -32,6 +33,8 @@ class RoutineStatus:
 
 class MonitoringService:
     def __init__(self):
+        self._logger = MonitoringLogger()
+
         self._detection_event = threading.Event()
         self._camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
         self._standby_seconds_count = 0
@@ -64,6 +67,11 @@ class MonitoringService:
     @process_started.setter
     def process_started(self, value):
         self._process_started = value
+        self._logger.store_log(
+            MonitoringLogMessage("Monitoring Service started from GUI",
+                                 LogSeverity.INFO,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
 
     @property
     def current_routine(self):
@@ -96,7 +104,11 @@ class MonitoringService:
                 camera_control.wait_camera_to_stabilize()
 
                 self._detection_count_per_module += 1
-                print("Moved at PROCESSING STATION Module")
+                self._logger.store_log(
+                    MonitoringLogMessage("Workpiece moved from High-Bay Warehouse to Processing Station",
+                                         LogSeverity.INFO,
+                                         self._tracking_workpiece, camera_control.current_module,
+                                         self._current_routine))
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
@@ -110,7 +122,11 @@ class MonitoringService:
                 camera_control.wait_camera_to_stabilize()
 
                 self._detection_count_per_module += 1
-                print("Moved at SORTING LINE Module")
+                self._logger.store_log(
+                    MonitoringLogMessage("Workpiece moved from Processing Station to Sorting Line",
+                                         LogSeverity.INFO,
+                                         self._tracking_workpiece, camera_control.current_module,
+                                         self._current_routine))
                 return
 
             if camera_control.is_module_equal(camera_control.current_module,
@@ -121,7 +137,11 @@ class MonitoringService:
                 camera_control.wait_camera_to_stabilize()
 
                 self._detection_count_per_module += 1
-                print("Moved at SHIPPING Module")
+                self._logger.store_log(
+                    MonitoringLogMessage("Workpiece moved from Sorting Line to Delivery",
+                                         LogSeverity.INFO,
+                                         self._tracking_workpiece, camera_control.current_module,
+                                         self._current_routine))
                 return
 
     def check_if_camera_has_delay(self):
@@ -150,34 +170,62 @@ class MonitoringService:
                        client_id=self._CLIENT_TXT_NAME,
                        keepalive=self._KEEP_ALIVE,
                        auth={'username': self._USERNAME, 'password': self._PASSWD})
+        self._logger.store_log(
+            MonitoringLogMessage(f"{color} Workpiece ordered",
+                                 LogSeverity.INFO,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
 
     def initialization_routine(self):
         self.initiate_camera_position()
         self._prev_frame_with_detected_objects = []
+        self._logger.store_log(
+            MonitoringLogMessage("Initialization Routine completed successfully!",
+                                 LogSeverity.SUCCESS,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
         self._current_routine = RoutineStatus.SURVEYING_BAY
 
     def camera_timeout_routine(self):
-        print("Object lost from field of view. Returning to bay")
         self._detection_count_per_module = 0
         self._tracking_workpiece = False
+        self._logger.store_log(
+            MonitoringLogMessage("Object lost from field of view!",
+                                 LogSeverity.WARNING,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
 
         time.sleep(2)
         self._current_routine = RoutineStatus.INITIALIZING
 
     def successful_delivery_routine(self):
-        print("Successfully delivered workpiece! Returning to bay")
         self._tracking_workpiece = False
+        self._logger.store_log(
+            MonitoringLogMessage("Successfully delivered workpiece!",
+                                 LogSeverity.SUCCESS,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
 
         time.sleep(2)
         self._current_routine = RoutineStatus.INITIALIZING
 
     def idle_routine(self):
         self._tracking_workpiece = False
+        self._logger.store_log(
+            MonitoringLogMessage("Monitoring Service turned to Idle mode",
+                                 LogSeverity.INFO,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
         while not self._process_started:
             time.sleep(0.5)
         self._current_routine = RoutineStatus.INITIALIZING
 
     def survey_bay_routine(self):
+        self._logger.store_log(
+            MonitoringLogMessage(f"Current state of the High-Bay Warehouse: {self._warehouse_containers}",
+                                 LogSeverity.INFO,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
         while True:
             if not self._process_started:
                 self._current_routine = RoutineStatus.IDLE
@@ -199,10 +247,15 @@ class MonitoringService:
             time.sleep(1)
 
     def survey_delivery_process_routine(self):
-        print("Starting surveillance of the in-delivery workpiece")
         self.process_start_camera_position()
         self._tracking_workpiece = True
         countdown_running = False
+        self._logger.store_log(
+            MonitoringLogMessage("Surveillance of the in-delivery workpiece started",
+                                 LogSeverity.INFO,
+                                 self._tracking_workpiece, camera_control.current_module,
+                                 self._current_routine))
+
         while True:
             if not self._process_started:
                 self._current_routine = RoutineStatus.IDLE

@@ -14,6 +14,7 @@ load_dotenv()
 class LogSeverity(Enum):
     WARNING = 1
     INFO = 2
+    SUCCESS = 3
 
     @classmethod
     def from_value(cls, value):
@@ -24,10 +25,10 @@ class LogSeverity(Enum):
 
 
 class MonitoringLogMessage:
-    def __init__(self, log_id: ObjectId, message: str, severity: LogSeverity, while_tracking=None, current_module=None,
+    def __init__(self, message: str, severity: LogSeverity, while_tracking=None, current_module=None,
                  current_routine=None
                  ):
-        self._id = log_id
+        self._id = ObjectId()
         self._timestamp = datetime.utcnow()
         self._message = message
         self._severity = severity
@@ -66,13 +67,13 @@ class MonitoringLogger:
         self._database = self._database_client[os.getenv("DATABASE_NAME")]
         self._collection = self._database[os.getenv("COLLECTION_NAME")]
 
-    def store_log_message(self, log: MonitoringLogMessage):
+    def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
-    def get_log_message(self, log_id: ObjectId = None, message: str = None, severity: LogSeverity = None,
-                        while_tracking: bool = None,
-                        current_routine=None,
-                        current_module=None) -> List:
+    def get_log(self, log_id: ObjectId = None, message: str = None, severity: LogSeverity = None,
+                while_tracking: bool = None,
+                current_routine=None,
+                current_module=None) -> List:
         query = {}
         if log_id is not None:
             query['_id'] = log_id
@@ -95,9 +96,9 @@ class MonitoringLogger:
                                                    severity=LogSeverity.from_value(log['severity']),
                                                    current_module=log['current_module'],
                                                    current_routine=log['current_routine'],
-                                                   log_id=ObjectId(),
                                                    )
                 log_message._timestamp = log["timestamp"]
+                log_message._id = log["_id"]
                 log_messages.append(log_message)
         except Exception as e:
             print(e)
