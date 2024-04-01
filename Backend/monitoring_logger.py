@@ -66,6 +66,7 @@ class MonitoringLogger:
         self._database_client = MongoClient(os.getenv("CONNECTION_STRING"))
         self._database = self._database_client[os.getenv("DATABASE_NAME")]
         self._collection = self._database[os.getenv("COLLECTION_NAME")]
+        print("Successfully connected Monitoring Logger to database")
 
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
