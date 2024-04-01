@@ -25,12 +25,15 @@ class LogSeverity(Enum):
 
 
 class MonitoringLogMessage:
-    def __init__(self, message: str, severity: LogSeverity, while_tracking=None, current_module=None,
-                 current_routine=None
+    def __init__(self, message: str, severity: LogSeverity, while_tracking=None,
+                 current_module=None,
+                 current_routine=None,
+                 additional_data: dict = None
                  ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
         self._message = message
+        self._additional_data = additional_data
         self._severity = severity
         self._current_module = current_module
         self._current_routine = current_routine
@@ -44,6 +47,7 @@ class MonitoringLogMessage:
             'current_routine': self._current_routine,
             'current_module': self._current_module,
             'message': self._message,
+            'additional_data': self._additional_data,
             'severity': self._severity.value
         }
 
@@ -52,12 +56,14 @@ class MonitoringLogMessage:
 
     def __str__(self):
         return f"{self.__class__.__name__}(id={self._id}, timestamp={self._timestamp}, message={self._message}, " \
-               f"severity={self._severity.name}, while_tracking={self._while_tracking}, " \
+               f"additional_data={self._additional_data}, severity={self._severity.name}, " \
+               f"while_tracking={self._while_tracking}, " \
                f"current_module={self._current_module}, current_routine={self._current_routine})"
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(id={self._id},timestamp={self._timestamp}, message={self._message}, " \
-               f"severity={self._severity}, while_tracking={self._while_tracking}, " \
+        return f"{self.__class__.__name__}(id={self._id}, timestamp={self._timestamp}, message={self._message}, " \
+               f"additional_data={self._additional_data}, severity={self._severity.name}, " \
+               f"while_tracking={self._while_tracking}, " \
                f"current_module={self._current_module}, current_routine={self._current_routine})"
 
 
@@ -97,6 +103,7 @@ class MonitoringLogger:
                                                    severity=LogSeverity.from_value(log['severity']),
                                                    current_module=log['current_module'],
                                                    current_routine=log['current_routine'],
+                                                   additional_data=log['additional_data']
                                                    )
                 log_message._timestamp = log["timestamp"]
                 log_message._id = log["_id"]
@@ -120,7 +127,8 @@ class MonitoringLogger:
                                                    while_tracking=log['while_tracking'],
                                                    severity=LogSeverity.from_value(log['severity']),
                                                    current_module=log['current_module'],
-                                                   current_routine=log['current_routine']
+                                                   current_routine=log['current_routine'],
+                                                   additional_data=log['additional_data']
                                                    )
                 log_message._timestamp = log["timestamp"]
                 log_message._id = log["_id"]
