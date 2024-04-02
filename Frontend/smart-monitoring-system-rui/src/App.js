@@ -8,11 +8,11 @@ import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
 import { AvailablePages } from "./config/enums/AvailablePages";
 import { ProcessProvider } from "./contexts/ProcessContext";
 
-function SettingsMenu() {
+function LogsMenu() {
   return (
     <Grid container rowSpacing={1}>
       <Grid item xs={4} sm={6} md={6} lg={4}>
-        <p>Settings works</p>
+        <p>Logs work</p>
       </Grid>
     </Grid>
   );
@@ -70,8 +70,8 @@ export default function App() {
     switch (currentActivePage) {
       case AvailablePages.HOME:
         return <HomePageMenu />;
-      case AvailablePages.SETTINGS:
-        return <SettingsMenu />;
+      case AvailablePages.LOGS:
+        return <LogsMenu />;
       default:
         return null;
     }
