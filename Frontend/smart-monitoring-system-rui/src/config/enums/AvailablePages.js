@@ -1,4 +1,4 @@
 export const AvailablePages = {
   HOME: 1,
-  SETTINGS: 2,
+  LOGS: 2,
 };

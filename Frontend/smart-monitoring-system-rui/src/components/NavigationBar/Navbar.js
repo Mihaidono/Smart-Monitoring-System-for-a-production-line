@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AvailablePages } from "../../config/enums/AvailablePages";
 import { Stack, IconButton, Typography, Button, styled } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import SettingsIcon from "@mui/icons-material/Settings";
+import NewspaperIcon from "@mui/icons-material/Newspaper";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 
@@ -71,14 +71,14 @@ function Navbar({ setActivePage }) {
       </div>
       <div className="navbar-button-container">
         <NavbarButton
-          aria-label="settings"
-          onClick={() => handleNavbarButtonClick(AvailablePages.SETTINGS)}
+          aria-label="logs"
+          onClick={() => handleNavbarButtonClick(AvailablePages.LOGS)}
           size="large"
           fullWidth
-          className={activeButton === AvailablePages.SETTINGS ? "active" : ""}
+          className={activeButton === AvailablePages.LOGS ? "active" : ""}
         >
-          <SettingsIcon sx={{ fontSize: 32 }} />
-          {expanded && <Typography variant="body">Settings</Typography>}
+          <NewspaperIcon sx={{ fontSize: 32 }} />
+          {expanded && <Typography variant="body">Logs</Typography>}
         </NavbarButton>
       </div>
       {expanded ? (
