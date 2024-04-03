@@ -7,6 +7,7 @@ import WarehouseDisplay from "./components/Warehouse/WarehouseDisplay";
 import ProcessOverview from "./components/ProcessOverview/ProcessOverview";
 import { AvailablePages } from "./config/enums/AvailablePages";
 import { ProcessProvider } from "./contexts/ProcessContext";
+import MonitoringLog from "./components/MonitoringLog/MonitoringLog";
 
 function LogsMenu() {
   return (
@@ -17,10 +18,15 @@ function LogsMenu() {
       padding="20px"
       paddingTop="30px"
       paddingBottom="30px"
+      width="100%"
     >
-      <Grid item xs={4} sm={6} md={6} lg={4}>
-        <p>Logs work</p>
-      </Grid>
+      {Array.from(Array(8)).map((_, index) => {
+        return (
+          <Grid item container justifyContent="center" xs={12}>
+            <MonitoringLog />
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }
