@@ -15,29 +15,31 @@ function MonitoringLog() {
   return (
     <Grid
       container
+      width="90%"
       sx={{
         border: "2px solid var(--mainColor)",
         borderRadius: 5,
         padding: "5px",
-        height: "110px",
       }}
     >
       <Grid
         item
         container
         xs={12}
-        sx={{ justifyContent: { xs: "center", sm: "flex-start" } }}
+        sx={{
+          justifyContent: { xs: "flex-end", sm: "flex-start" },
+          width: { xs: "100%", sm: "200px" },
+        }}
       >
         <Typography
-          variant="overline"
+          noWrap
+          variant="body2"
           sx={{
             paddingLeft: { xs: "0px", sm: "40px" },
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            paddingRight: { xs: "10px", sm: "0px" },
           }}
         >
-          2024-04-03T08:01:12+00:00
+          Timestamp: 2024-04-03T08:01:12+00:00
         </Typography>
       </Grid>
       <Grid item container xs={12}>
@@ -68,17 +70,17 @@ function MonitoringLog() {
           sx={{
             justifyContent: "flex-start",
             alignContent: "center",
+            width: { xs: "100%", sm: "200px" },
           }}
         >
           <Typography
-            noWrap={true}
+            noWrap
             style={{
-              paddingLeft: { xs: "0px", sm: "20px" },
-              paddingRight: "20px",
+              paddingLeft: "10px",
+              paddingRight: "10px",
             }}
           >
-            The workpiece has been processed aaaaaaaaa has been processed
-            aaaaaaaaa has been processed aaaaaaaaa
+            The workpiece has been processed
           </Typography>
         </Grid>
         <Grid
@@ -87,20 +89,21 @@ function MonitoringLog() {
           xs={12}
           sm={3}
           sx={{
-            justifyContent: { xs: "center", sm: "flex-end" },
+            justifyContent: "flex-end",
             alignContent: "center",
             color: "var(--defaultStateColor)",
+            width: { xs: "100%", sm: "200px" },
           }}
         >
           <Typography
-            noWrap={true}
+            noWrap
             sx={{
-              paddingLeft: { xs: "0px", sm: "10px" },
-              paddingRight: { xs: "0px", sm: "10px" },
+              paddingLeft: "10px",
+              paddingRight: "10px",
             }}
             variant="body2"
           >
-            507f1f77bcf86cd799439011
+            Id: 507f1f77bcf86cd799439011
           </Typography>
         </Grid>
       </Grid>

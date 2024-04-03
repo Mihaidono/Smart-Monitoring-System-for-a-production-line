@@ -17,7 +17,6 @@ function LogsMenu() {
       padding="20px"
       paddingTop="30px"
       paddingBottom="30px"
-      width="100%"
       height="fit-content"
     >
       {Array.from(Array(5)).map(() => {
@@ -36,7 +35,7 @@ function HomePageMenu() {
     <ProcessProvider>
       <Grid
         container
-        rowSpacing={{ xs: 2 }}
+        rowSpacing={2}
         justifyContent="center"
         padding="20px"
         paddingTop="30px"
