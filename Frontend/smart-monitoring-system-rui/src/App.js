@@ -13,14 +13,14 @@ function LogsMenu() {
   return (
     <Grid
       container
-      rowSpacing={{ xs: 2 }}
-      justifyContent="center"
+      rowSpacing={1}
       padding="20px"
       paddingTop="30px"
       paddingBottom="30px"
       width="100%"
+      height="fit-content"
     >
-      {Array.from(Array(8)).map((_, index) => {
+      {Array.from(Array(5)).map(() => {
         return (
           <Grid item container justifyContent="center" xs={12}>
             <MonitoringLog />
@@ -90,7 +90,7 @@ export default function App() {
     }
   };
   return (
-    <Stack direction={{ xs: "column", sm: "row" }} rowSpacing={2}>
+    <Stack direction={{ xs: "column", sm: "row" }}>
       <Navbar setActivePage={setCurrentPage} />
       {renderActivePage()}
     </Stack>

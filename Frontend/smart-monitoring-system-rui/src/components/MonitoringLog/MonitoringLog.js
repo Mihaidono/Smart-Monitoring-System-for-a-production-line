@@ -19,19 +19,19 @@ function MonitoringLog() {
         border: "2px solid var(--mainColor)",
         borderRadius: 5,
         padding: "5px",
+        height: "110px",
       }}
     >
       <Grid
         item
         container
         xs={12}
-        sx={{ justifyContent: { xs: "flex-end", sm: "flex-start" } }}
+        sx={{ justifyContent: { xs: "center", sm: "flex-start" } }}
       >
         <Typography
           variant="overline"
           sx={{
             paddingLeft: { xs: "0px", sm: "40px" },
-            paddingRight: { xs: "40px", sm: "0px" },
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -73,7 +73,7 @@ function MonitoringLog() {
           <Typography
             noWrap={true}
             style={{
-              paddingLeft: "20px",
+              paddingLeft: { xs: "0px", sm: "20px" },
               paddingRight: "20px",
             }}
           >
@@ -87,7 +87,7 @@ function MonitoringLog() {
           xs={12}
           sm={3}
           sx={{
-            justifyContent: "flex-end",
+            justifyContent: { xs: "center", sm: "flex-end" },
             alignContent: "center",
             color: "var(--defaultStateColor)",
           }}
@@ -95,8 +95,8 @@ function MonitoringLog() {
           <Typography
             noWrap={true}
             sx={{
-              paddingLeft: "10px",
-              paddingRight: { xs: "40px", sm: "10px" },
+              paddingLeft: { xs: "0px", sm: "10px" },
+              paddingRight: { xs: "0px", sm: "10px" },
             }}
             variant="body2"
           >
