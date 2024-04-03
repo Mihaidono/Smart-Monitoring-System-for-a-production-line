@@ -1,8 +1,9 @@
 import { Grid, Typography } from "@mui/material";
 import "./MonitoringLog.css";
 import React, { useState } from "react";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-
+import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 function MonitoringLog({ logData }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
 
@@ -13,7 +14,6 @@ function MonitoringLog({ logData }) {
   return (
     <Grid
       container
-      width="90%"
       sx={{
         border: "2px solid var(--mainColor)",
         borderRadius: 5,
@@ -35,6 +35,7 @@ function MonitoringLog({ logData }) {
           sx={{
             paddingLeft: { xs: "0px", sm: "40px" },
             paddingRight: { xs: "10px", sm: "0px" },
+            color: "var(--secondaryColor)",
           }}
         >
           Timestamp: {logData.timestamp}
@@ -51,11 +52,10 @@ function MonitoringLog({ logData }) {
             alignContent: "center",
           }}
         >
-          <WarningAmberIcon
+          <WarningAmberOutlinedIcon
             sx={{
-              fontSize: { xs: 42, sm: 52 },
-              paddingLeft: "5px",
-              paddingRight: "5px",
+              fontSize: "42px",
+              paddingLeft: "15px",
             }}
           />
         </Grid>

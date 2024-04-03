@@ -19,9 +19,9 @@ function LogsMenu() {
       paddingBottom="30px"
       height="fit-content"
     >
-      {Array.from(Array(7)).map(() => {
+      {Array.from(Array(14)).map(() => {
         return (
-          <Grid item container justifyContent="center" xs={12}>
+          <Grid item container justifyContent="center" md={12} lg={6} padding="5px">
             <MonitoringLog
               logData={{
                 timestamp: "2024-04-03T08:01:12+00:00",
