@@ -19,10 +19,16 @@ function LogsMenu() {
       paddingBottom="30px"
       height="fit-content"
     >
-      {Array.from(Array(5)).map(() => {
+      {Array.from(Array(7)).map(() => {
         return (
           <Grid item container justifyContent="center" xs={12}>
-            <MonitoringLog />
+            <MonitoringLog
+              logData={{
+                timestamp: "2024-04-03T08:01:12+00:00",
+                message: "The workpiece has been processed",
+                id: "507f1f77bcf86cd799439011",
+              }}
+            />
           </Grid>
         );
       })}

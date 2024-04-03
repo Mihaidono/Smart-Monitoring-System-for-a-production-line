@@ -1,12 +1,10 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "./MonitoringLog.css";
 import React, { useState } from "react";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
-function MonitoringLog() {
+function MonitoringLog({ logData }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
-  const [logArray, setLogArray] = useState([]);
-  const [currentLogBatch, setCurrentLogBatch] = useState(1);
 
   const handleClick = () => {
     setDetailsVisible(!detailsVisible);
@@ -39,7 +37,7 @@ function MonitoringLog() {
             paddingRight: { xs: "10px", sm: "0px" },
           }}
         >
-          Timestamp: 2024-04-03T08:01:12+00:00
+          Timestamp: {logData.timestamp}
         </Typography>
       </Grid>
       <Grid item container xs={12}>
@@ -80,7 +78,7 @@ function MonitoringLog() {
               paddingRight: "10px",
             }}
           >
-            The workpiece has been processed
+            {logData.message}
           </Typography>
         </Grid>
         <Grid
@@ -103,7 +101,7 @@ function MonitoringLog() {
             }}
             variant="body2"
           >
-            Id: 507f1f77bcf86cd799439011
+            Id: {logData.id}
           </Typography>
         </Grid>
       </Grid>
