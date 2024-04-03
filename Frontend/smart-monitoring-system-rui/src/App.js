@@ -28,19 +28,14 @@ function LogsMenu() {
         <TextField></TextField>
         <Button endIcon={<FilterListOutlinedIcon />}>Filter</Button>
       </Grid>
-      {Array.from(Array(14)).map(() => {
+      {Array.from(Array(2)).map(() => {
         return (
-          <Grid
-            item
-            container
-            justifyContent="center"
-            md={12}
-            padding="5px"
-          >
+          <Grid item container justifyContent="center" xs={12} padding="5px">
             <MonitoringLog
               logData={{
                 timestamp: "2024-04-03T08:01:12+00:00",
-                message: "The workpiece has been processed processedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessed",
+                message:
+                  "The workpiece has been processed processedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessed",
                 id: "507f1f77bcf86cd799439011",
               }}
             />

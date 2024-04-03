@@ -19,10 +19,95 @@ function MonitoringLog({ logData }) {
         sx={{
           border: "2px solid var(--mainColor)",
           borderRadius: 5,
-          padding: "5px",
+          padding: "10px",
         }}
       >
         <Grid
+          xs={1}
+          item
+          container
+          sx={{
+            justifyContent: "center",
+            alignContent: "center",
+          }}
+        >
+          <WarningAmberOutlinedIcon
+            sx={{
+              fontSize: { xs: "32px", sm: "42px" },
+            }}
+          />
+        </Grid>
+        <Grid item container xs={11}>
+          <Grid
+            item
+            container
+            xs={6}
+            sx={{
+              justifyContent: "flex-start",
+              alignContent: "center",
+              width: { xs: "100%", sm: "200px" },
+            }}
+          >
+            <Typography
+              noWrap
+              variant="body2"
+              sx={{
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                color: "var(--secondaryColor)",
+              }}
+            >
+              {logData.timestamp}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            container
+            xs={12}
+            md={5}
+            lg={6}
+            order={{ xs: 3, sm: 2 }}
+            sx={{
+              justifyContent: "center",
+              alignContent: "center",
+              width: { xs: "100%", sm: "200px" },
+            }}
+          >
+            <Typography
+              noWrap
+              sx={{
+                paddingLeft: "10px",
+                paddingRight: "10px",
+              }}
+            >
+              {logData.message}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            container
+            xs={6}
+            order={{ xs: 2, sm: 3 }}
+            sx={{
+              justifyContent: "flex-start",
+              alignContent: "center",
+              color: "var(--defaultStateColor)",
+              width: { xs: "100%", sm: "200px" },
+            }}
+          >
+            <Typography
+              noWrap
+              sx={{
+                paddingLeft: "10px",
+                paddingRight: "10px",
+              }}
+              variant="body2"
+            >
+              Id: {logData.id}
+            </Typography>
+          </Grid>
+        </Grid>
+        {/* <Grid
           item
           container
           xs={12}
@@ -106,7 +191,7 @@ function MonitoringLog({ logData }) {
               Id: {logData.id}
             </Typography>
           </Grid>
-        </Grid>
+        </Grid> */}
       </Grid>
     </ButtonBase>
   );
