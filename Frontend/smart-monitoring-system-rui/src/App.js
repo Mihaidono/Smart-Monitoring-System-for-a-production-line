@@ -10,7 +10,14 @@ import { ProcessProvider } from "./contexts/ProcessContext";
 
 function LogsMenu() {
   return (
-    <Grid container rowSpacing={1}>
+    <Grid
+      container
+      rowSpacing={{ xs: 2 }}
+      justifyContent="center"
+      padding="20px"
+      paddingTop="30px"
+      paddingBottom="30px"
+    >
       <Grid item xs={4} sm={6} md={6} lg={4}>
         <p>Logs work</p>
       </Grid>
