@@ -20,6 +20,7 @@ function MonitoringLog({ logData }) {
     >
       <ButtonBase
         onClick={toggleVisivility}
+        disableRipple
         sx={{
           width: "100%",
           border: "2px solid var(--mainColor)",
@@ -128,11 +129,13 @@ function MonitoringLog({ logData }) {
         <Collapse
           in={detailsVisible}
           sx={{
-            width: "95%",
+            width: { xs: "90%", md: "95%" },
             justifyContent: "center",
             borderLeft: "2px solid var(--mainColor)",
             borderRight: "2px solid var(--mainColor)",
             borderBottom: "2px solid var(--mainColor)",
+            borderBottomLeftRadius: 5,
+            borderBottomRightRadius: 5,
           }}
         >
           <Grid container justifyContent="center" alignItems="center">
