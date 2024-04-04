@@ -1,5 +1,16 @@
-import React, { useState } from "react";
-import { Grid, Stack, TextField, Button } from "@mui/material";
+import React, { useState, useRef } from "react";
+import {
+  Grid,
+  Stack,
+  TextField,
+  Button,
+  Box,
+  Modal,
+  Typography,
+  style,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
 import Navbar from "./components/NavigationBar/Navbar";
@@ -13,7 +24,15 @@ import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 function LogsMenu() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const textFieldValueRef = useRef("");
+
   const logsPerPage = 10;
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
+  const filterLogsByMessage = (message) => {};
 
   return (
     <Grid
@@ -24,10 +43,97 @@ function LogsMenu() {
       paddingBottom="30px"
       height="fit-content"
     >
-      <Grid item container>
-        <TextField></TextField>
-        <Button endIcon={<FilterListOutlinedIcon />}>Filter</Button>
+      <Grid
+        item
+        container
+        sx={{
+          justifyContent: "center",
+          alignContent: "center",
+          paddingBottom: "10px",
+        }}
+      >
+        <Grid
+          item
+          container
+          xs={1}
+          sx={{
+            justifyContent: "center",
+            alignContent: "center",
+          }}
+        >
+          <IconButton
+            onClick={handleOpenModal}
+            sx={{
+              justifyContent: "center",
+              alignContent: "center",
+              color: "var(--mainColor)",
+              "&:hover": {
+                color: "var(--mainColorToggled)",
+              },
+            }}
+          >
+            <Tooltip title="Filter options" enterDelay={200} arrow>
+              <FilterListOutlinedIcon />
+            </Tooltip>
+          </IconButton>
+        </Grid>
+        <Grid item container xs={10} sm={9} sx={{ alignContent: "center" }}>
+          <TextField
+            onChange={filterLogsByMessage}
+            label="Search by message"
+            id="search-by-message-input"
+            placeholder="Workpiece in processing ..."
+            variant="standard"
+            autoComplete="off"
+            autoCapitalize="off"
+            fullWidth
+            InputLabelProps={{
+              style: {
+                color: "var(--mainColor)",
+              },
+            }}
+            sx={{
+              "& .MuiInput-underline:after": {
+                borderBottomColor: "var(--secondaryColor)",
+              },
+              "& .MuiInput-underline:before": {
+                borderBottomColor: "var(--mainColor)",
+              },
+              "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+                borderBottomColor: "var(--mainColorToggled)",
+              },
+            }}
+          />
+        </Grid>
+        <Modal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          aria-labelledby="Filter"
+          aria-describedby="Filter Log Messages List"
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "30%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "30%",
+              height: "30%",
+              backgroundColor: "#fff",
+              border: "2px solid var(--mainColorToggled)",
+              padding: "20px",
+            }}
+          >
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
+          </Box>
+        </Modal>
       </Grid>
+
       {Array.from(Array(2)).map(() => {
         return (
           <Grid item container justifyContent="center" xs={12} padding="5px">
