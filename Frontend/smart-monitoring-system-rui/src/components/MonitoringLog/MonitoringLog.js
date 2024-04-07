@@ -140,68 +140,234 @@ function MonitoringLog({ logData }) {
         >
           <Grid container justifyContent="center" alignItems="center">
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Object Id:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">{logData.id}</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Timestamp:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">{logData.timestamp}</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Severity:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">to add severity</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Module:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">to add module</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Routine:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">to add routine</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">In tracking:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">to add in tracking</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Message:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
-                <Typography variant="body2" sx={{ overflowWrap: "normal" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    overflowWrap: "normal",
+                    textAlign: { xs: "center", sm: "start" },
+                  }}
+                >
                   {logData.message}
                 </Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
-              <Grid xs={2} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={4}
+                md={2}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="subtitle2">Additional Data:</Typography>
               </Grid>
-              <Grid xs={10} item container sx={{ padding: "10px" }}>
+              <Grid
+                xs={12}
+                sm={8}
+                md={10}
+                item
+                container
+                sx={{
+                  padding: "5px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Typography variant="body2">to add aditional data</Typography>
               </Grid>
             </Grid>
