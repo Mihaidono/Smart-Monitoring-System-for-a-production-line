@@ -3,11 +3,10 @@ import {
   Grid,
   Stack,
   TextField,
-  Button,
   Box,
   Modal,
   Typography,
-  style,
+  Pagination,
   IconButton,
   Tooltip,
 } from "@mui/material";
@@ -142,13 +141,23 @@ function LogsMenu() {
               logData={{
                 timestamp: "2024-04-03T08:01:12+00:00",
                 message:
-                  "The workpiece has been processed processedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessedprocessed",
+                  "The workpiece has been processed processe dprocessed processed processedpro cessedproces sedprocessedproces sedprocessedprocessedpro cessedprocessedprocessedp rocesse dprocessedprocessed",
                 id: "507f1f77bcf86cd799439011",
               }}
             />
           </Grid>
         );
       })}
+      <Grid
+        item
+        container
+        sx={{
+          justifyContent: "center",
+          justifyItems: "center",
+        }}
+      >
+        <Pagination count={10} variant="outlined" />
+      </Grid>
     </Grid>
   );
 }
