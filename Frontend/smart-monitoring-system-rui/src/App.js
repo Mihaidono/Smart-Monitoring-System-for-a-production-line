@@ -58,7 +58,7 @@ function LogsMenu() {
           xs={1}
           sx={{
             justifyContent: "center",
-            alignContent: "center",
+            alignContent: "flex-end",
           }}
         >
           <IconButton
@@ -93,6 +93,7 @@ function LogsMenu() {
               },
             }}
             sx={{
+              paddingBottom: "5px",
               "& .MuiInput-underline:after": {
                 borderBottomColor: "var(--secondaryColor)",
               },
