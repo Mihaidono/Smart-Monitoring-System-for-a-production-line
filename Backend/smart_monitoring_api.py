@@ -11,11 +11,13 @@ from uvicorn.protocols.utils import ClientDisconnected
 
 import camera_control_service as camera_control
 from monitoring_service import MonitoringService
+from monitoring_logger import MonitoringLogger
 
 load_dotenv()
 
 smart_monitoring_app = FastAPI()
 surveillance_system = MonitoringService()
+logger = MonitoringLogger()
 
 smart_monitoring_app.add_middleware(
     CORSMiddleware,
@@ -39,6 +41,9 @@ class ChangeState(BaseModel):
 async def order_workpiece(color: str):
     try:
         surveillance_system.order_workpiece(color)
+
+        response = f"Ordered workpiece of color {color} successfully"
+        return JSONResponse(content=response, status_code=200)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -46,8 +51,24 @@ async def order_workpiece(color: str):
             "additional_info": "Unable to access camera",
         }
         raise HTTPException(status_code=500, detail=error_details)
-    response = f"Ordered workpiece of color {color} successfully"
-    return JSONResponse(content=response, status_code=200)
+
+
+@smart_monitoring_app.get("/logger/get_total_count")
+async def get_total_count():
+    try:
+        logs_count = logger.get_total_log_count()
+        return JSONResponse(content={"logs_count": logs_count})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@smart_monitoring_app.get("/logger/get_page")
+async def get_page(current_page: int, limit: int):
+    try:
+        logs = logger.get_page_of_logs(current_page, limit)
+        return JSONResponse(content={"log_page": logs}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @smart_monitoring_app.post("/move_camera")
@@ -56,6 +77,9 @@ async def move_camera(control_message: CameraControlMessage):
         camera_control.move_camera(
             direction=control_message.direction, degrees=control_message.degrees
         )
+        
+        response = f"Camera moved by {control_message.degrees} degrees to {control_message.direction}"
+        return JSONResponse(content=response, status_code=200)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -63,14 +87,15 @@ async def move_camera(control_message: CameraControlMessage):
             "additional_info": "Unable to access camera",
         }
         raise HTTPException(status_code=500, detail=error_details)
-    response = f"Camera moved by {control_message.degrees} degrees to {control_message.direction}"
-    return JSONResponse(content=response, status_code=200)
 
 
 @smart_monitoring_app.post("/set_process_state")
 async def set_process_state(change_state: ChangeState):
     try:
         surveillance_system.process_started = change_state.new_state
+
+        response = f"Process State set to {change_state.new_state}"
+        return JSONResponse(content=response, status_code=200)
     except Exception as e:
         error_details = {
             "error_type": e.__class__.__name__,
@@ -78,8 +103,6 @@ async def set_process_state(change_state: ChangeState):
             "additional_info": "Unable to change state",
         }
         raise HTTPException(status_code=500, detail=error_details)
-    response = f"Process State set to {change_state.new_state}"
-    return JSONResponse(content=response, status_code=200)
 
 
 @smart_monitoring_app.websocket("/ws_get_image")

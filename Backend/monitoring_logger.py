@@ -77,6 +77,12 @@ class MonitoringLogger:
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
+    def get_total_log_count(self):
+        return self._collection.count_documents({})
+
+    def get_page_of_logs(self, current_page: int, limitation: int):
+        return self._collection.find({}).skip((current_page - 1) * limitation).limit(limitation)
+
     def get_log(self, log_id: ObjectId = None, message: str = None, severity: LogSeverity = None,
                 while_tracking: bool = None,
                 current_routine=None,
