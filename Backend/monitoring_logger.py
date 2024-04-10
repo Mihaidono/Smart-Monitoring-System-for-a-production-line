@@ -83,7 +83,7 @@ class MonitoringLogger:
     def get_page_of_logs(self, current_page: int, limitation: int):
         return self._collection.find({}).skip((current_page - 1) * limitation).limit(limitation)
 
-    def get_log(self, log_id: ObjectId = None, message: str = None, severity: LogSeverity = None,
+    def get_logs(self, log_id: ObjectId = None, message: str = None, severity: LogSeverity = None,
                 while_tracking: bool = None,
                 current_routine=None,
                 current_module=None) -> List:

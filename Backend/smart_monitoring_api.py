@@ -53,31 +53,13 @@ async def order_workpiece(color: str):
         raise HTTPException(status_code=500, detail=error_details)
 
 
-@smart_monitoring_app.get("/logger/get_total_count")
-async def get_total_count():
-    try:
-        logs_count = logger.get_total_log_count()
-        return JSONResponse(content={"logs_count": logs_count})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@smart_monitoring_app.get("/logger/get_page")
-async def get_page(current_page: int, limit: int):
-    try:
-        logs = logger.get_page_of_logs(current_page, limit)
-        return JSONResponse(content={"log_page": logs}, status_code=200)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @smart_monitoring_app.post("/move_camera")
 async def move_camera(control_message: CameraControlMessage):
     try:
         camera_control.move_camera(
             direction=control_message.direction, degrees=control_message.degrees
         )
-        
+
         response = f"Camera moved by {control_message.degrees} degrees to {control_message.direction}"
         return JSONResponse(content=response, status_code=200)
     except Exception as e:
@@ -151,10 +133,13 @@ async def get_tracking_workpiece(websocket: WebSocket):
         await websocket.accept()
 
         while True:
-            data = {"current_module": camera_control.FischertechnikModuleLocations.get_location_name(
-                camera_control.current_module),
+            data = {
+                "current_module": camera_control.FischertechnikModuleLocations.get_location_name(
+                    camera_control.current_module
+                ),
                 "tracking_workpiece": surveillance_system.tracking_workpiece,
-                "current_routine": surveillance_system.current_routine}
+                "current_routine": surveillance_system.current_routine,
+            }
 
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.2)
@@ -167,6 +152,56 @@ async def get_tracking_workpiece(websocket: WebSocket):
             "additional_info": "An unexpected error occurred in the WebSocket Image endpoint",
         }
         await websocket.send_json({"error": error_details})
+
+
+@smart_monitoring_app.get("/logger/get_total_count")
+async def get_total_count():
+    try:
+        logs_count = logger.get_total_log_count()
+        return JSONResponse(content={"logs_count": logs_count})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@smart_monitoring_app.get("/logger/get_page")
+async def get_page(current_page: int, limit: int):
+    try:
+        logs = logger.get_page_of_logs(current_page, limit)
+        return JSONResponse(content={"log_page": logs}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@smart_monitoring_app.get("/logger/filter")
+async def filter_logs_by_query(
+    log_id: str = None,
+    message: str = None,
+    severity: str = None,
+    while_tracking: bool = None,
+    current_routine: str = None,
+    current_module: str = None,
+):
+    try:
+        logs = logger.get_logs(
+            log_id=log_id,
+            message=message,
+            severity=severity,
+            while_tracking=while_tracking,
+            current_module=current_module,
+            current_routine=current_routine,
+        )
+        return JSONResponse(content={"logs": logs}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@smart_monitoring_app.get("/logger/get_page")
+async def get_page(current_page: int, limit: int):
+    try:
+        logs = logger.get_page_of_logs(current_page, limit)
+        return JSONResponse(content={"log_page": logs}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def start_uvicorn():
