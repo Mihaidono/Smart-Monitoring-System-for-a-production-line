@@ -4,12 +4,50 @@ import React, { useState } from "react";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 
 function MonitoringLog({ logData }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
 
   const toggleVisivility = () => {
     setDetailsVisible(!detailsVisible);
+  };
+
+  const renderSeverityIcon = (severity) => {
+    switch (severity) {
+      case 1:
+        return (
+          <InfoOutlinedIcon
+            sx={{
+              fontSize: { xs: "32px", sm: "42px" },
+            }}
+          />
+        );
+      case 2:
+        return (
+          <WarningAmberOutlinedIcon
+            sx={{
+              fontSize: { xs: "32px", sm: "42px" },
+            }}
+          />
+        );
+      case 3:
+        return (
+          <CheckCircleOutlinedIcon
+            sx={{
+              fontSize: { xs: "32px", sm: "42px" },
+            }}
+          />
+        );
+      default:
+        return (
+          <QuestionMarkIcon
+            sx={{
+              fontSize: { xs: "32px", sm: "42px" },
+            }}
+          />
+        );
+    }
   };
 
   return (
@@ -42,11 +80,7 @@ function MonitoringLog({ logData }) {
               alignContent: "center",
             }}
           >
-            <WarningAmberOutlinedIcon
-              sx={{
-                fontSize: { xs: "32px", sm: "42px" },
-              }}
-            />
+            {renderSeverityIcon(logData.severity)}
           </Grid>
           <Grid item container xs={11}>
             <Grid
@@ -119,7 +153,7 @@ function MonitoringLog({ logData }) {
                 }}
                 variant="body2"
               >
-                Id: {logData.id}
+                Id: {logData._id}
               </Typography>
             </Grid>
           </Grid>
