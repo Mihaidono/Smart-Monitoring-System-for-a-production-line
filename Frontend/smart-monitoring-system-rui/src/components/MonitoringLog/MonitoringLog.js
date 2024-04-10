@@ -148,6 +148,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -161,6 +162,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -176,6 +178,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -189,6 +192,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -204,6 +208,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -217,6 +222,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -232,6 +238,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -245,6 +252,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -260,6 +268,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -273,6 +282,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -288,6 +298,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -301,6 +312,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -316,6 +328,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -329,6 +342,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -352,6 +366,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
@@ -365,6 +380,7 @@ function MonitoringLog({ logData }) {
                 container
                 sx={{
                   padding: "5px",
+                  paddingLeft: "15px",
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
