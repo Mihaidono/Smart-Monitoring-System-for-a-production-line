@@ -19,6 +19,7 @@ import { AvailablePages } from "./config/enums/AvailablePages";
 import { ProcessProvider } from "./contexts/ProcessContext";
 import MonitoringLog from "./components/MonitoringLog/MonitoringLog";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
+import SearchIcon from "@mui/icons-material/Search";
 import { AvailableURLs } from "./config/enums/AvailableURLs";
 import axios from "axios";
 
@@ -31,6 +32,7 @@ function LogsMenu() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [logPages, setLogPages] = useState(1);
+  const [paginationDisabled, setPaginationDisabled] = useState(false);
   const logsPerPage = 8;
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -38,15 +40,29 @@ function LogsMenu() {
   const handleCloseModal = () => setModalOpen(false);
 
   const handleTextFieldChange = (event) => {
-    const value = event.target.value;
-    setTextFieldValue(value);
-    setSearchQuery((prevQuery) => ({
-      ...prevQuery,
-      message: value,
-    }));
+    setTextFieldValue(event.target.value);
   };
 
-  const queryLogs = async () => {
+  const handleSearchClick = async () => {
+    setTextFieldDisabled(true);
+    try {
+      const updatedSearchQuery = { ...searchQuery, message: textFieldValue };
+      const response = await axios.get(
+        `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
+        updatedSearchQuery
+      );
+      setSearchQuery(updatedSearchQuery);
+      setDisplayedLogs(response.data.logs);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setTextFieldDisabled(false);
+    }
+  };
+
+  const handlePageChange = async (event, page) => {
+    setCurrentPage(page);
+    setPaginationDisabled(true);
     try {
       const response = await axios.get(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
@@ -56,6 +72,8 @@ function LogsMenu() {
       setDisplayedLogs(response.data.logs);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setPaginationDisabled(false);
     }
   };
 
@@ -118,7 +136,7 @@ function LogsMenu() {
             </Tooltip>
           </IconButton>
         </Grid>
-        <Grid item container xs={10} sm={9} sx={{ alignContent: "center" }}>
+        <Grid item container xs={9} sm={8} sx={{ alignContent: "center" }}>
           <TextField
             disabled={textFieldDisabled}
             label="Search by message"
@@ -149,6 +167,29 @@ function LogsMenu() {
             }}
           />
         </Grid>
+        <Grid
+          xs={1}
+          item
+          container
+          sx={{
+            justifyContent: "flex-start",
+            alignContent: "flex-end",
+          }}
+        >
+          <IconButton
+            onClick={handleSearchClick}
+            sx={{
+              justifyContent: "center",
+              alignContent: "center",
+              color: "var(--mainColor)",
+              "&:hover": {
+                color: "var(--mainColorToggled)",
+              },
+            }}
+          >
+            <SearchIcon />
+          </IconButton>
+        </Grid>
         <Modal
           open={modalOpen}
           onClose={handleCloseModal}
@@ -178,17 +219,17 @@ function LogsMenu() {
         </Modal>
       </Grid>
 
-      {displayedLogs.map(() => {
+      {displayedLogs.map((log, index) => {
         return (
-          <Grid item container justifyContent="center" xs={12} padding="5px">
-            <MonitoringLog
-              logData={{
-                timestamp: "2024-04-03T08:01:12+00:00",
-                message:
-                  "The workpiece has been processed processe dprocessed processed processedpro cessedproces sedprocessedproces sedprocessedprocessedpro cessedprocessedprocessedp rocesse dprocessedprocessed",
-                id: "507f1f77bcf86cd799439011",
-              }}
-            />
+          <Grid
+            item
+            container
+            justifyContent="center"
+            xs={12}
+            padding="5px"
+            key={index}
+          >
+            <MonitoringLog logData={log} />
           </Grid>
         );
       })}
@@ -200,7 +241,13 @@ function LogsMenu() {
           justifyItems: "center",
         }}
       >
-        <Pagination count={logPages} variant="outlined" />
+        <Pagination
+          count={logPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          disabled={paginationDisabled}
+          variant="outlined"
+        />
       </Grid>
     </Grid>
   );
