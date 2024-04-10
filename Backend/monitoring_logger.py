@@ -84,15 +84,12 @@ class MonitoringLogger:
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
-    def get_total_log_count(self):
-        return self._collection.count_documents({})
-
-    def get_page_of_logs(self, current_page: int, limitation: int):
-        return (
-            self._collection.find({})
-            .skip((current_page - 1) * limitation)
-            .limit(limitation)
-        )
+    def get_total_log_count(self, query):
+        if query:
+            log_count = self._collection.count_documents(query)
+        else:
+            log_count = self._collection.count_documents({})
+        return log_count
 
     def get_logs(
             self,
@@ -104,6 +101,8 @@ class MonitoringLogger:
             current_module=None,
             lower_boundary: datetime = None,
             upper_boundary: datetime = None,
+            current_page: int = None,
+            limitation: int = None
     ) -> List:
         query = {}
         if log_id is not None:
@@ -123,7 +122,10 @@ class MonitoringLogger:
 
         log_messages = []
         try:
-            cursor = self._collection.find(query)
+            if current_page and limitation:
+                cursor = self._collection.find(query).skip((current_page - 1) * limitation).limit(limitation)
+            else:
+                cursor = self._collection.find(query)
             for log in cursor:
                 log_message = MonitoringLogMessage(
                     message=log["message"],
@@ -133,9 +135,9 @@ class MonitoringLogger:
                     current_routine=log["current_routine"],
                     additional_data=log["additional_data"],
                 )
-                log_message._timestamp = log["timestamp"]
-                log_message._id = log["_id"]
-                log_messages.append(log_message)
+                log_message._timestamp = log["timestamp"].isoformat()
+                log_message._id = str(log["_id"])
+                log_messages.append(log_message.get_log_data())
         except Exception as e:
             print(e)
         return log_messages

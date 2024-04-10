@@ -20,33 +20,61 @@ import { ProcessProvider } from "./contexts/ProcessContext";
 import MonitoringLog from "./components/MonitoringLog/MonitoringLog";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { AvailableURLs } from "./config/enums/AvailableURLs";
+import axios from "axios";
 
 function LogsMenu() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [displayedLogs, setDisplayedLogs] = useState([]);
+
+  const [searchQuery, setSearchQuery] = useState({});
   const [textFieldValue, setTextFieldValue] = useState("");
+  const [textFieldDisabled, setTextFieldDisabled] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
   const [logPages, setLogPages] = useState(1);
-  const logsPerPage = 10;
+  const logsPerPage = 8;
 
   const [modalOpen, setModalOpen] = useState(false);
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const filterLogsByMessage = (message) => {};
+  const handleTextFieldChange = (event) => {
+    const value = event.target.value;
+    setTextFieldValue(value);
+    setSearchQuery((prevQuery) => ({
+      ...prevQuery,
+      message: value,
+    }));
+  };
+
+  const queryLogs = async () => {
+    try {
+      const response = await axios.get(
+        `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
+        searchQuery
+      );
+
+      setDisplayedLogs(response.data.logs);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchLogPageCount = async () => {
       try {
-        const response = await fetch(
-          `${AvailableURLs.BACKEND_HTTP}/logger/get_total_page_count`
+        const response = await axios.get(
+          `${AvailableURLs.BACKEND_HTTP}/logger/get_total_log_count`,
+          searchQuery
         );
-        const data = await response.json();
-        setLogPages(data.data);
+        setLogPages(
+          Math.ceil(parseInt(response.data.logs_count) / logsPerPage)
+        );
       } catch (error) {}
     };
 
     fetchLogPageCount();
-  }, [logPages]);
+  }, [searchQuery]);
+
   return (
     <Grid
       container
@@ -92,14 +120,16 @@ function LogsMenu() {
         </Grid>
         <Grid item container xs={10} sm={9} sx={{ alignContent: "center" }}>
           <TextField
-            onChange={filterLogsByMessage}
+            disabled={textFieldDisabled}
             label="Search by message"
             id="search-by-message-input"
-            placeholder="Workpiece in processing ..."
+            placeholder="ex: Workpiece in processing ..."
             variant="standard"
             autoComplete="off"
             autoCapitalize="off"
             fullWidth
+            value={textFieldValue}
+            onChange={handleTextFieldChange}
             InputLabelProps={{
               style: {
                 color: "var(--mainColor)",
@@ -148,7 +178,7 @@ function LogsMenu() {
         </Modal>
       </Grid>
 
-      {Array.from(Array(4)).map(() => {
+      {displayedLogs.map(() => {
         return (
           <Grid item container justifyContent="center" xs={12} padding="5px">
             <MonitoringLog
@@ -170,7 +200,7 @@ function LogsMenu() {
           justifyItems: "center",
         }}
       >
-        <Pagination count={10} variant="outlined" />
+        <Pagination count={logPages} variant="outlined" />
       </Grid>
     </Grid>
   );
