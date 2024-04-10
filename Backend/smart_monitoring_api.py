@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import json
 from threading import Thread
 
@@ -180,6 +181,8 @@ async def filter_logs_by_query(
     while_tracking: bool = None,
     current_routine: str = None,
     current_module: str = None,
+    lower_boundary: datetime = None,
+    upper_boundary: datetime = None,
 ):
     try:
         logs = logger.get_logs(
@@ -189,6 +192,8 @@ async def filter_logs_by_query(
             while_tracking=while_tracking,
             current_module=current_module,
             current_routine=current_routine,
+            lower_boundary=lower_boundary,
+            upper_boundary=upper_boundary,
         )
         return JSONResponse(content={"logs": logs}, status_code=200)
     except Exception as e:
