@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Stack,
@@ -23,7 +23,7 @@ import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 function LogsMenu() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const textFieldValueRef = useRef("");
+  const [textFieldValue, setTextFieldValue] = useState("");
 
   const logsPerPage = 10;
 
@@ -208,7 +208,13 @@ function HomePageMenu() {
 }
 
 export default function App() {
-  const [currentActivePage, setCurrentPage] = useState(AvailablePages.HOME);
+  const [currentActivePage, setCurrentPage] = useState(
+    JSON.parse(localStorage.getItem("activePage")) || AvailablePages.HOME
+  );
+
+  useEffect(() => {
+    localStorage.setItem("activePage", currentActivePage);
+  }, [currentActivePage]);
 
   const renderActivePage = () => {
     switch (currentActivePage) {

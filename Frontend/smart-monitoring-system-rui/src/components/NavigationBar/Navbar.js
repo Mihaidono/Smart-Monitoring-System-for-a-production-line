@@ -35,8 +35,9 @@ const NavbarButton = styled(Button)(() => ({
 
 function Navbar({ setActivePage }) {
   const [expanded, setExpanded] = useState(false);
-  const [activeButton, setActiveButton] = useState(AvailablePages.HOME);
-
+  const [activeButton, setActiveButton] = useState(
+    JSON.parse(localStorage.getItem("activePage")) || AvailablePages.HOME
+  );
   const toggleNavbar = () => {
     setExpanded(!expanded);
   };
