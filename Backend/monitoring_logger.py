@@ -26,13 +26,13 @@ class LogSeverity(Enum):
 
 class MonitoringLogMessage:
     def __init__(
-        self,
-        message: str,
-        severity: LogSeverity,
-        while_tracking=None,
-        current_module=None,
-        current_routine=None,
-        additional_data: dict | List = None,
+            self,
+            message: str,
+            severity: LogSeverity,
+            while_tracking=None,
+            current_module=None,
+            current_routine=None,
+            additional_data: dict | List = None,
     ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
@@ -80,7 +80,6 @@ class MonitoringLogger:
         self._database_client = MongoClient(os.getenv("CONNECTION_STRING"))
         self._database = self._database_client[os.getenv("DATABASE_NAME")]
         self._collection = self._database[os.getenv("COLLECTION_NAME")]
-        print("Successfully connected Monitoring Logger to database")
 
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
@@ -96,15 +95,15 @@ class MonitoringLogger:
         )
 
     def get_logs(
-        self,
-        log_id: ObjectId = None,
-        message: str = None,
-        severity: LogSeverity = None,
-        while_tracking: bool = None,
-        current_routine=None,
-        current_module=None,
-        lower_boundary: datetime = None,
-        upper_boundary: datetime = None,
+            self,
+            log_id: ObjectId = None,
+            message: str = None,
+            severity: LogSeverity = None,
+            while_tracking: bool = None,
+            current_routine=None,
+            current_module=None,
+            lower_boundary: datetime = None,
+            upper_boundary: datetime = None,
     ) -> List:
         query = {}
         if log_id is not None:

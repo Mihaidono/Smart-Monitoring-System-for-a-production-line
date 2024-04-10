@@ -19,12 +19,13 @@ import { AvailablePages } from "./config/enums/AvailablePages";
 import { ProcessProvider } from "./contexts/ProcessContext";
 import MonitoringLog from "./components/MonitoringLog/MonitoringLog";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
+import { AvailableURLs } from "./config/enums/AvailableURLs";
 
 function LogsMenu() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [textFieldValue, setTextFieldValue] = useState("");
-
+  const [logPages, setLogPages] = useState(1);
   const logsPerPage = 10;
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -33,6 +34,19 @@ function LogsMenu() {
 
   const filterLogsByMessage = (message) => {};
 
+  useEffect(() => {
+    const fetchLogPageCount = async () => {
+      try {
+        const response = await fetch(
+          `${AvailableURLs.BACKEND_HTTP}/logger/get_total_page_count`
+        );
+        const data = await response.json();
+        setLogPages(data.data);
+      } catch (error) {}
+    };
+
+    fetchLogPageCount();
+  }, [logPages]);
   return (
     <Grid
       container
@@ -134,7 +148,7 @@ function LogsMenu() {
         </Modal>
       </Grid>
 
-      {Array.from(Array(2)).map(() => {
+      {Array.from(Array(4)).map(() => {
         return (
           <Grid item container justifyContent="center" xs={12} padding="5px">
             <MonitoringLog

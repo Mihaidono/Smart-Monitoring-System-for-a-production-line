@@ -155,7 +155,7 @@ async def get_tracking_workpiece(websocket: WebSocket):
         await websocket.send_json({"error": error_details})
 
 
-@smart_monitoring_app.get("/logger/get_total_count")
+@smart_monitoring_app.get("/logger/get_total_page_count")
 async def get_total_count():
     try:
         logs_count = logger.get_total_log_count()
@@ -164,7 +164,7 @@ async def get_total_count():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@smart_monitoring_app.get("/logger/get_page")
+@smart_monitoring_app.get("/logger/get_log_page")
 async def get_page(current_page: int, limit: int):
     try:
         logs = logger.get_page_of_logs(current_page, limit)
@@ -175,14 +175,14 @@ async def get_page(current_page: int, limit: int):
 
 @smart_monitoring_app.get("/logger/filter")
 async def filter_logs_by_query(
-    log_id: str = None,
-    message: str = None,
-    severity: str = None,
-    while_tracking: bool = None,
-    current_routine: str = None,
-    current_module: str = None,
-    lower_boundary: datetime = None,
-    upper_boundary: datetime = None,
+        log_id: str = None,
+        message: str = None,
+        severity: str = None,
+        while_tracking: bool = None,
+        current_routine: str = None,
+        current_module: str = None,
+        lower_boundary: datetime = None,
+        upper_boundary: datetime = None,
 ):
     try:
         logs = logger.get_logs(
