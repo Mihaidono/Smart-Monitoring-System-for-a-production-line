@@ -84,7 +84,31 @@ class MonitoringLogger:
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
-    def get_total_log_count(self, query):
+    def get_total_log_count(self,
+                            log_id: ObjectId = None,
+                            message: str = None,
+                            severity: LogSeverity = None,
+                            while_tracking: bool = None,
+                            current_routine=None,
+                            current_module=None,
+                            lower_boundary: datetime = None,
+                            upper_boundary: datetime = None):
+        query = {}
+        if log_id is not None:
+            query["_id"] = log_id
+        if severity is not None:
+            query["severity"] = severity.value
+        if while_tracking is not None:
+            query["while_tracking"] = while_tracking
+        if current_routine is not None:
+            query["current_routine"] = current_routine
+        if current_module is not None:
+            query["current_module"] = current_module
+        if message is not None:
+            query["message"] = {"$regex": message}
+        if lower_boundary is not None and upper_boundary is not None:
+            query["timestamp"] = {"$gte": lower_boundary, "$lte": upper_boundary}
+
         if query:
             log_count = self._collection.count_documents(query)
         else:

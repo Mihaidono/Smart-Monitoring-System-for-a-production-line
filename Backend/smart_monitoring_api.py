@@ -155,27 +155,40 @@ async def get_tracking_workpiece(websocket: WebSocket):
 
 
 @smart_monitoring_app.get("/logger/get_total_log_count")
-async def get_total_count(query: dict = None):
+async def get_total_count(log_id: str = None,
+                          message: str = None,
+                          severity: str = None,
+                          while_tracking: bool = None,
+                          current_routine: str = None,
+                          current_module: str = None,
+                          lower_boundary: datetime = None,
+                          upper_boundary: datetime = None, ):
     try:
-        logs_count = logger.get_total_log_count(query)
+        logs_count = logger.get_total_log_count(
+            log_id=log_id,
+            message=message,
+            severity=severity,
+            while_tracking=while_tracking,
+            current_module=current_module,
+            current_routine=current_routine,
+            lower_boundary=lower_boundary,
+            upper_boundary=upper_boundary)
         return JSONResponse(content={"logs_count": logs_count})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @smart_monitoring_app.get("/logger/get_logs")
-async def get_logs(
-        log_id: str = None,
-        message: str = None,
-        severity: str = None,
-        while_tracking: bool = None,
-        current_routine: str = None,
-        current_module: str = None,
-        lower_boundary: datetime = None,
-        upper_boundary: datetime = None,
-        current_page: int = None,
-        limitation: int = None
-):
+async def get_logs(log_id: str = None,
+                   message: str = None,
+                   severity: str = None,
+                   while_tracking: bool = None,
+                   current_routine: str = None,
+                   current_module: str = None,
+                   lower_boundary: datetime = None,
+                   upper_boundary: datetime = None,
+                   current_page: int = None,
+                   limitation: int = None):
     try:
         logs = logger.get_logs(
             log_id=log_id,
