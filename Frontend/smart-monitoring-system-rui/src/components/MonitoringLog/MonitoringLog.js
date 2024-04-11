@@ -1,10 +1,12 @@
 import { Grid, Typography, ButtonBase, Collapse, Stack } from "@mui/material";
 import "./MonitoringLog.css";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import { MonitoringModules } from "../../config/enums/MonitoringModules";
+import { MonitoringRoutines } from "../../config/enums/MonitoringRoutines";
 
 function MonitoringLog({ logData }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
@@ -13,11 +15,24 @@ function MonitoringLog({ logData }) {
     setDetailsVisible(!detailsVisible);
   };
 
+  const renderFormatedTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  };
+
   const renderSeverityIcon = (severity) => {
     switch (severity) {
       case 1:
         return (
-          <InfoOutlinedIcon
+          <WarningAmberOutlinedIcon
             sx={{
               fontSize: { xs: "32px", sm: "42px" },
             }}
@@ -25,7 +40,7 @@ function MonitoringLog({ logData }) {
         );
       case 2:
         return (
-          <WarningAmberOutlinedIcon
+          <InfoOutlinedIcon
             sx={{
               fontSize: { xs: "32px", sm: "42px" },
             }}
@@ -49,6 +64,71 @@ function MonitoringLog({ logData }) {
         );
     }
   };
+
+  const renderSeverityText = (severity) => {
+    switch (severity) {
+      case 1:
+        return "Warning";
+      case 2:
+        return "Information";
+      case 3:
+        return "Success";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const renderModuleText = (module) => {
+    switch (module.toString()) {
+      case MonitoringModules.HOME.toString():
+        return "Home";
+      case MonitoringModules.PROCESSING_STATION.toString():
+        return "Processing Station";
+      case MonitoringModules.SHIPPING.toString():
+        return "Shipping";
+      case MonitoringModules.SORTING_LINE.toString():
+        return "Sorting Line";
+      case MonitoringModules.WAREHOUSE.toString():
+        return "Warehouse";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const renderRoutineText = (routine) => {
+    switch (routine) {
+      case MonitoringRoutines.IDLE:
+        return "Idle";
+      case MonitoringRoutines.INITIALIZING:
+        return "Initializing";
+      case MonitoringRoutines.SURVEYING_BAY:
+        return "Surveying the High-Bay Warehouse";
+      case MonitoringRoutines.SURVEYING_DELIVERY_PROCESS:
+        return "Surveying the Delivery Process";
+      case MonitoringRoutines.DELIVERY_SUCCESSFUL:
+        return "Successful Delivery";
+      case MonitoringRoutines.CONFIRM_DELIVERY_STATUS:
+        return "Successful Delivery Confirmation";
+      case MonitoringRoutines.TIMED_OUT:
+        return "Timed out";
+      default:
+        return "Unknown";
+    }
+  };
+
+  function formatStorageData(storageData) {
+    let result = "";
+    for (const group of storageData) {
+      for (const item of group) {
+        if (item.coordinates) {
+          result += `(${
+            item.color
+          } Storage at coordinates [${item.coordinates.join(", ")}]) `;
+        }
+      }
+    }
+    return result.trim();
+  }
 
   return (
     <Stack
@@ -104,7 +184,7 @@ function MonitoringLog({ logData }) {
                   color: "var(--secondaryColor)",
                 }}
               >
-                {logData.timestamp}
+                {renderFormatedTimestamp(logData.timestamp)}
               </Typography>
             </Grid>
             <Grid
@@ -172,7 +252,12 @@ function MonitoringLog({ logData }) {
             borderBottomRightRadius: 5,
           }}
         >
-          <Grid container justifyContent="center" alignItems="center">
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            padding="10px"
+          >
             <Grid xs={12} container item>
               <Grid
                 xs={12}
@@ -200,7 +285,7 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">{logData.id}</Typography>
+                <Typography variant="body2">{logData._id}</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
@@ -230,7 +315,9 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">{logData.timestamp}</Typography>
+                <Typography variant="body2">
+                  {renderFormatedTimestamp(logData.timestamp)}
+                </Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
@@ -260,7 +347,9 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">to add severity</Typography>
+                <Typography variant="body2">
+                  {renderSeverityText(logData.severity)}
+                </Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
@@ -290,7 +379,9 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">to add module</Typography>
+                <Typography variant="body2">
+                  {renderModuleText(logData.current_module)}
+                </Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
@@ -320,7 +411,9 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">to add routine</Typography>
+                <Typography variant="body2">
+                  {renderRoutineText(logData.current_routine)}
+                </Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
@@ -350,7 +443,9 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">to add in tracking</Typography>
+                <Typography variant="body2">
+                  {logData.while_tracking === true ? "True" : "False"}
+                </Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
@@ -418,7 +513,11 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">to add aditional data</Typography>
+                <Typography variant="body2">
+                  {logData.additional_data
+                    ? formatStorageData(logData.additional_data)
+                    : "None"}
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
