@@ -22,11 +22,12 @@ import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { AvailableURLs } from "./config/enums/AvailableURLs";
 import axios from "axios";
+import { MonitoringLogQuery } from "./models/MonitoringLogQuery";
 
 function LogsMenu() {
   const [displayedLogs, setDisplayedLogs] = useState([]);
 
-  const [searchQuery, setSearchQuery] = useState({});
+  const [searchQuery, setSearchQuery] = useState(new MonitoringLogQuery());
   const [textFieldValue, setTextFieldValue] = useState("");
   const [textFieldDisabled, setTextFieldDisabled] = useState(false);
 
@@ -43,15 +44,39 @@ function LogsMenu() {
     setTextFieldValue(event.target.value);
   };
 
+  const handleQueryChange = (key, value) => {
+    const updatedSearchQuery = new MonitoringLogQuery();
+    updatedSearchQuery.setQuery(key, value);
+    setSearchQuery(updatedSearchQuery);
+  };
+
+  const handlePageChange = async (event, page) => {
+    setPaginationDisabled(true);
+    try {
+      setCurrentPage(page);
+      searchQuery.setQuery("limitation", logsPerPage);
+      searchQuery.setQuery("current_page", page);
+      const response = await axios.get(
+        `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
+        { params: searchQuery.getQuery() }
+      );
+
+      setDisplayedLogs(response.data.logs);
+    } catch (error) {
+    } finally {
+      setPaginationDisabled(false);
+    }
+  };
+
   const handleSearchClick = async () => {
     setTextFieldDisabled(true);
     try {
-      const updatedSearchQuery = { ...searchQuery, message: textFieldValue };
       const response = await axios.get(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-        updatedSearchQuery
+        {
+          params: searchQuery.getQuery(),
+        }
       );
-      setSearchQuery(updatedSearchQuery);
       setDisplayedLogs(response.data.logs);
     } catch (error) {
       console.error("Error:", error);
@@ -60,34 +85,19 @@ function LogsMenu() {
     }
   };
 
-  const handlePageChange = async (event, page) => {
-    setCurrentPage(page);
-    setPaginationDisabled(true);
-    try {
-      const response = await axios.get(
-        `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-        searchQuery
-      );
-
-      setDisplayedLogs(response.data.logs);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setPaginationDisabled(false);
-    }
-  };
-
   useEffect(() => {
     const fetchLogPageCount = async () => {
       try {
         const response = await axios.get(
           `${AvailableURLs.BACKEND_HTTP}/logger/get_total_log_count`,
-          searchQuery
+          { params: searchQuery.getQuery() }
         );
         setLogPages(
           Math.ceil(parseInt(response.data.logs_count) / logsPerPage)
         );
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetchLogPageCount();
