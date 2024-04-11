@@ -221,12 +221,6 @@ class MonitoringService:
         self._current_routine = RoutineStatus.INITIALIZING
 
     def survey_bay_routine(self):
-        self._logger.store_log(
-            MonitoringLogMessage(f"Current state of the High-Bay Warehouse",
-                                 LogSeverity.INFO,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine,
-                                 self._warehouse_containers))
         while True:
             if not self._process_started:
                 self._current_routine = RoutineStatus.IDLE
@@ -353,6 +347,12 @@ class MonitoringService:
         self._prev_frame_with_detected_objects = filled_coordinate_matrix
         if any(3 in column for column in self._reoccurrence_matrix):
             self._reoccurrence_matrix = np.zeros((3, 3))
+            self._logger.store_log(
+                MonitoringLogMessage(f"Current state of the High-Bay Warehouse",
+                                     LogSeverity.INFO,
+                                     self._tracking_workpiece, camera_control.current_module,
+                                     self._current_routine,
+                                     self._warehouse_containers))
             return True
         return False
 
