@@ -4,11 +4,10 @@ import json
 from threading import Thread
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from uvicorn.protocols.utils import ClientDisconnected
 
 import camera_control_service as camera_control
 from monitoring_service import MonitoringService
@@ -97,7 +96,7 @@ async def get_image(websocket: WebSocket):
             data = {"data": surveillance_system.json_mqtt_data["data"]}
             await websocket.send_json(data)
             await asyncio.sleep(0.5)
-    except ClientDisconnected:
+    except WebSocketDisconnect:
         print("Client disconnected from WS Get Image")
     except Exception as e:
         error_details = {
@@ -117,7 +116,7 @@ async def get_warehouse_inventory(websocket: WebSocket):
             data = {"containers": surveillance_system.warehouse_containers}
             await websocket.send_json(data)
             await asyncio.sleep(0.5)
-    except ClientDisconnected:
+    except WebSocketDisconnect:
         print("Client disconnected from WS Get Warehouse Inventory")
     except Exception as e:
         error_details = {
@@ -144,7 +143,7 @@ async def get_tracking_workpiece(websocket: WebSocket):
 
             await websocket.send_text(json.dumps(data))
             await asyncio.sleep(0.2)
-    except ClientDisconnected:
+    except WebSocketDisconnect:
         print("Client disconnected from WS Get Process State")
     except Exception as e:
         error_details = {
