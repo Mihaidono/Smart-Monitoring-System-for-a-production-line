@@ -9,14 +9,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-import camera_control_service as camera_control
-from monitoring_service import MonitoringService
+# import camera_control_service as camera_control
+# from monitoring_service import MonitoringService
 from monitoring_logger import MonitoringLogger
 
 load_dotenv()
 
 smart_monitoring_app = FastAPI()
-surveillance_system = MonitoringService()
+# surveillance_system = MonitoringService()
 logger = MonitoringLogger()
 
 smart_monitoring_app.add_middleware(
@@ -214,9 +214,9 @@ def start_uvicorn():
 
 
 if __name__ == "__main__":
-    camera_control.start_camera_control_service()
+    # camera_control.start_camera_control_service()
 
-    uvicorn_thread = Thread(target=start_uvicorn, daemon=True)
-    uvicorn_thread.start()
-
-    surveillance_system.start_monitoring()
+    # uvicorn_thread = Thread(target=start_uvicorn, daemon=True)
+    # uvicorn_thread.start()
+    start_uvicorn()
+    # surveillance_system.start_monitoring()

@@ -9,6 +9,7 @@ import {
   Pagination,
   IconButton,
   Tooltip,
+  Chip,
 } from "@mui/material";
 import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
@@ -23,6 +24,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AvailableURLs } from "./config/enums/AvailableURLs";
 import axios from "axios";
 import { MonitoringLogQuery } from "./models/MonitoringLogQuery";
+
+const filterList = [
+  "filter1",
+  "filter2",
+  "filter3",
+  "filter4",
+  "filter5",
+  "filter6",
+  "filter7",
+];
 
 function LogsMenu() {
   const [displayedLogs, setDisplayedLogs] = useState([]);
@@ -44,7 +55,7 @@ function LogsMenu() {
     setTextFieldValue(event.target.value);
   };
 
-  const handleQueryChange = (key, value) => {
+  const handleFilterChipClick = (key, value) => {
     const updatedSearchQuery = { ...searchQuery, key: value };
     setSearchQuery(updatedSearchQuery);
   };
@@ -81,7 +92,7 @@ function LogsMenu() {
       );
       setDisplayedLogs(response.data.logs);
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
     } finally {
       setTextFieldDisabled(false);
     }
@@ -122,7 +133,7 @@ function LogsMenu() {
         );
         setDisplayedLogs(response.data.logs);
       } catch (error) {
-        console.error("Error:", error);
+        console.error(error);
       } finally {
         setTextFieldDisabled(false);
       }
@@ -239,21 +250,43 @@ function LogsMenu() {
             sx={{
               position: "absolute",
               top: "30%",
-              left: "50%",
+              left: { xs: "50%", sm: "55%", md: "50%" },
               transform: "translate(-50%, -50%)",
-              width: "30%",
+              width: { xs: "80%", sm: "70%", md: "50%" },
               height: "30%",
               backgroundColor: "#fff",
               border: "2px solid var(--mainColorToggled)",
               padding: "20px",
             }}
           >
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            <Grid container rowGap={2}>
+              <Grid xs={12} container item>
+                <Typography
+                  gutterBottom
+                  id="modal-modal-title"
+                  variant="h5"
+                  component="h2"
+                >
+                  Select filters:
+                </Typography>
+              </Grid>
+              {filterList.map((value, index) => {
+                return (
+                  <Grid
+                    item
+                    container
+                    xs={2}
+                    sx={{ justifyContent: "flex-start", pl: "5px", pr: "5px" }}
+                  >
+                    <Chip
+                      label={value}
+                      onClick={handleFilterChipClick}
+                      variant="outlined"
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
           </Box>
         </Modal>
       </Grid>
