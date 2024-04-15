@@ -1,24 +1,14 @@
 export class MonitoringLogQuery {
   constructor() {
-    this.query = {
-      log_id: null,
-      message: null,
-      severity: null,
-      while_tracking: null,
-      current_routine: null,
-      current_module: null,
-      lower_boundary: null,
-      upper_boundary: null,
-      current_page: null,
-      limitation: null,
-    };
-  }
-
-  setQuery(key, value) {
-    this.query[key] = value;
-  }
-
-  getQuery() {
-    return this.query;
+    this.log_id = null;
+    this.message = null;
+    this.severity = null;
+    this.while_tracking = null;
+    this.current_routine = null;
+    this.current_module = null;
+    this.lower_boundary = null;
+    this.upper_boundary = null;
+    this.current_page = null;
+    this.limitation = null;
   }
 }

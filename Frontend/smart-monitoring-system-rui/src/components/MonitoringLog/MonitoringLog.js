@@ -1,6 +1,6 @@
 import { Grid, Typography, ButtonBase, Collapse, Stack } from "@mui/material";
 import "./MonitoringLog.css";
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";

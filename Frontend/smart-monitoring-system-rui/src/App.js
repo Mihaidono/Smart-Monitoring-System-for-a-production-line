@@ -45,8 +45,7 @@ function LogsMenu() {
   };
 
   const handleQueryChange = (key, value) => {
-    const updatedSearchQuery = new MonitoringLogQuery();
-    updatedSearchQuery.setQuery(key, value);
+    const updatedSearchQuery = { ...searchQuery, key: value };
     setSearchQuery(updatedSearchQuery);
   };
 
@@ -54,11 +53,14 @@ function LogsMenu() {
     setPaginationDisabled(true);
     try {
       setCurrentPage(page);
-      searchQuery.setQuery("limitation", logsPerPage);
-      searchQuery.setQuery("current_page", page);
+      const updatedQuery = {
+        ...searchQuery,
+        limitation: logsPerPage,
+        current_page: page,
+      };
       const response = await axios.get(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-        { params: searchQuery.getQuery() }
+        { params: updatedQuery }
       );
 
       setDisplayedLogs(response.data.logs);
@@ -74,7 +76,7 @@ function LogsMenu() {
       const response = await axios.get(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
         {
-          params: searchQuery.getQuery(),
+          params: searchQuery,
         }
       );
       setDisplayedLogs(response.data.logs);
@@ -90,7 +92,7 @@ function LogsMenu() {
       try {
         const response = await axios.get(
           `${AvailableURLs.BACKEND_HTTP}/logger/get_total_log_count`,
-          { params: searchQuery.getQuery() }
+          { params: searchQuery }
         );
         setLogPages(
           Math.ceil(parseInt(response.data.logs_count) / logsPerPage)
@@ -102,6 +104,33 @@ function LogsMenu() {
 
     fetchLogPageCount();
   }, [searchQuery]);
+
+  useEffect(() => {
+    const initQuery = {
+      limitation: logsPerPage,
+      current_page: 1,
+    };
+
+    const initLogs = async () => {
+      setTextFieldDisabled(true);
+      try {
+        const response = await axios.get(
+          `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
+          {
+            params: initQuery,
+          }
+        );
+        setDisplayedLogs(response.data.logs);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setTextFieldDisabled(false);
+      }
+    };
+
+    initLogs();
+    setSearchQuery(initQuery);
+  }, []);
 
   return (
     <Grid
@@ -141,7 +170,7 @@ function LogsMenu() {
               },
             }}
           >
-            <Tooltip title="Filter options" enterDelay={200} arrow>
+            <Tooltip title="Filter options" enterDelay={500} arrow>
               <FilterListOutlinedIcon />
             </Tooltip>
           </IconButton>
