@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from enum import Enum
 from typing import List
 
@@ -105,7 +106,7 @@ class MonitoringLogger:
         if current_module is not None:
             query["current_module"] = current_module
         if message is not None:
-            query["message"] = {"$regex": message}
+            query["message"] = {"$regex": re.compile(message, re.IGNORECASE)}
         if lower_boundary is not None and upper_boundary is not None:
             query["timestamp"] = {"$gte": lower_boundary, "$lte": upper_boundary}
 
@@ -140,7 +141,7 @@ class MonitoringLogger:
         if current_module is not None:
             query["current_module"] = current_module
         if message is not None:
-            query["message"] = {"$regex": message}
+            query["message"] = {"$regex": re.compile(message, re.IGNORECASE)}
         if lower_boundary is not None and upper_boundary is not None:
             query["timestamp"] = {"$gte": lower_boundary, "$lte": upper_boundary}
 
