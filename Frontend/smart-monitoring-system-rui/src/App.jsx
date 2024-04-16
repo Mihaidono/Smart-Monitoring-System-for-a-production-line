@@ -26,13 +26,12 @@ import axios from "axios";
 import { MonitoringLogQuery } from "./models/MonitoringLogQuery";
 
 const filterList = [
-  "filter1",
-  "filter2",
-  "filter3",
-  "filter4",
-  "filter5",
-  "filter6",
-  "filter7",
+  "Id",
+  "Severity",
+  "In Tracking",
+  "Routine",
+  "Module",
+  "Timeframe",
 ];
 
 function LogsMenu() {
@@ -47,16 +46,23 @@ function LogsMenu() {
   const [paginationDisabled, setPaginationDisabled] = useState(false);
   const logsPerPage = 8;
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [chipModalOpen, setChipModalOpen] = useState(false);
+
+  const handleFilterOpenModal = () => setFilterModalOpen(true);
+  const handleFilterCloseModal = () => setFilterModalOpen(false);
+
+  const handleChipOpenModal = () => setChipModalOpen(true);
+  const handleChipCloseModal = () => setChipModalOpen(false);
 
   const handleTextFieldChange = (event) => {
     setTextFieldValue(event.target.value);
   };
 
   const handleFilterChipClick = (key, value) => {
-    const updatedSearchQuery = { ...searchQuery, key: value };
+    const updatedSearchQuery = { ...searchQuery, [filterList[key]]: value };
+    console.log([filterList[key]], key, value);
+    console.log(updatedSearchQuery);
     setSearchQuery(updatedSearchQuery);
   };
 
@@ -84,17 +90,25 @@ function LogsMenu() {
   const handleSearchClick = async () => {
     setTextFieldDisabled(true);
     try {
+      const updatedQuery = { ...searchQuery, message: textFieldValue };
       const response = await axios.get(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
         {
-          params: searchQuery,
+          params: updatedQuery,
         }
       );
       setDisplayedLogs(response.data.logs);
+      setSearchQuery(updatedQuery);
     } catch (error) {
       console.error(error);
     } finally {
       setTextFieldDisabled(false);
+    }
+  };
+
+  const handleEnterKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearchClick();
     }
   };
 
@@ -171,7 +185,7 @@ function LogsMenu() {
           }}
         >
           <IconButton
-            onClick={handleOpenModal}
+            onClick={handleFilterOpenModal}
             sx={{
               justifyContent: "center",
               alignContent: "center",
@@ -196,6 +210,7 @@ function LogsMenu() {
             autoComplete="off"
             autoCapitalize="off"
             fullWidth
+            onKeyUp={handleEnterKeyPress}
             value={textFieldValue}
             onChange={handleTextFieldChange}
             InputLabelProps={{
@@ -241,8 +256,8 @@ function LogsMenu() {
           </IconButton>
         </Grid>
         <Modal
-          open={modalOpen}
-          onClose={handleCloseModal}
+          open={filterModalOpen}
+          onClose={handleFilterCloseModal}
           aria-labelledby="Filter"
           aria-describedby="Filter Log Messages List"
         >
@@ -259,33 +274,45 @@ function LogsMenu() {
               padding: "20px",
             }}
           >
-            <Grid container rowGap={2}>
-              <Grid xs={12} container item>
-                <Typography
-                  gutterBottom
-                  id="modal-modal-title"
-                  variant="h5"
-                  component="h2"
-                >
-                  Select filters:
-                </Typography>
-              </Grid>
-              {filterList.map((value, index) => {
-                return (
-                  <Grid
-                    item
-                    container
-                    xs={2}
-                    sx={{ justifyContent: "flex-start", pl: "5px", pr: "5px" }}
-                  >
-                    <Chip
-                      label={value}
-                      onClick={handleFilterChipClick}
-                      variant="outlined"
-                    />
-                  </Grid>
-                );
-              })}
+            <Typography
+              gutterBottom
+              id="modal-modal-title"
+              variant="h5"
+              component="h2"
+            >
+              Select filters:
+            </Typography>
+            <Grid container rowSpacing={1}>
+              {filterList.map((value, index) => (
+                <Grid item key={index} sx={{ pr: "10px" }}>
+                  <Chip
+                    label={value}
+                    onClick={handleChipOpenModal}
+                    variant="outlined"
+                    sx={{
+                      fontSize: "1em",
+                      p: "10px",
+                    }}
+                  />
+                  <Modal open={chipModalOpen} onClose={handleChipCloseModal}>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "30%",
+                        left: { xs: "50%", sm: "55%", md: "50%" },
+                        transform: "translate(-50%, -50%)",
+                        width: { xs: "80%", sm: "70%", md: "50%" },
+                        height: "30%",
+                        backgroundColor: "#fff",
+                        border: "2px solid var(--mainColorToggled)",
+                        padding: "20px",
+                      }}
+                    >
+                      element
+                    </Box>
+                  </Modal>
+                </Grid>
+              ))}
             </Grid>
           </Box>
         </Modal>
