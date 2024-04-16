@@ -24,6 +24,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AvailableURLs } from "./config/enums/AvailableURLs";
 import axios from "axios";
 import { MonitoringLogQuery } from "./models/MonitoringLogQuery";
+import FilterModel from "./components/FilterModal/FilterModal";
 
 const filterList = [
   "Id",
@@ -47,13 +48,9 @@ function LogsMenu() {
   const logsPerPage = 8;
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [chipModalOpen, setChipModalOpen] = useState(false);
 
   const handleFilterOpenModal = () => setFilterModalOpen(true);
   const handleFilterCloseModal = () => setFilterModalOpen(false);
-
-  const handleChipOpenModal = () => setChipModalOpen(true);
-  const handleChipCloseModal = () => setChipModalOpen(false);
 
   const handleTextFieldChange = (event) => {
     setTextFieldValue(event.target.value);
@@ -255,67 +252,11 @@ function LogsMenu() {
             <SearchIcon />
           </IconButton>
         </Grid>
-        <Modal
-          open={filterModalOpen}
+        <FilterModel
           onClose={handleFilterCloseModal}
-          aria-labelledby="Filter"
-          aria-describedby="Filter Log Messages List"
-        >
-          <Box
-            sx={{
-              position: "absolute",
-              top: "30%",
-              left: { xs: "50%", sm: "55%", md: "50%" },
-              transform: "translate(-50%, -50%)",
-              width: { xs: "80%", sm: "70%", md: "50%" },
-              height: "30%",
-              backgroundColor: "#fff",
-              border: "2px solid var(--mainColorToggled)",
-              padding: "20px",
-            }}
-          >
-            <Typography
-              gutterBottom
-              id="modal-modal-title"
-              variant="h5"
-              component="h2"
-            >
-              Select filters:
-            </Typography>
-            <Grid container rowSpacing={1}>
-              {filterList.map((value, index) => (
-                <Grid item key={index} sx={{ pr: "10px" }}>
-                  <Chip
-                    label={value}
-                    onClick={handleChipOpenModal}
-                    variant="outlined"
-                    sx={{
-                      fontSize: "1em",
-                      p: "10px",
-                    }}
-                  />
-                  <Modal open={chipModalOpen} onClose={handleChipCloseModal}>
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: "30%",
-                        left: { xs: "50%", sm: "55%", md: "50%" },
-                        transform: "translate(-50%, -50%)",
-                        width: { xs: "80%", sm: "70%", md: "50%" },
-                        height: "30%",
-                        backgroundColor: "#fff",
-                        border: "2px solid var(--mainColorToggled)",
-                        padding: "20px",
-                      }}
-                    >
-                      element
-                    </Box>
-                  </Modal>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </Modal>
+          open={filterModalOpen}
+          filterList={filterList}
+        />
       </Grid>
 
       {displayedLogs.map((log, index) => {
