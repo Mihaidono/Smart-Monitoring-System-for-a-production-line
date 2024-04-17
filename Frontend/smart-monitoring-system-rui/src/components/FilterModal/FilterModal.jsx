@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, Modal, Chip } from "@mui/material";
+import { Grid, Typography, Box, Dialog, Chip } from "@mui/material";
 import React, { useState } from "react";
 
 function FilterModal({ open, onClose, filterList }) {
@@ -8,30 +8,18 @@ function FilterModal({ open, onClose, filterList }) {
   const handleChipCloseModal = () => setChipModalOpen(false);
 
   return (
-    <Modal
+    <Dialog
       open={open}
       onClose={onClose}
       aria-labelledby="Filter"
       aria-describedby="Filter Log Messages List"
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "30%",
-          left: { xs: "50%", sm: "55%", md: "50%" },
-          transform: "translate(-50%, -50%)",
-          width: { xs: "80%", sm: "70%", md: "50%" },
-          height: "30%",
-          backgroundColor: "#fff",
-          border: "2px solid var(--mainColorToggled)",
-          padding: "20px",
-        }}
-      >
+      <Box sx={{ width: "90%", p: "20px" }}>
         <Typography
           gutterBottom
-          id="modal-modal-title"
           variant="h5"
           component="h2"
+          sx={{ color: "var(--mainColorToggled)" }}
         >
           Select filters:
         </Typography>
@@ -44,31 +32,25 @@ function FilterModal({ open, onClose, filterList }) {
                 variant="outlined"
                 sx={{
                   fontSize: "1em",
+                  color: "var(--mainColorToggled)",
                   p: "10px",
                 }}
               />
-              <Modal open={chipModalOpen} onClose={handleChipCloseModal}>
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "30%",
-                    left: { xs: "50%", sm: "55%", md: "50%" },
-                    transform: "translate(-50%, -50%)",
-                    width: { xs: "80%", sm: "70%", md: "50%" },
-                    height: "30%",
-                    backgroundColor: "#fff",
-                    border: "2px solid var(--mainColorToggled)",
-                    padding: "20px",
-                  }}
-                >
-                  element
-                </Box>
-              </Modal>
             </Grid>
           ))}
         </Grid>
+        <Dialog open={chipModalOpen} onClose={handleChipCloseModal}>
+          <Box
+            sx={{
+              width: { xs: "70%", sm: "60%", md: "40%" },
+              p: "20px",
+            }}
+          >
+            element
+          </Box>
+        </Dialog>
       </Box>
-    </Modal>
+    </Dialog>
   );
 }
 
