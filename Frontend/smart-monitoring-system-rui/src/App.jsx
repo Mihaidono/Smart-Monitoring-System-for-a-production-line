@@ -182,6 +182,7 @@ function LogsMenu() {
           }}
         >
           <IconButton
+            disabled={displayedLogs.length === 0}
             onClick={handleFilterOpenModal}
             sx={{
               justifyContent: "center",
