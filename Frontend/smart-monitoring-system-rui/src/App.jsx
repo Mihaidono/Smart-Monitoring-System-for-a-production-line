@@ -3,13 +3,9 @@ import {
   Grid,
   Stack,
   TextField,
-  Box,
-  Modal,
-  Typography,
   Pagination,
   IconButton,
   Tooltip,
-  Chip,
 } from "@mui/material";
 import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
