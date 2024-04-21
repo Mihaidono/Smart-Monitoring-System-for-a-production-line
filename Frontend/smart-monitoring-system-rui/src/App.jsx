@@ -177,8 +177,9 @@ function LogsMenu() {
           container
           xs={1}
           sx={{
-            justifyContent: "center",
+            justifyContent: { xs: "center", sm: "flex-end" },
             alignContent: "flex-end",
+            pr: "10px",
           }}
         >
           <IconButton
@@ -235,7 +236,7 @@ function LogsMenu() {
           item
           container
           sx={{
-            justifyContent: "flex-start",
+            justifyContent: { xs: "center", sm: "flex-start" },
             alignContent: "flex-end",
           }}
         >

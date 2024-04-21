@@ -1,4 +1,4 @@
-import { Drawer, Box } from "@mui/material";
+import { Drawer, Box, Stack, Chip, Button } from "@mui/material";
 import React, { useState } from "react";
 
 const severity = ["Warning", "Info", "Success"];
@@ -19,18 +19,45 @@ const modules = [
   "Shipping",
 ];
 
+function DrawerContent({ filterList }) {
+  return (
+    <Stack
+      rowGap={2}
+      sx={{
+        pt: "20px",
+        pb: "20px",
+        pl: "10px",
+        pr: "10px",
+        width: { xs: "70vw", sm: "300px" },
+        height: "100%",
+        backgroundColor: "var(--mainColor)",
+      }}
+    >
+      {filterList.map((value, index) => {
+        return (
+          <Chip
+            key={index}
+            label={value}
+            sx={{
+              p: "20px",
+              backgroundColor: "#fff",
+              color: "var(--mainColor)",
+              border:"2px solid #fff",
+              borderRadius:"15px"
+            }}
+          ></Chip>
+        );
+      })}
+    </Stack>
+  );
+}
+
 function FilterModal({ open, onClose, filterList }) {
-  const [chipModalOpen, setChipModalOpen] = useState(false);
-  const [selectedChip, setSelectedChip] = useState(null);
-  const [auxiliaryQuery, setAuxiliaryQuery] = useState(null);
-
-  const handleChipOpenModal = (chipInfo) => {
-    setSelectedChip(chipInfo);
-    setChipModalOpen(true);
-  };
-  const handleChipCloseModal = () => setChipModalOpen(false);
-
-  return <Box>Nimic</Box>; //DO IT WITH DRAWER LIKE THE EMAG GODS
+  return (
+    <Drawer anchor="left" open={open} onClose={onClose}>
+      <DrawerContent filterList={filterList} />
+    </Drawer>
+  );
 }
 
 export default FilterModal;
