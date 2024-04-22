@@ -13,8 +13,8 @@ function TrackingComponent({ stateValue, setStateValue }) {
       fullWidth
       sx={{ textAlign: "center" }}
     >
-      <MenuItem value={"Yes"}>Yes</MenuItem>
-      <MenuItem value={"No"}>No</MenuItem>
+      <MenuItem value={"Yes"} sx={{justifyContent:"center"}}>Yes</MenuItem>
+      <MenuItem value={"No"} sx={{justifyContent:"center"}}>No</MenuItem>
     </Select>
   );
 }

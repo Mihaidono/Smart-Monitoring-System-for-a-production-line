@@ -15,18 +15,15 @@ import SeverityComponent from "../FilterComponents/SeverityComponent/SeverityCom
 import TrackingComponent from "../FilterComponents/TrackingComponent/TrackingComponent";
 import RoutineComponent from "../FilterComponents/RoutineComponent/RoutineComponent";
 import ModuleComponent from "../FilterComponents/ModuleComponent/ModuleComponent";
+import { FilterList } from "../../config/enums/FilterList";
+import { Severity } from "../../config/enums/Severity";
+import { MonitoringRoutines } from "../../config/enums/MonitoringRoutines";
+import { MonitoringModules } from "../../config/enums/MonitoringModules";
 
-const filterTypes = {
-  ID: "Id",
-  SEVERITY: "Severity",
-  TRACKING: "In Tracking",
-  ROUTINE: "Routine",
-  MODULE: "Module",
-  TIMEFRAME: "Timeframe",
-};
-
-function DrawerContent({ filterList }) {
+function DrawerContent({ query, updateQuery }) {
   const [expandedPanel, setExpandedPanel] = useState(null);
+  const filterList = Object.values(FilterList);
+
   const [chipState, setChipState] = useState(
     Array.from({ length: filterList.length }).fill(false)
   );
@@ -52,39 +49,43 @@ function DrawerContent({ filterList }) {
     setChipState(updatedState);
   };
 
+  const getKeyByValue = (object, value) => {
+    return Object.keys(object).find((key) => object[key] === value);
+  };
+
   const renderFilterContent = (filterName) => {
     switch (filterName.split(":")[0]) {
-      case filterTypes.ID:
+      case FilterList.ID:
         return <IdComponent stateValue={idValue} setStateValue={setIdValue} />;
-      case filterTypes.SEVERITY:
+      case FilterList.SEVERITY:
         return (
           <SeverityComponent
             stateValue={severityValue}
             setStateValue={setSeverityValue}
           />
         );
-      case filterTypes.TRACKING:
+      case FilterList.TRACKING:
         return (
           <TrackingComponent
             stateValue={trackingValue}
             setStateValue={setTrackingValue}
           />
         );
-      case filterTypes.ROUTINE:
+      case FilterList.ROUTINE:
         return (
           <RoutineComponent
             stateValue={routineValue}
             setStateValue={setRoutineValue}
           />
         );
-      case filterTypes.MODULE:
+      case FilterList.MODULE:
         return (
           <ModuleComponent
             stateValue={moduleValue}
             setStateValue={setModuleValue}
           />
         );
-      case filterTypes.TIMEFRAME:
+      case FilterList.TIMEFRAME:
         return <Typography>to implement timeframe</Typography>;
       default:
         break;
@@ -92,33 +93,73 @@ function DrawerContent({ filterList }) {
   };
 
   const applyFilterChanges = (filterName, index) => {
+    let updatedQuery = { ...query };
     let updatedMessages = [...filtersTextMessages];
-    switch (filterName) {
-      case filterTypes.ID:
-        updatedMessages[index] = `${filterList[index]}: ${idValue}`;
+    let stateChanged = false;
+    switch (filterName.split(":")[0]) {
+      case FilterList.ID:
+        if (idValue) {
+          updatedMessages[index] = `${filterList[index]}: ${idValue}`;
+          stateChanged = true;
+          updatedQuery.log_id = idValue;
+        }
         break;
-      case filterTypes.SEVERITY:
-        updatedMessages[index] = `${filterList[index]}: ${severityValue}`;
+      case FilterList.SEVERITY:
+        if (severityValue) {
+          updatedMessages[index] = `${filterList[index]}: ${getKeyByValue(
+            Severity,
+            severityValue
+          )}`;
+          stateChanged = true;
+          updatedQuery.severity = severityValue;
+        }
         break;
-      case filterTypes.TRACKING:
-        updatedMessages[index] = `${filterList[index]}: ${trackingValue}`;
+      case FilterList.TRACKING:
+        if (trackingValue) {
+          updatedMessages[index] = `${filterList[index]}: ${trackingValue}`;
+          stateChanged = true;
+          if (trackingValue.toLowerCase() === "yes") {
+            updatedQuery.while_tracking = true;
+          } else if (trackingValue.toLowerCase() === "no") {
+            updatedQuery.while_tracking = false;
+          }
+        }
         break;
-      case filterTypes.ROUTINE:
-        updatedMessages[index] = `${filterList[index]}: ${routineValue}`;
+      case FilterList.ROUTINE:
+        if (routineValue) {
+          updatedMessages[index] = `${filterList[index]}: ${getKeyByValue(
+            MonitoringRoutines,
+            routineValue
+          )}`;
+          stateChanged = true;
+          updatedQuery.current_routine = routineValue;
+        }
         break;
-      case filterTypes.MODULE:
-        updatedMessages[index] = `${filterList[index]}: ${moduleValue}`;
+      case FilterList.MODULE:
+        if (moduleValue) {
+          updatedMessages[index] = `${filterList[index]}: ${getKeyByValue(
+            MonitoringModules,
+            moduleValue
+          )}`;
+          stateChanged = true;
+          updatedQuery.current_module = moduleValue;
+        }
         break;
-      case filterTypes.TIMEFRAME:
+      case FilterList.TIMEFRAME:
         break;
       default:
         break;
     }
-    let updatedState = [...chipState];
-    updatedState[index] = true;
 
+    if (stateChanged) {
+      let updatedState = [...chipState];
+      updatedState[index] = true;
+      setChipState(updatedState);
+    }
+
+    console.log(updatedQuery);
+    updateQuery(updatedQuery);
     setFiltersTextMessages(updatedMessages);
-    setChipState(updatedState);
     setExpandedPanel(null);
   };
 
@@ -177,10 +218,10 @@ function DrawerContent({ filterList }) {
   );
 }
 
-function FilterModal({ open, onClose, filterList }) {
+function FilterModal({ open, onClose, query, updateQuery }) {
   return (
     <Drawer anchor="left" open={open} onClose={onClose}>
-      <DrawerContent filterList={filterList} />
+      <DrawerContent query={query} updateQuery={updateQuery} />
     </Drawer>
   );
 }

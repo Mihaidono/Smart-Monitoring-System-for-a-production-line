@@ -6,7 +6,7 @@ from typing import List
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime
 from bson.objectid import ObjectId
 
 load_dotenv()
@@ -88,7 +88,7 @@ class MonitoringLogger:
     def get_total_log_count(self,
                             log_id: ObjectId = None,
                             message: str = None,
-                            severity: LogSeverity = None,
+                            severity: int = None,
                             while_tracking: bool = None,
                             current_routine=None,
                             current_module=None,
@@ -96,9 +96,9 @@ class MonitoringLogger:
                             upper_boundary: datetime = None):
         query = {}
         if log_id is not None:
-            query["_id"] = log_id
+            query["_id"] = ObjectId(log_id)
         if severity is not None:
-            query["severity"] = severity.value
+            query["severity"] = severity
         if while_tracking is not None:
             query["while_tracking"] = while_tracking
         if current_routine is not None:
@@ -133,7 +133,7 @@ class MonitoringLogger:
         if log_id is not None:
             query["_id"] = log_id
         if severity is not None:
-            query["severity"] = severity.value
+            query["severity"] = severity
         if while_tracking is not None:
             query["while_tracking"] = while_tracking
         if current_routine is not None:

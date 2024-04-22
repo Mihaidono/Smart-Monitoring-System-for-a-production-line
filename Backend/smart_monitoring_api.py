@@ -157,7 +157,7 @@ async def get_tracking_workpiece(websocket: WebSocket):
 @smart_monitoring_app.get("/logger/get_total_log_count")
 async def get_total_count(log_id: str = None,
                           message: str = None,
-                          severity: str = None,
+                          severity: int = None,
                           while_tracking: bool = None,
                           current_routine: str = None,
                           current_module: str = None,

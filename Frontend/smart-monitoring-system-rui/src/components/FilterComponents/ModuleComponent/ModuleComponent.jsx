@@ -1,12 +1,5 @@
 import { Select, MenuItem } from "@mui/material";
-
-const modules = [
-  "Home",
-  "Warehouse",
-  "Processing Station",
-  "Sorting Line",
-  "Shipping",
-];
+import { MonitoringModules } from "../../../config/enums/MonitoringModules";
 
 function ModuleComponent({ stateValue, setStateValue }) {
   const handleChange = (event) => {
@@ -20,10 +13,10 @@ function ModuleComponent({ stateValue, setStateValue }) {
       fullWidth
       sx={{ textAlign: "center" }}
     >
-      {modules.map((value, index) => {
+      {Object.entries(MonitoringModules).map(([key, value]) => {
         return (
-          <MenuItem key={index} value={value}>
-            {value}
+          <MenuItem key={key} value={value} sx={{justifyContent:"center"}}>
+            {key}
           </MenuItem>
         );
       })}

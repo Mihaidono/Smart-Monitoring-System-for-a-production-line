@@ -1,14 +1,5 @@
 import { Select, MenuItem } from "@mui/material";
-
-const routines = [
-  "Initializing",
-  "Surveying Bay",
-  "Surveying Delivery Process",
-  "Timed Out",
-  "Confirm Delivery Status",
-  "Delivery Successful",
-  "Idle",
-];
+import { MonitoringRoutines } from "../../../config/enums/MonitoringRoutines";
 
 function RoutineComponent({ stateValue, setStateValue }) {
   const handleChange = (event) => {
@@ -22,10 +13,10 @@ function RoutineComponent({ stateValue, setStateValue }) {
       fullWidth
       sx={{ textAlign: "center" }}
     >
-      {routines.map((value, index) => {
+      {Object.entries(MonitoringRoutines).map(([key, value]) => {
         return (
-          <MenuItem key={index} value={value}>
-            {value}
+          <MenuItem key={key} value={value} sx={{ justifyContent: "center" }}>
+            {key}
           </MenuItem>
         );
       })}

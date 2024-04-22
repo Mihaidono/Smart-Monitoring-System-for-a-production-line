@@ -1,6 +1,5 @@
 import { Select, MenuItem } from "@mui/material";
-
-const severity = ["Warning", "Info", "Success"];
+import { Severity } from "../../../config/enums/Severity";
 
 function SeverityComponent({ stateValue, setStateValue }) {
   const handleChange = (event) => {
@@ -14,10 +13,10 @@ function SeverityComponent({ stateValue, setStateValue }) {
       fullWidth
       sx={{ textAlign: "center" }}
     >
-      {severity.map((value, index) => {
+      {Object.entries(Severity).map(([key, value]) => {
         return (
-          <MenuItem key={index} value={value}>
-            {value}
+          <MenuItem key={key} value={value} sx={{justifyContent:"center"}}>
+            {key}
           </MenuItem>
         );
       })}

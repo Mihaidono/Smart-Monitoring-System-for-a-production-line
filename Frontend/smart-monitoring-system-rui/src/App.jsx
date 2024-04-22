@@ -20,16 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AvailableURLs } from "./config/enums/AvailableURLs";
 import axios from "axios";
 import { MonitoringLogQuery } from "./models/MonitoringLogQuery";
-import FilterModel from "./components/FilterModal/FilterModal";
-
-const filterList = [
-  "Id",
-  "Severity",
-  "In Tracking",
-  "Routine",
-  "Module",
-  "Timeframe",
-];
+import FilterModal from "./components/FilterModal/FilterModal";
 
 function LogsMenu() {
   const [displayedLogs, setDisplayedLogs] = useState([]);
@@ -50,13 +41,6 @@ function LogsMenu() {
 
   const handleTextFieldChange = (event) => {
     setTextFieldValue(event.target.value);
-  };
-
-  const handleFilterChipClick = (key, value) => {
-    const updatedSearchQuery = { ...searchQuery, [filterList[key]]: value };
-    console.log([filterList[key]], key, value);
-    console.log(updatedSearchQuery);
-    setSearchQuery(updatedSearchQuery);
   };
 
   const handlePageChange = async (event, page) => {
@@ -250,10 +234,11 @@ function LogsMenu() {
             <SearchIcon />
           </IconButton>
         </Grid>
-        <FilterModel
-          onClose={handleFilterCloseModal}
+        <FilterModal
           open={filterModalOpen}
-          filterList={filterList}
+          onClose={handleFilterCloseModal}
+          query={searchQuery}
+          updateQuery={setSearchQuery}
         />
       </Grid>
 

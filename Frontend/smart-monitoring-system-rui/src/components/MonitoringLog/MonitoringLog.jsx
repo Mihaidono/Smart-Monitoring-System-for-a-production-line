@@ -6,6 +6,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { MonitoringModules } from "../../config/enums/MonitoringModules";
 import { MonitoringRoutines } from "../../config/enums/MonitoringRoutines";
+import { Severity } from "../../config/enums/Severity";
 
 function MonitoringLog({ logData }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
@@ -29,7 +30,7 @@ function MonitoringLog({ logData }) {
 
   const renderSeverityIcon = (severity) => {
     switch (severity) {
-      case 1:
+      case Severity.WARNING:
         return (
           <WarningAmberOutlinedIcon
             sx={{
@@ -37,7 +38,7 @@ function MonitoringLog({ logData }) {
             }}
           />
         );
-      case 2:
+      case Severity.INFO:
         return (
           <InfoOutlinedIcon
             sx={{
@@ -45,7 +46,7 @@ function MonitoringLog({ logData }) {
             }}
           />
         );
-      case 3:
+      case Severity.SUCCESS:
         return (
           <CheckCircleOutlinedIcon
             sx={{
@@ -66,11 +67,11 @@ function MonitoringLog({ logData }) {
 
   const renderSeverityText = (severity) => {
     switch (severity) {
-      case 1:
+      case Severity.WARNING:
         return "Warning";
-      case 2:
-        return "Information";
-      case 3:
+      case Severity.INFO:
+        return "Informative";
+      case Severity.SUCCESS:
         return "Success";
       default:
         return "Unknown";
