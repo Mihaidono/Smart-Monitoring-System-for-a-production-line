@@ -11,11 +11,33 @@ function SeverityComponent({ stateValue, setStateValue }) {
       onChange={handleChange}
       displayEmpty
       fullWidth
-      sx={{ textAlign: "center" }}
+      sx={{
+        textAlign: "center",
+        color: "#fff",
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#fff",
+        },
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          borderColor: "var(--secondaryColor)",
+        },
+        "&:hover .MuiOutlinedInput-notchedOutline": {
+          borderColor: "var(--secondaryColor)",
+        },
+        ".MuiSvgIcon-root": {
+          fill: "white !important",
+        },
+        "&:hover .MuiSvgIcon-root": {
+          fill: "var(--secondaryColor) !important",
+        },
+      }}
     >
       {Object.entries(Severity).map(([key, value]) => {
         return (
-          <MenuItem key={key} value={value} sx={{justifyContent:"center"}}>
+          <MenuItem
+            key={key}
+            value={value}
+            sx={{ justifyContent: "center", color: "var(--mainColor)" }}
+          >
             {key}
           </MenuItem>
         );

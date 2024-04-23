@@ -247,7 +247,10 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
             </AccordionSummary>
             <AccordionDetails>{renderFilterContent(value)}</AccordionDetails>
             <AccordionActions>
-              <Button onClick={() => applyFilterChanges(value, index)}>
+              <Button
+                onClick={() => applyFilterChanges(value, index)}
+                sx={{ color: "var(--secondaryColor)" }}
+              >
                 Apply
               </Button>
             </AccordionActions>
