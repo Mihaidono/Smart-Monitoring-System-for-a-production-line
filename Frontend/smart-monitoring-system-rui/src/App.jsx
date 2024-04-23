@@ -6,6 +6,7 @@ import {
   Pagination,
   IconButton,
   Tooltip,
+  Badge,
 } from "@mui/material";
 import "./App.css";
 import CameraControl from "./components/CameraControl/CameraControl";
@@ -41,6 +42,7 @@ function LogsMenu() {
   const [paginationDisabled, setPaginationDisabled] = useState(false);
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [appliedFilterCount, setAppliedFilterCount] = useState(0);
 
   const handleFilterOpenModal = () => setFilterModalOpen(true);
   const handleFilterCloseModal = () => setFilterModalOpen(false);
@@ -169,7 +171,9 @@ function LogsMenu() {
             }}
           >
             <Tooltip title="Filter options" enterDelay={500} arrow>
-              <FilterListOutlinedIcon />
+              <Badge badgeContent={appliedFilterCount}>
+                <FilterListOutlinedIcon />
+              </Badge>
             </Tooltip>
           </IconButton>
         </Grid>
@@ -233,6 +237,8 @@ function LogsMenu() {
           onClose={handleFilterCloseModal}
           query={searchQuery}
           updateQuery={setSearchQuery}
+          updateFilterCount={setAppliedFilterCount}
+          filterCount={appliedFilterCount}
         />
       </Grid>
 

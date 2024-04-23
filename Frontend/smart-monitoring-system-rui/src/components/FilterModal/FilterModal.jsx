@@ -20,7 +20,7 @@ import { Severity } from "../../config/enums/Severity";
 import { MonitoringRoutines } from "../../config/enums/MonitoringRoutines";
 import { MonitoringModules } from "../../config/enums/MonitoringModules";
 
-function DrawerContent({ query, updateQuery }) {
+function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
   const [expandedPanel, setExpandedPanel] = useState(null);
   const filterList = Object.values(FilterList);
 
@@ -77,8 +77,9 @@ function DrawerContent({ query, updateQuery }) {
       default:
         break;
     }
-    
+
     sessionStorage.setItem("query", JSON.stringify(updatedQuery));
+    updateFilterCount(filterCount - 1);
     updateQuery(updatedQuery);
   };
 
@@ -191,6 +192,7 @@ function DrawerContent({ query, updateQuery }) {
       sessionStorage.setItem("filterList", JSON.stringify(updatedMessages));
       sessionStorage.setItem("chipState", JSON.stringify(updatedState));
       sessionStorage.setItem("query", JSON.stringify(updatedQuery));
+      updateFilterCount(filterCount + 1);
     }
 
     updateQuery(updatedQuery);
@@ -253,10 +255,22 @@ function DrawerContent({ query, updateQuery }) {
   );
 }
 
-function FilterModal({ open, onClose, query, updateQuery }) {
+function FilterModal({
+  open,
+  onClose,
+  query,
+  updateQuery,
+  filterCount,
+  updateFilterCount,
+}) {
   return (
     <Drawer anchor="left" open={open} onClose={onClose}>
-      <DrawerContent query={query} updateQuery={updateQuery} />
+      <DrawerContent
+        query={query}
+        updateQuery={updateQuery}
+        updateFilterCount={updateFilterCount}
+        filterCount={filterCount}
+      />
     </Drawer>
   );
 }
