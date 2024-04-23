@@ -79,6 +79,7 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
     }
 
     sessionStorage.setItem("query", JSON.stringify(updatedQuery));
+    sessionStorage.setItem("appliedFilters", JSON.stringify(filterCount - 1));
     updateFilterCount(filterCount - 1);
     updateQuery(updatedQuery);
   };
@@ -192,6 +193,7 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
       sessionStorage.setItem("filterList", JSON.stringify(updatedMessages));
       sessionStorage.setItem("chipState", JSON.stringify(updatedState));
       sessionStorage.setItem("query", JSON.stringify(updatedQuery));
+      sessionStorage.setItem("appliedFilters", JSON.stringify(filterCount + 1));
       updateFilterCount(filterCount + 1);
     }
 
