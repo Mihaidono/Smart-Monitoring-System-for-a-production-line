@@ -70,7 +70,6 @@ function DrawerContent({ query, updateQuery }) {
       default:
         break;
     }
-    console.log(updatedQuery);
     updateQuery(updatedQuery);
   };
 
@@ -182,7 +181,6 @@ function DrawerContent({ query, updateQuery }) {
       setChipState(updatedState);
     }
 
-    console.log(updatedQuery);
     updateQuery(updatedQuery);
     setFiltersTextMessages(updatedMessages);
     setExpandedPanel(null);

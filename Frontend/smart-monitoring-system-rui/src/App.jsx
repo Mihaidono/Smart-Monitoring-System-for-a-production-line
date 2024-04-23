@@ -25,14 +25,18 @@ import FilterModal from "./components/FilterModal/FilterModal";
 function LogsMenu() {
   const [displayedLogs, setDisplayedLogs] = useState([]);
 
-  const [searchQuery, setSearchQuery] = useState(new MonitoringLogQuery());
+  const logsPerPage = 8;
+  const initQuery = new MonitoringLogQuery();
+  initQuery.limitation = logsPerPage;
+  initQuery.current_page = 1;
+
+  const [searchQuery, setSearchQuery] = useState(initQuery);
   const [textFieldValue, setTextFieldValue] = useState("");
   const [textFieldDisabled, setTextFieldDisabled] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [logPages, setLogPages] = useState(1);
   const [paginationDisabled, setPaginationDisabled] = useState(false);
-  const logsPerPage = 8;
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
@@ -108,31 +112,20 @@ function LogsMenu() {
   }, [searchQuery]);
 
   useEffect(() => {
-    const initQuery = {
-      limitation: logsPerPage,
-      current_page: 1,
-    };
-
-    const initLogs = async () => {
-      setTextFieldDisabled(true);
+    const fetchLogs = async () => {
       try {
         const response = await axios.get(
           `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-          {
-            params: initQuery,
-          }
+          { params: searchQuery }
         );
         setDisplayedLogs(response.data.logs);
       } catch (error) {
         console.error(error);
-      } finally {
-        setTextFieldDisabled(false);
       }
     };
 
-    initLogs();
-    setSearchQuery(initQuery);
-  }, []);
+    fetchLogs();
+  }, [searchQuery]);
 
   return (
     <Grid

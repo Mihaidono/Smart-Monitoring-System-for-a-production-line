@@ -27,13 +27,13 @@ class LogSeverity(Enum):
 
 class MonitoringLogMessage:
     def __init__(
-            self,
-            message: str,
-            severity: LogSeverity,
-            while_tracking=None,
-            current_module=None,
-            current_routine=None,
-            additional_data: dict | List = None,
+        self,
+        message: str,
+        severity: LogSeverity,
+        while_tracking=None,
+        current_module=None,
+        current_routine=None,
+        additional_data: dict | List = None,
     ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
@@ -85,15 +85,17 @@ class MonitoringLogger:
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
-    def get_total_log_count(self,
-                            log_id: ObjectId = None,
-                            message: str = None,
-                            severity: int = None,
-                            while_tracking: bool = None,
-                            current_routine=None,
-                            current_module=None,
-                            lower_boundary: datetime = None,
-                            upper_boundary: datetime = None):
+    def get_total_log_count(
+        self,
+        log_id: ObjectId = None,
+        message: str = None,
+        severity: int = None,
+        while_tracking: bool = None,
+        current_routine: int = None,
+        current_module: int = None,
+        lower_boundary: datetime = None,
+        upper_boundary: datetime = None,
+    ):
         query = {}
         if log_id is not None:
             query["_id"] = ObjectId(log_id)
@@ -117,17 +119,17 @@ class MonitoringLogger:
         return log_count
 
     def get_logs(
-            self,
-            log_id: ObjectId = None,
-            message: str = None,
-            severity: LogSeverity = None,
-            while_tracking: bool = None,
-            current_routine=None,
-            current_module=None,
-            lower_boundary: datetime = None,
-            upper_boundary: datetime = None,
-            current_page: int = None,
-            limitation: int = None
+        self,
+        log_id: ObjectId = None,
+        message: str = None,
+        severity: LogSeverity = None,
+        while_tracking: bool = None,
+        current_routine: int = None,
+        current_module: int = None,
+        lower_boundary: datetime = None,
+        upper_boundary: datetime = None,
+        current_page: int = None,
+        limitation: int = None,
     ) -> List:
         query = {}
         if log_id is not None:
@@ -148,7 +150,11 @@ class MonitoringLogger:
         log_messages = []
         try:
             if current_page and limitation:
-                cursor = self._collection.find(query).skip((current_page - 1) * limitation).limit(limitation)
+                cursor = (
+                    self._collection.find(query)
+                    .skip((current_page - 1) * limitation)
+                    .limit(limitation)
+                )
             else:
                 cursor = self._collection.find(query)
             for log in cursor:
