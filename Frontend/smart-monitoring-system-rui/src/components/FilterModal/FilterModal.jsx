@@ -1,5 +1,4 @@
 import {
-  Drawer,
   Stack,
   Button,
   Accordion,
@@ -8,6 +7,7 @@ import {
   AccordionActions,
   Typography,
   Chip,
+  SwipeableDrawer,
 } from "@mui/material";
 import React, { useState } from "react";
 import IdComponent from "../FilterComponents/IdComponent/IdComponent";
@@ -210,7 +210,7 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
         pb: "20px",
         pl: "10px",
         pr: "10px",
-        width: { xs: "80vw", sm: "300px" },
+        width: { xs: "90vw", sm: "300px" },
       }}
     >
       {filtersTextMessages.map((value, index) => {
@@ -220,13 +220,12 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
             expanded={expandedPanel === index}
             onChange={handleFocusedFilterChange(index)}
             sx={{
-              backgroundColor: "var(--primaryColor)",
-              color: "var(--mainColor)",
+              backgroundColor: "var(--mainColor)",
             }}
           >
             <AccordionSummary id={index}>
               <Chip
-                label={value}
+                label={<Typography>{value}</Typography>}
                 onDelete={
                   chipState[index] ? () => handleChipRemove(index) : undefined
                 }
@@ -234,12 +233,14 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
                 sx={{
                   width: "100%",
                   backgroundColor: "transparent",
-                  color: "var(--mainColor)",
+                  color: "#fff",
                   border: "2px solid transparent",
                   borderRadius: "15px",
                   "& .MuiChip-deleteIcon": {
                     marginRight: 0,
+                    fontSize: "2em",
                     marginLeft: "auto",
+                    color: "var(--secondaryColor)",
                   },
                 }}
               ></Chip>
@@ -266,14 +267,14 @@ function FilterModal({
   updateFilterCount,
 }) {
   return (
-    <Drawer anchor="left" open={open} onClose={onClose}>
+    <SwipeableDrawer anchor="left" open={open} onClose={onClose}>
       <DrawerContent
         query={query}
         updateQuery={updateQuery}
         updateFilterCount={updateFilterCount}
         filterCount={filterCount}
       />
-    </Drawer>
+    </SwipeableDrawer>
   );
 }
 
