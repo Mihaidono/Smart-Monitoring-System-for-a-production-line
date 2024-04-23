@@ -47,6 +47,31 @@ function DrawerContent({ query, updateQuery }) {
     let updatedState = [...chipState];
     updatedState[index] = false;
     setChipState(updatedState);
+
+    let updatedQuery = { ...query };
+    switch (filterList[index].split(":")[0]) {
+      case FilterList.ID:
+        delete updatedQuery.log_id;
+        break;
+      case FilterList.SEVERITY:
+        delete updatedQuery.severity;
+        break;
+      case FilterList.TRACKING:
+        delete updatedQuery.while_tracking;
+        break;
+      case FilterList.ROUTINE:
+        delete updatedQuery.current_routine;
+        break;
+      case FilterList.MODULE:
+        delete updatedQuery.current_module;
+        break;
+      case FilterList.TIMEFRAME:
+        break;
+      default:
+        break;
+    }
+    console.log(updatedQuery);
+    updateQuery(updatedQuery);
   };
 
   const getKeyByValue = (object, value) => {
