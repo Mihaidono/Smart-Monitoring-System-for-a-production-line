@@ -25,9 +25,12 @@ function DrawerContent({ query, updateQuery }) {
   const filterList = Object.values(FilterList);
 
   const [chipState, setChipState] = useState(
-    Array.from({ length: filterList.length }).fill(false)
+    JSON.parse(sessionStorage.getItem("chipState")) ||
+      Array.from({ length: filterList.length }).fill(false)
   );
-  const [filtersTextMessages, setFiltersTextMessages] = useState(filterList);
+  const [filtersTextMessages, setFiltersTextMessages] = useState(
+    JSON.parse(sessionStorage.getItem("filterList")) || filterList
+  );
 
   const [idValue, setIdValue] = useState("");
   const [severityValue, setSeverityValue] = useState("");
@@ -42,10 +45,14 @@ function DrawerContent({ query, updateQuery }) {
   const handleChipRemove = (index) => {
     let updatedMessages = [...filtersTextMessages];
     updatedMessages[index] = filterList[index];
+
+    sessionStorage.setItem("filterList", JSON.stringify(filterList));
     setFiltersTextMessages(updatedMessages);
 
     let updatedState = [...chipState];
     updatedState[index] = false;
+
+    sessionStorage.setItem("chipState", JSON.stringify(updatedState));
     setChipState(updatedState);
 
     let updatedQuery = { ...query };
@@ -70,6 +77,8 @@ function DrawerContent({ query, updateQuery }) {
       default:
         break;
     }
+    
+    sessionStorage.setItem("query", JSON.stringify(updatedQuery));
     updateQuery(updatedQuery);
   };
 
@@ -179,6 +188,9 @@ function DrawerContent({ query, updateQuery }) {
       let updatedState = [...chipState];
       updatedState[index] = true;
       setChipState(updatedState);
+      sessionStorage.setItem("filterList", JSON.stringify(updatedMessages));
+      sessionStorage.setItem("chipState", JSON.stringify(updatedState));
+      sessionStorage.setItem("query", JSON.stringify(updatedQuery));
     }
 
     updateQuery(updatedQuery);

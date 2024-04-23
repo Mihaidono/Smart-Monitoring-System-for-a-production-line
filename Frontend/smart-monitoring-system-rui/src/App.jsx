@@ -30,7 +30,9 @@ function LogsMenu() {
   initQuery.limitation = logsPerPage;
   initQuery.current_page = 1;
 
-  const [searchQuery, setSearchQuery] = useState(initQuery);
+  const [searchQuery, setSearchQuery] = useState(
+    JSON.parse(sessionStorage.getItem("query")) || initQuery
+  );
   const [textFieldValue, setTextFieldValue] = useState("");
   const [textFieldDisabled, setTextFieldDisabled] = useState(false);
 
@@ -156,7 +158,6 @@ function LogsMenu() {
           }}
         >
           <IconButton
-            disabled={displayedLogs.length === 0}
             onClick={handleFilterOpenModal}
             sx={{
               justifyContent: "center",
