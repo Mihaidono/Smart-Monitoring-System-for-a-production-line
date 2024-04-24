@@ -42,7 +42,9 @@ function LogsMenu() {
   const [paginationDisabled, setPaginationDisabled] = useState(false);
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [appliedFilterCount, setAppliedFilterCount] = useState(JSON.parse(sessionStorage.getItem('appliedFilters')) || 0);
+  const [appliedFilterCount, setAppliedFilterCount] = useState(
+    JSON.parse(sessionStorage.getItem("appliedFilters")) || 0
+  );
 
   const handleFilterOpenModal = () => setFilterModalOpen(true);
   const handleFilterCloseModal = () => setFilterModalOpen(false);
@@ -270,6 +272,8 @@ function LogsMenu() {
           onChange={handlePageChange}
           disabled={paginationDisabled}
           variant="outlined"
+          hidePrevButton
+          hideNextButton
         />
       </Grid>
     </Grid>
