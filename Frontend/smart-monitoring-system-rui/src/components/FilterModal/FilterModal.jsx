@@ -15,6 +15,7 @@ import SeverityComponent from "../FilterComponents/SeverityComponent/SeverityCom
 import TrackingComponent from "../FilterComponents/TrackingComponent/TrackingComponent";
 import RoutineComponent from "../FilterComponents/RoutineComponent/RoutineComponent";
 import ModuleComponent from "../FilterComponents/ModuleComponent/ModuleComponent";
+import TimestampComponent from "../FilterComponents/TimestampComponent/TimestampComponent";
 import { FilterList } from "../../config/enums/FilterList";
 import { Severity } from "../../config/enums/Severity";
 import { MonitoringRoutines } from "../../config/enums/MonitoringRoutines";
@@ -37,6 +38,8 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
   const [trackingValue, setTrackingValue] = useState("");
   const [routineValue, setRoutineValue] = useState("");
   const [moduleValue, setModuleValue] = useState("");
+  const [lowerBoundaryValue, setLowerBoundaryValue] = useState("");
+  const [upperBoundaryValue, setUpperBoundaryValue] = useState("");
 
   const handleFocusedFilterChange = (panel) => (event, isExpanded) => {
     setExpandedPanel(isExpanded ? panel : null);
@@ -73,6 +76,8 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
         delete updatedQuery.current_module;
         break;
       case FilterList.TIMEFRAME:
+        delete updatedQuery.lower_boundary;
+        delete updatedQuery.upper_boundary;
         break;
       default:
         break;
@@ -121,7 +126,14 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
           />
         );
       case FilterList.TIMEFRAME:
-        return <Typography>to implement timeframe</Typography>;
+        return (
+          <TimestampComponent
+            lowerBoundaryValue={lowerBoundaryValue}
+            setLowerBoundaryValue={setLowerBoundaryValue}
+            upperBoundaryValue={upperBoundaryValue}
+            setUpperBoundaryValue={setUpperBoundaryValue}
+          />
+        );
       default:
         break;
     }
@@ -263,6 +275,7 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
 
 function FilterModal({
   open,
+  onOpen,
   onClose,
   query,
   updateQuery,
@@ -270,7 +283,12 @@ function FilterModal({
   updateFilterCount,
 }) {
   return (
-    <SwipeableDrawer anchor="left" open={open} onClose={onClose}>
+    <SwipeableDrawer
+      anchor="left"
+      open={open}
+      onOpen={onOpen}
+      onClose={onClose}
+    >
       <DrawerContent
         query={query}
         updateQuery={updateQuery}

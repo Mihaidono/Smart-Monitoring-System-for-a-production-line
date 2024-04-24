@@ -236,6 +236,7 @@ function LogsMenu() {
         </Grid>
         <FilterModal
           open={filterModalOpen}
+          onOpen={handleFilterOpenModal}
           onClose={handleFilterCloseModal}
           query={searchQuery}
           updateQuery={setSearchQuery}
