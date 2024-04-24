@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
@@ -42,7 +42,7 @@ function TimestampComponent({
           onChange={(date) =>
             setLowerBoundaryValue(formatDateTimeToString(date))
           }
-          renderInput={(params) => <TextField {...params} />}
+          slotProps={{ textField: { variant: "outlined" } }}
           sx={{
             "& .MuiOutlinedInput-root": {
               color: "#fff",
@@ -58,6 +58,9 @@ function TimestampComponent({
             },
             "& .MuiFormLabel-root": {
               color: "#fff",
+              "&.Mui-focused fieldset": {
+                color: "#fff",
+              },
             },
             "& .MuiIconButton-root": {
               color: "#fff",
@@ -80,7 +83,7 @@ function TimestampComponent({
           onChange={(date) =>
             setUpperBoundaryValue(formatDateTimeToString(date))
           }
-          renderInput={(params) => <TextField {...params} />}
+          slotProps={{ textField: { variant: "outlined" } }}
           sx={{
             "& .MuiOutlinedInput-root": {
               color: "#fff",
@@ -96,6 +99,9 @@ function TimestampComponent({
             },
             "& .MuiFormLabel-root": {
               color: "#fff",
+              "&.Mui-focused fieldset": {
+                color: "#fff",
+              },
             },
             "& .MuiIconButton-root": {
               color: "#fff",
