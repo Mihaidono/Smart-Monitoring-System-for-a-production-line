@@ -180,10 +180,10 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
         if (routineValue) {
           updatedMessages[index] = `${filterList[index]}: ${getKeyByValue(
             MonitoringRoutines,
-            routineValue
+            routineValue - 1
           )}`;
           stateChanged = true;
-          updatedQuery.current_routine = routineValue;
+          updatedQuery.current_routine = routineValue - 1;
         }
         break;
       case FilterList.MODULE:
