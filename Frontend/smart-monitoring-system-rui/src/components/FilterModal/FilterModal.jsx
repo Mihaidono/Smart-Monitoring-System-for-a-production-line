@@ -10,7 +10,7 @@ import {
   SwipeableDrawer,
   Tooltip,
 } from "@mui/material";
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import IdComponent from "../FilterComponents/IdComponent/IdComponent";
 import SeverityComponent from "../FilterComponents/SeverityComponent/SeverityComponent";
 import TrackingComponent from "../FilterComponents/TrackingComponent/TrackingComponent";
@@ -24,7 +24,7 @@ import { MonitoringModules } from "../../config/enums/MonitoringModules";
 
 function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
   const [expandedPanel, setExpandedPanel] = useState(null);
-  const filterList = useMemo(() => Object.values(FilterList), []);
+  const filterList = Object.values(FilterList);
 
   const [chipState, setChipState] = useState(
     JSON.parse(sessionStorage.getItem("chipState")) ||
