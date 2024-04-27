@@ -137,10 +137,10 @@ function LogsMenu() {
     <Grid
       container
       rowSpacing={1}
-      padding="20px"
-      paddingTop="30px"
-      paddingBottom="30px"
-      height="fit-content"
+      sx={{
+        height: "fit-content",
+        p: "20px",
+      }}
     >
       <Grid
         item
