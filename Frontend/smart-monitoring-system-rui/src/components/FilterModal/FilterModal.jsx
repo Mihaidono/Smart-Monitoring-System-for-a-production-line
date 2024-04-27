@@ -8,6 +8,7 @@ import {
   Typography,
   Chip,
   SwipeableDrawer,
+  Tooltip,
 } from "@mui/material";
 import React, { useState } from "react";
 import IdComponent from "../FilterComponents/IdComponent/IdComponent";
@@ -271,26 +272,36 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
             }}
           >
             <AccordionSummary id={index}>
-              <Chip
-                label={<Typography>{value}</Typography>}
-                onDelete={
-                  chipState[index] ? () => handleChipRemove(index) : undefined
-                }
-                variant="outlined"
-                sx={{
-                  width: "100%",
-                  backgroundColor: "transparent",
-                  color: "#fff",
-                  border: "2px solid transparent",
-                  borderRadius: "15px",
-                  "& .MuiChip-deleteIcon": {
-                    marginRight: 0,
-                    fontSize: "2em",
-                    marginLeft: "auto",
-                    color: "var(--secondaryColor)",
-                  },
-                }}
-              ></Chip>
+              <Tooltip title={value} enterDelay={500} placement="bottom" arrow>
+                <Chip
+                  label={
+                    <Typography
+                      noWrap
+                      sx={{ width: { xs: "70vw", sm: "200px" }, textAlign:"center" }}
+                    >
+                      {value}
+                    </Typography>
+                  }
+                  onDelete={
+                    chipState[index] ? () => handleChipRemove(index) : undefined
+                  }
+                  variant="outlined"
+                  sx={{
+                    width: "100%",
+                    justifyContent: "center",
+                    backgroundColor: "transparent",
+                    color: "#fff",
+                    border: "2px solid transparent",
+                    borderRadius: "15px",
+                    "& .MuiChip-deleteIcon": {
+                      marginRight: 0,
+                      fontSize: "2em",
+                      marginLeft: "auto",
+                      color: "var(--secondaryColor)",
+                    },
+                  }}
+                ></Chip>
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails>{renderFilterContent(value)}</AccordionDetails>
             <AccordionActions>
