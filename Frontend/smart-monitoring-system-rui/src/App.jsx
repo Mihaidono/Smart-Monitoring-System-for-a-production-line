@@ -43,7 +43,7 @@ function LogsMenu() {
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [appliedFilterCount, setAppliedFilterCount] = useState(
-    JSON.parse(sessionStorage.getItem("appliedFilters")) || 0
+    JSON.parse(sessionStorage.getItem("appliedFiltersCount")) || 0
   );
 
   const handleFilterOpenModal = () => setFilterModalOpen(true);

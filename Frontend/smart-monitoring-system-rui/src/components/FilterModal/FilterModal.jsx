@@ -10,7 +10,7 @@ import {
   SwipeableDrawer,
   Tooltip,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import IdComponent from "../FilterComponents/IdComponent/IdComponent";
 import SeverityComponent from "../FilterComponents/SeverityComponent/SeverityComponent";
 import TrackingComponent from "../FilterComponents/TrackingComponent/TrackingComponent";
@@ -24,7 +24,7 @@ import { MonitoringModules } from "../../config/enums/MonitoringModules";
 
 function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
   const [expandedPanel, setExpandedPanel] = useState(null);
-  const filterList = Object.values(FilterList);
+  const filterList = useMemo(() => Object.values(FilterList), []);
 
   const [chipState, setChipState] = useState(
     JSON.parse(sessionStorage.getItem("chipState")) ||
@@ -85,7 +85,10 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
     }
 
     sessionStorage.setItem("query", JSON.stringify(updatedQuery));
-    sessionStorage.setItem("appliedFilters", JSON.stringify(filterCount - 1));
+    sessionStorage.setItem(
+      "appliedFiltersCount",
+      JSON.stringify(filterCount - 1)
+    );
     updateFilterCount(filterCount - 1);
     updateQuery(updatedQuery);
   };
@@ -234,13 +237,18 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
 
     if (stateChanged) {
       let updatedState = [...chipState];
-      updatedState[index] = true;
-      setChipState(updatedState);
+      if (updatedState[index] === false) {
+        updatedState[index] = true;
+        setChipState(updatedState);
+        sessionStorage.setItem(
+          "appliedFiltersCount",
+          JSON.stringify(filterCount + 1)
+        );
+        updateFilterCount(filterCount + 1);
+      }
       sessionStorage.setItem("filterList", JSON.stringify(updatedMessages));
       sessionStorage.setItem("chipState", JSON.stringify(updatedState));
       sessionStorage.setItem("query", JSON.stringify(updatedQuery));
-      sessionStorage.setItem("appliedFilters", JSON.stringify(filterCount + 1));
-      updateFilterCount(filterCount + 1);
     }
 
     updateQuery(updatedQuery);
@@ -277,7 +285,10 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
                   label={
                     <Typography
                       noWrap
-                      sx={{ width: { xs: "70vw", sm: "200px" }, textAlign:"center" }}
+                      sx={{
+                        width: { xs: "70vw", sm: "200px" },
+                        textAlign: "center",
+                      }}
                     >
                       {value}
                     </Typography>
