@@ -35,7 +35,7 @@ function RoutineComponent({ stateValue, setStateValue }) {
         return (
           <MenuItem
             key={key}
-            value={value + 1}
+            value={value}
             sx={{ justifyContent: "center", color: "var(--mainColor)" }}
           >
             {key}
