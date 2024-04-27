@@ -223,6 +223,8 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
         pl: "10px",
         pr: "10px",
         width: { xs: "90vw", sm: "300px" },
+        height: "100%",
+        borderRight: "2px solid var(--mainColor)",
       }}
     >
       {filtersTextMessages.map((value, index) => {

@@ -26,7 +26,7 @@ import FilterModal from "./components/FilterModal/FilterModal";
 function LogsMenu() {
   const [displayedLogs, setDisplayedLogs] = useState([]);
 
-  const logsPerPage = 8;
+  const logsPerPage = 7;
   const initQuery = new MonitoringLogQuery();
   initQuery.limitation = logsPerPage;
   initQuery.current_page = 1;
