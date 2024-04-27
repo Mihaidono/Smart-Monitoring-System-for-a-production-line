@@ -193,6 +193,39 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
         }
         break;
       case FilterList.TIMEFRAME:
+        if (lowerBoundaryValue && upperBoundaryValue) {
+          const lowerBoundaryDate = new Date(lowerBoundaryValue);
+          const upperBoundaryDate = new Date(upperBoundaryValue);
+          const formattedLowerBoundary = lowerBoundaryDate.toLocaleString(
+            "en-US",
+            {
+              hour12: true,
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+            }
+          );
+          const formattedUpperBoundary = upperBoundaryDate.toLocaleString(
+            "en-US",
+            {
+              hour12: true,
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+            }
+          );
+
+          updatedMessages[
+            index
+          ] = `${filterList[index]}: ${formattedLowerBoundary} - ${formattedUpperBoundary}`;
+          stateChanged = true;
+          updatedQuery.lower_boundary = lowerBoundaryValue;
+          updatedQuery.upper_boundary = upperBoundaryValue;
+        }
         break;
       default:
         break;
