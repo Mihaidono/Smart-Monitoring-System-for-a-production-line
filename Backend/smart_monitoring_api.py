@@ -8,15 +8,16 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from typing import Optional, List
 
-# import camera_control_service as camera_control
-# from monitoring_service import MonitoringService
+import camera_control_service as camera_control
+from monitoring_service import MonitoringService
 from monitoring_logger import MonitoringLogger
 
 load_dotenv()
 
 smart_monitoring_app = FastAPI()
-# surveillance_system = MonitoringService()
+surveillance_system = MonitoringService()
 logger = MonitoringLogger()
 
 smart_monitoring_app.add_middleware(
@@ -35,6 +36,19 @@ class CameraControlMessage(BaseModel):
 
 class ChangeState(BaseModel):
     new_state: bool
+
+
+class LogRequest(BaseModel):
+    log_id: Optional[str] = None
+    message: Optional[str] = None
+    severity: Optional[int] = None
+    while_tracking: Optional[bool] = None
+    current_routine: Optional[int] = None
+    current_module: Optional[List[float]] = None
+    lower_boundary: Optional[datetime] = None
+    upper_boundary: Optional[datetime] = None
+    current_page: Optional[int] = None
+    limitation: Optional[int] = None
 
 
 @smart_monitoring_app.get("/order_workpiece")
@@ -154,58 +168,38 @@ async def get_tracking_workpiece(websocket: WebSocket):
         await websocket.send_json({"error": error_details})
 
 
-@smart_monitoring_app.get("/logger/get_total_log_count")
-async def get_total_count(
-    log_id: str = None,
-    message: str = None,
-    severity: int = None,
-    while_tracking: bool = None,
-    current_routine: str = None,
-    current_module: str = None,
-    lower_boundary: datetime = None,
-    upper_boundary: datetime = None,
-):
+@smart_monitoring_app.post("/logger/get_total_log_count")
+async def get_total_count(log_request: LogRequest):
     try:
         logs_count = logger.get_total_log_count(
-            log_id=log_id,
-            message=message,
-            severity=severity,
-            while_tracking=while_tracking,
-            current_module=current_module,
-            current_routine=current_routine,
-            lower_boundary=lower_boundary,
-            upper_boundary=upper_boundary,
+            log_id=log_request.log_id,
+            message=log_request.message,
+            severity=log_request.severity,
+            while_tracking=log_request.while_tracking,
+            current_module=log_request.current_module,
+            current_routine=log_request.current_routine,
+            lower_boundary=log_request.lower_boundary,
+            upper_boundary=log_request.upper_boundary,
         )
         return JSONResponse(content={"logs_count": logs_count})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@smart_monitoring_app.get("/logger/get_logs")
-async def get_logs(
-    log_id: str = None,
-    message: str = None,
-    severity: int = None,
-    while_tracking: bool = None,
-    current_routine: int = None,
-    current_module: int = None,
-    lower_boundary: datetime = None,
-    upper_boundary: datetime = None,
-    current_page: int = None,
-    limitation: int = None,
-):
+@smart_monitoring_app.post("/logger/get_logs")
+async def get_logs(log_request: LogRequest):
     try:
         logs = logger.get_logs(
-            log_id=log_id,
-            message=message,
-            severity=severity,
-            while_tracking=while_tracking,
-            current_module=current_module,
-            current_routine=current_routine,
-            lower_boundary=lower_boundary,
-            upper_boundary=upper_boundary,
-            current_page=current_page,
-            limitation=limitation,
+            log_id=log_request.log_id,
+            message=log_request.message,
+            severity=log_request.severity,
+            while_tracking=log_request.while_tracking,
+            current_module=log_request.current_module,
+            current_routine=log_request.current_routine,
+            lower_boundary=log_request.lower_boundary,
+            upper_boundary=log_request.upper_boundary,
+            current_page=log_request.current_page,
+            limitation=log_request.limitation,
         )
         return JSONResponse(content={"logs": logs}, status_code=200)
     except Exception as e:
@@ -219,11 +213,9 @@ def start_uvicorn():
 
 
 if __name__ == "__main__":
-    # camera_control.start_camera_control_service()
+    camera_control.start_camera_control_service()
 
-    # uvicorn_thread = Thread(target=start_uvicorn, daemon=True)
-    # uvicorn_thread.start()
+    uvicorn_thread = Thread(target=start_uvicorn, daemon=True)
+    uvicorn_thread.start()
 
-    # surveillance_system.start_monitoring()
-
-    start_uvicorn()
+    surveillance_system.start_monitoring()

@@ -62,9 +62,9 @@ function LogsMenu() {
         limitation: logsPerPage,
         current_page: page,
       };
-      const response = await axios.get(
+      const response = await axios.post(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-        { params: updatedQuery }
+        updatedQuery
       );
 
       setDisplayedLogs(response.data.logs);
@@ -78,11 +78,9 @@ function LogsMenu() {
     setTextFieldDisabled(true);
     try {
       const updatedQuery = { ...searchQuery, message: textFieldValue };
-      const response = await axios.get(
+      const response = await axios.post(
         `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-        {
-          params: updatedQuery,
-        }
+        updatedQuery
       );
       setDisplayedLogs(response.data.logs);
       setSearchQuery(updatedQuery);
@@ -102,9 +100,9 @@ function LogsMenu() {
   useEffect(() => {
     const fetchLogPageCount = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${AvailableURLs.BACKEND_HTTP}/logger/get_total_log_count`,
-          { params: searchQuery }
+          searchQuery
         );
         setLogPages(
           Math.ceil(parseInt(response.data.logs_count) / logsPerPage)
@@ -120,9 +118,9 @@ function LogsMenu() {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${AvailableURLs.BACKEND_HTTP}/logger/get_logs`,
-          { params: searchQuery }
+          searchQuery
         );
         setDisplayedLogs(response.data.logs);
       } catch (error) {

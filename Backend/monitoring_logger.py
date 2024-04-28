@@ -27,13 +27,13 @@ class LogSeverity(Enum):
 
 class MonitoringLogMessage:
     def __init__(
-        self,
-        message: str,
-        severity: LogSeverity,
-        while_tracking=None,
-        current_module=None,
-        current_routine=None,
-        additional_data: dict | List = None,
+            self,
+            message: str,
+            severity: LogSeverity,
+            while_tracking=None,
+            current_module=None,
+            current_routine=None,
+            additional_data: dict | List = None,
     ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
@@ -86,15 +86,15 @@ class MonitoringLogger:
         self._collection.insert_one(log.get_log_data())
 
     def get_total_log_count(
-        self,
-        log_id: ObjectId = None,
-        message: str = None,
-        severity: int = None,
-        while_tracking: bool = None,
-        current_routine: int = None,
-        current_module: int = None,
-        lower_boundary: datetime = None,
-        upper_boundary: datetime = None,
+            self,
+            log_id: ObjectId = None,
+            message: str = None,
+            severity: int = None,
+            while_tracking: bool = None,
+            current_routine: int = None,
+            current_module: int = None,
+            lower_boundary: datetime = None,
+            upper_boundary: datetime = None,
     ):
         query = {}
         if log_id is not None:
@@ -106,7 +106,7 @@ class MonitoringLogger:
         if current_routine is not None:
             query["current_routine"] = current_routine
         if current_module is not None:
-            query["current_module"] = current_module
+            query["current_module"] = {"$all": current_module}
         if message is not None:
             query["message"] = {"$regex": re.compile(message, re.IGNORECASE)}
         if lower_boundary is not None and upper_boundary is not None:
@@ -119,17 +119,17 @@ class MonitoringLogger:
         return log_count
 
     def get_logs(
-        self,
-        log_id: ObjectId = None,
-        message: str = None,
-        severity: LogSeverity = None,
-        while_tracking: bool = None,
-        current_routine: int = None,
-        current_module: int = None,
-        lower_boundary: datetime = None,
-        upper_boundary: datetime = None,
-        current_page: int = None,
-        limitation: int = None,
+            self,
+            log_id: ObjectId = None,
+            message: str = None,
+            severity: LogSeverity = None,
+            while_tracking: bool = None,
+            current_routine: int = None,
+            current_module: int = None,
+            lower_boundary: datetime = None,
+            upper_boundary: datetime = None,
+            current_page: int = None,
+            limitation: int = None,
     ) -> List:
         query = {}
         if log_id is not None:
@@ -141,7 +141,7 @@ class MonitoringLogger:
         if current_routine is not None:
             query["current_routine"] = current_routine
         if current_module is not None:
-            query["current_module"] = current_module
+            query["current_module"] = {"$all": current_module}
         if message is not None:
             query["message"] = {"$regex": re.compile(message, re.IGNORECASE)}
         if lower_boundary is not None and upper_boundary is not None:
