@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import uuid
 import threading
 import time
 from datetime import datetime
@@ -39,6 +40,7 @@ class MonitoringService:
         self._camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
         self._standby_seconds_count = 0
 
+        self._current_process_id = None
         self._warehouse_containers = []
         self._prev_frame_with_detected_objects = []
         self._reoccurrence_matrix = np.zeros((3, 3))
@@ -68,7 +70,7 @@ class MonitoringService:
     def process_started(self, value):
         self._process_started = value
         self._logger.store_log(
-            MonitoringLogMessage("Monitoring Service started from GUI",
+            MonitoringLogMessage(self._current_process_id, "Monitoring Service started from GUI",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -105,7 +107,8 @@ class MonitoringService:
 
                 self._detection_count_per_module += 1
                 self._logger.store_log(
-                    MonitoringLogMessage("Workpiece moved from High-Bay Warehouse to Processing Station",
+                    MonitoringLogMessage(self._current_process_id,
+                                         "Workpiece moved from High-Bay Warehouse to Processing Station",
                                          LogSeverity.INFO,
                                          self._tracking_workpiece, camera_control.current_module,
                                          self._current_routine))
@@ -123,7 +126,8 @@ class MonitoringService:
 
                 self._detection_count_per_module += 1
                 self._logger.store_log(
-                    MonitoringLogMessage("Workpiece moved from Processing Station to Sorting Line",
+                    MonitoringLogMessage(self._current_process_id,
+                                         "Workpiece moved from Processing Station to Sorting Line",
                                          LogSeverity.INFO,
                                          self._tracking_workpiece, camera_control.current_module,
                                          self._current_routine))
@@ -138,7 +142,7 @@ class MonitoringService:
 
                 self._detection_count_per_module += 1
                 self._logger.store_log(
-                    MonitoringLogMessage("Workpiece moved from Sorting Line to Delivery",
+                    MonitoringLogMessage(self._current_process_id, "Workpiece moved from Sorting Line to Delivery",
                                          LogSeverity.INFO,
                                          self._tracking_workpiece, camera_control.current_module,
                                          self._current_routine))
@@ -171,7 +175,7 @@ class MonitoringService:
                        keepalive=self._KEEP_ALIVE,
                        auth={'username': self._USERNAME, 'password': self._PASSWD})
         self._logger.store_log(
-            MonitoringLogMessage(f"{color} Workpiece ordered",
+            MonitoringLogMessage(self._current_process_id, f"{color} Workpiece ordered",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -179,8 +183,9 @@ class MonitoringService:
     def initialization_routine(self):
         self.initiate_camera_position()
         self._prev_frame_with_detected_objects = []
+        self._current_process_id = str(uuid.uuid1())
         self._logger.store_log(
-            MonitoringLogMessage("Initialization Routine completed successfully!",
+            MonitoringLogMessage(self._current_process_id, "Initialization Routine completed successfully!",
                                  LogSeverity.SUCCESS,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -189,7 +194,7 @@ class MonitoringService:
     def camera_timeout_routine(self):
         self._detection_count_per_module = 0
         self._logger.store_log(
-            MonitoringLogMessage("Object lost from field of view!",
+            MonitoringLogMessage(self._current_process_id, "Object lost from field of view!",
                                  LogSeverity.WARNING,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -201,7 +206,7 @@ class MonitoringService:
     def successful_delivery_routine(self):
         self._tracking_workpiece = False
         self._logger.store_log(
-            MonitoringLogMessage("Successfully delivered workpiece!",
+            MonitoringLogMessage(self._current_process_id, "Successfully delivered workpiece!",
                                  LogSeverity.SUCCESS,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -212,7 +217,7 @@ class MonitoringService:
     def idle_routine(self):
         self._tracking_workpiece = False
         self._logger.store_log(
-            MonitoringLogMessage("Monitoring Service turned to Idle mode",
+            MonitoringLogMessage(self._current_process_id, "Monitoring Service turned to Idle mode",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -246,7 +251,7 @@ class MonitoringService:
         self._tracking_workpiece = True
         countdown_running = False
         self._logger.store_log(
-            MonitoringLogMessage("Surveillance of the in-delivery workpiece started",
+            MonitoringLogMessage(self._current_process_id, "Surveillance of the in-delivery workpiece started",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -294,7 +299,7 @@ class MonitoringService:
 
     def confirm_delivery_status_routine(self):
         self._logger.store_log(
-            MonitoringLogMessage("Waiting for delivery confirmation!",
+            MonitoringLogMessage(self._current_process_id, "Waiting for delivery confirmation!",
                                  LogSeverity.INFO,
                                  self._tracking_workpiece, camera_control.current_module,
                                  self._current_routine))
@@ -348,7 +353,7 @@ class MonitoringService:
         if any(3 in column for column in self._reoccurrence_matrix):
             self._reoccurrence_matrix = np.zeros((3, 3))
             self._logger.store_log(
-                MonitoringLogMessage(f"Current state of the High-Bay Warehouse",
+                MonitoringLogMessage(self._current_process_id, f"Current state of the High-Bay Warehouse",
                                      LogSeverity.INFO,
                                      self._tracking_workpiece, camera_control.current_module,
                                      self._current_routine,
