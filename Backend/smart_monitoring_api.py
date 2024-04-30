@@ -172,7 +172,7 @@ async def get_tracking_workpiece(websocket: WebSocket):
 async def get_total_count(log_request: LogRequest):
     try:
         logs_count = logger.get_total_log_count(
-            log_id=log_request.log_id,
+            process_id=log_request.process_id,
             message=log_request.message,
             severity=log_request.severity,
             while_tracking=log_request.while_tracking,
@@ -190,7 +190,7 @@ async def get_total_count(log_request: LogRequest):
 async def get_logs(log_request: LogRequest):
     try:
         logs = logger.get_logs(
-            log_id=log_request.log_id,
+            process_id=log_request.process_id,
             message=log_request.message,
             severity=log_request.severity,
             while_tracking=log_request.while_tracking,
