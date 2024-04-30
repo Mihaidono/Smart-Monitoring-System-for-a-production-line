@@ -28,15 +28,17 @@ class LogSeverity(Enum):
 class MonitoringLogMessage:
     def __init__(
             self,
+            process_id: str,
             message: str,
             severity: LogSeverity,
-            while_tracking=None,
-            current_module=None,
-            current_routine=None,
+            while_tracking: bool,
+            current_module: int,
+            current_routine: int,
             additional_data: dict | List = None,
     ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
+        self._process_id = process_id
         self._message = message
         self._additional_data = additional_data
         self._severity = severity
@@ -47,6 +49,7 @@ class MonitoringLogMessage:
     def get_log_data(self) -> dict:
         return {
             "_id": self._id,
+            "process_id": self._process_id,
             "timestamp": self._timestamp,
             "while_tracking": self._while_tracking,
             "current_routine": self._current_routine,
@@ -61,19 +64,18 @@ class MonitoringLogMessage:
 
     def __str__(self):
         return (
-            f"{self.__class__.__name__}(id={self._id}, timestamp={self._timestamp}, message={self._message}, "
-            f"additional_data={self._additional_data}, severity={self._severity.name}, "
+            f"{self.__class__.__name__}(id={self._id},process_id={self._process_id}, timestamp={self._timestamp},"
+            f"message={self._message}, additional_data={self._additional_data}, severity={self._severity.name}, "
             f"while_tracking={self._while_tracking}, "
             f"current_module={self._current_module}, current_routine={self._current_routine})"
         )
 
     def __repr__(self):
         return (
-            f"{self.__class__.__name__}(id={self._id}, timestamp={self._timestamp}, message={self._message}, "
-            f"additional_data={self._additional_data}, severity={self._severity.name}, "
+            f"{self.__class__.__name__}(id={self._id},process_id={self._process_id}, timestamp={self._timestamp}, "
+            f"message={self._message}, additional_data={self._additional_data}, severity={self._severity.name}, "
             f"while_tracking={self._while_tracking}, "
-            f"current_module={self._current_module}, current_routine={self._current_routine})"
-        )
+            f"current_module={self._current_module}, current_routine={self._current_routine})")
 
 
 class MonitoringLogger:
@@ -87,7 +89,7 @@ class MonitoringLogger:
 
     def get_total_log_count(
             self,
-            log_id: ObjectId = None,
+            process_id: str = None,
             message: str = None,
             severity: int = None,
             while_tracking: bool = None,
@@ -97,8 +99,8 @@ class MonitoringLogger:
             upper_boundary: datetime = None,
     ):
         query = {}
-        if log_id is not None:
-            query["_id"] = ObjectId(log_id)
+        if process_id is not None:
+            query["process_id"] = process_id
         if severity is not None:
             query["severity"] = severity
         if while_tracking is not None:
@@ -120,7 +122,7 @@ class MonitoringLogger:
 
     def get_logs(
             self,
-            log_id: ObjectId = None,
+            process_id: str = None,
             message: str = None,
             severity: LogSeverity = None,
             while_tracking: bool = None,
@@ -132,8 +134,8 @@ class MonitoringLogger:
             limitation: int = None,
     ) -> List:
         query = {}
-        if log_id is not None:
-            query["_id"] = log_id
+        if process_id is not None:
+            query["process_id"] = process_id
         if severity is not None:
             query["severity"] = severity
         if while_tracking is not None:
@@ -159,6 +161,7 @@ class MonitoringLogger:
                 cursor = self._collection.find(query)
             for log in cursor:
                 log_message = MonitoringLogMessage(
+                    process_id=log['process_id'],
                     message=log["message"],
                     while_tracking=log["while_tracking"],
                     severity=LogSeverity.from_value(log["severity"]),
