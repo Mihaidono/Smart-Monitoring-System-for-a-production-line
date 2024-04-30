@@ -233,7 +233,7 @@ function MonitoringLog({ logData }) {
                 }}
                 variant="body2"
               >
-                Id: {logData._id}
+                Id: {logData.process_id}
               </Typography>
             </Grid>
           </Grid>
@@ -271,7 +271,7 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="subtitle2">Object Id:</Typography>
+                <Typography variant="subtitle2">Process Id:</Typography>
               </Grid>
               <Grid
                 xs={12}
@@ -285,7 +285,7 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">{logData._id}</Typography>
+                <Typography variant="body2">{logData.process_id}</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
