@@ -62,7 +62,7 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
     let updatedQuery = { ...query };
     switch (filterList[index].split(":")[0]) {
       case FilterList.ID:
-        delete updatedQuery.log_id;
+        delete updatedQuery.process_id;
         break;
       case FilterList.SEVERITY:
         delete updatedQuery.severity;
@@ -152,7 +152,7 @@ function DrawerContent({ query, updateQuery, filterCount, updateFilterCount }) {
         if (idValue) {
           updatedMessages[index] = `${filterList[index]}: ${idValue}`;
           stateChanged = true;
-          updatedQuery.log_id = idValue;
+          updatedQuery.process_id = idValue;
         }
         break;
       case FilterList.SEVERITY:

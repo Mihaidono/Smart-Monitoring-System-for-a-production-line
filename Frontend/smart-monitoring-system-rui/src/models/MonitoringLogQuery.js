@@ -1,6 +1,6 @@
 export class MonitoringLogQuery {
   constructor() {
-    this.log_id = null;
+    this.process_id = null;
     this.message = null;
     this.severity = null;
     this.while_tracking = null;
