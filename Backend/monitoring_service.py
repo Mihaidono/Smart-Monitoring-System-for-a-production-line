@@ -1,14 +1,13 @@
 import base64
 import json
 import os
-import io
 import uuid
 import threading
 import time
 from datetime import datetime
 from typing import List
 
-from PIL import Image
+import cv2
 import numpy as np
 import paho.mqtt.subscribe as subscribe
 import paho.mqtt.publish as publish
@@ -331,10 +330,10 @@ class MonitoringService:
                     self._json_mqtt_data = json_message
                     self._previous_timestamp = current_timestamp
 
-    def decode_image_from_base64(self) -> Image:
+    def decode_image_from_base64(self) -> cv2.typing.MatLike:
         image_data = base64.b64decode(self._json_mqtt_data['data'].split(',', 1)[-1].strip())
-        image_stream = io.BytesIO(image_data)
-        return Image.open(image_stream)
+        image_np = np.frombuffer(image_data, np.uint8)
+        return cv2.imdecode(image_np, cv2.IMREAD_COLOR)
 
     def has_container_moved(self, filled_coordinate_matrix: List[List]):
 
