@@ -1,8 +1,8 @@
 import os
 from typing import List
 
-import cv2
 import yaml
+from PIL import Image
 from dotenv import load_dotenv
 from ultralytics import YOLO
 
@@ -87,7 +87,7 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
     model.train(data=config_file, epochs=number_of_epochs)
 
 
-def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | None:
+def identify_container_units(image: Image) -> List | List[List] | None:
     results = trained_model(image, verbose=True)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
@@ -116,7 +116,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
     return None
 
 
-def identify_workpiece(image: cv2.typing.MatLike) -> None | dict:
+def identify_workpiece(image: Image) -> None | dict:
     results = trained_model(image)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
