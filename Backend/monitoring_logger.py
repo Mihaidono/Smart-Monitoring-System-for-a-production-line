@@ -80,7 +80,7 @@ class MonitoringLogMessage:
 
 class MonitoringLogger:
     def __init__(self):
-        self._database_client = MongoClient(os.getenv("CONNECTION_STRING"))
+        self._database_client = MongoClient(os.getenv("MONGO_HOST"), int(os.getenv("MONGO_PORT")))
         self._database = self._database_client[os.getenv("DATABASE_NAME")]
         self._collection = self._database[os.getenv("COLLECTION_NAME")]
 
