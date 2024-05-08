@@ -4,7 +4,7 @@ services:
   frontend:
     image: mihaidono/sms-frontend:latest
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - REACT_APP_BACKEND_API_BASE_URL=http://backend
       - REACT_APP_BACKEND_API_PORT=8080
@@ -25,7 +25,8 @@ services:
       - YOLO_MODEL_PATH=train5
       - CONTAINER_RECOGNITION_THRESHOLD=0.3
       - WORKPIECE_RECOGNITION_THRESHOLD=0.1
-      - CONNECTION_STRING=mongodb://database:27017
+      - MONGO_HOST=database
+      - MONGO_PORT=27017
       - DATABASE_NAME=smspl-cluster
       - COLLECTION_NAME=smspl-logs
     ports:
