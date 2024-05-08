@@ -14,4 +14,5 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=builder /smart_monitoring_frontend/build .
 
+#Default port exposed: 80
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
