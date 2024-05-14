@@ -4,10 +4,12 @@ services:
   frontend:
     image: mihaidono/sms-frontend:latest
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       REACT_APP_BACKEND_API_BASE_URL: backend
-      REACT_APP_BACKEND_API_PORT: 8000
+      REACT_APP_BACKEND_API_PORT: 8001
+    networks:
+      - monitoring-network
     depends_on:
       - backend
     restart: on-failure
@@ -31,7 +33,9 @@ services:
       DATABASE_NAME: smspl-cluster
       COLLECTION_NAME: smspl-logs
     ports:
-      - "8000:8000"
+      - "8001:8000"
+    networks:
+      - monitoring-network
     depends_on:
       - database
     restart: on-failure
@@ -41,6 +45,8 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
+    networks:
+      - monitoring-network
     volumes:
       - mongo-data:/mongo/data/
     restart: on-failure
@@ -48,13 +54,19 @@ services:
   database-ui:
     image: mongo-express:latest
     ports:
-      - 8081:8081
+      - 8002:8081
     restart: on-failure
+    networks:
+      - monitoring-network
     depends_on:
       - database
     environment:
-      ME_CONFIG_MONGODB_SERVER: database
+      ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_PORT: 27017
+
+networks:
+  monitoring-network:
+    name: monitoring-network
 
 volumes:
   mongo-data: {}
