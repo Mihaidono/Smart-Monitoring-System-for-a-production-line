@@ -4,35 +4,37 @@ services:
   frontend:
     image: mihaidono/sms-frontend:latest
     ports:
-      - "3001:80"
+      - "3001:3000"
     environment:
-      - REACT_APP_BACKEND_API_BASE_URL=http://backend
-      - REACT_APP_BACKEND_API_PORT=8080
+      REACT_APP_BACKEND_API_BASE_URL: backend
+      REACT_APP_BACKEND_API_PORT: 8000
     depends_on:
       - backend
+    restart: on-failure
 
   backend:
     image: mihaidono/sms-backend:latest
     environment:
-      - TXT_CONTROLLER_ADDRESS=192.168.0.10
-      - TXT_CONTROLLER_PORT_USED=1883
-      - TXT_CONTROLLER_KEEP_ALIVE=60
-      - TXT_USERNAME=txt
-      - TXT_PASSWD=xtx
-      - CAMERA_STANDBY_TIME=45
-      - YOLO_MODEL_USED=yolov8m
-      - EPOCHS_TO_TRAIN=50
-      - YOLO_MODEL_PATH=train5
-      - CONTAINER_RECOGNITION_THRESHOLD=0.3
-      - WORKPIECE_RECOGNITION_THRESHOLD=0.1
-      - MONGO_HOST=database
-      - MONGO_PORT=27017
-      - DATABASE_NAME=smspl-cluster
-      - COLLECTION_NAME=smspl-logs
+      TXT_CONTROLLER_ADDRESS: 192.168.0.10
+      TXT_CONTROLLER_PORT_USED: 1883
+      TXT_CONTROLLER_KEEP_ALIVE: 60
+      TXT_USERNAME: txt
+      TXT_PASSWD: xtx
+      CAMERA_STANDBY_TIME: 45
+      YOLO_MODEL_USED: yolov8m
+      EPOCHS_TO_TRAIN: 50
+      YOLO_MODEL_PATH: train5
+      CONTAINER_RECOGNITION_THRESHOLD: 0.3
+      WORKPIECE_RECOGNITION_THRESHOLD: 0.1
+      MONGO_HOST: database
+      MONGO_PORT: 27017
+      DATABASE_NAME: smspl-cluster
+      COLLECTION_NAME: smspl-logs
     ports:
-      - "8080:8000"
+      - "8000:8000"
     depends_on:
       - database
+    restart: on-failure
 
   database:
     image: mongo:latest
@@ -40,4 +42,19 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data:/data/db
+      - mongo-data:/mongo/data/
+    restart: on-failure
+
+  database-ui:
+    image: mongo-express:latest
+    ports:
+      - 8081:8081
+    restart: on-failure
+    depends_on:
+      - database
+    environment:
+      ME_CONFIG_MONGODB_SERVER: database
+      ME_CONFIG_MONGODB_PORT: 27017
+
+volumes:
+  mongo-data: {}
