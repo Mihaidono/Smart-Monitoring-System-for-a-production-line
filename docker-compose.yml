@@ -6,13 +6,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_BACKEND_API_BASE_URL: backend
+      REACT_APP_BACKEND_API_BASE_URL: localhost
       REACT_APP_BACKEND_API_PORT: 8001
     networks:
       - monitoring-network
     depends_on:
       - backend
-    restart: on-failure
+    restart: always
 
   backend:
     image: mihaidono/sms-backend:latest
@@ -38,30 +38,30 @@ services:
       - monitoring-network
     depends_on:
       - database
-    restart: on-failure
+    restart: always
 
   database:
-    image: mongo:latest
-    container_name: mongodb
+    image: mongo:7.0.9
+    container_name: mongo
     ports:
       - "27017:27017"
     networks:
       - monitoring-network
     volumes:
       - mongo-data:/mongo/data/
-    restart: on-failure
+    restart: always
 
   database-ui:
-    image: mongo-express:latest
+    image: mongo-express:1.0.2-20
     ports:
       - 8002:8081
-    restart: on-failure
+    restart: always
     networks:
       - monitoring-network
     depends_on:
       - database
     environment:
-      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_SERVER: database
       ME_CONFIG_MONGODB_PORT: 27017
 
 networks:

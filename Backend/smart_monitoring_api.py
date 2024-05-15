@@ -39,7 +39,7 @@ class ChangeState(BaseModel):
 
 
 class LogRequest(BaseModel):
-    log_id: Optional[str] = None
+    process_id: Optional[str] = None
     message: Optional[str] = None
     severity: Optional[int] = None
     while_tracking: Optional[bool] = None
