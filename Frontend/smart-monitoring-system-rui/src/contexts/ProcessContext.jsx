@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { AvailableURLs } from "../config/enums/AvailableURLs";
 import axios from "axios";
 
@@ -19,6 +19,22 @@ export const ProcessProvider = ({ children }) => {
 
     sendStateToBackend();
   };
+
+  // attempt at updating process state at init for no discrepancies
+
+  useEffect(() => {
+    const sendStateToBackend = async () => {
+      try {
+        await axios.post(`${AvailableURLs.BACKEND_HTTP}/set_process_state`, {
+          new_state: processStarted,
+        });
+      } catch (error) {}
+    };
+
+    sendStateToBackend();
+  }, []);
+
+  //----------------------------------------------------------------------
 
   return (
     <ProcessContext.Provider value={{ processStarted, updateProcessStarted }}>
