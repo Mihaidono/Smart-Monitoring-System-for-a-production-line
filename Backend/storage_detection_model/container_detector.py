@@ -88,7 +88,7 @@ def train_container_detector(yolo_model_type: str, number_of_epochs: int):
 
 
 def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | None:
-    results = trained_model(image, verbose=True)[0]
+    results = trained_model(image, verbose=False)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
@@ -117,7 +117,7 @@ def identify_container_units(image: cv2.typing.MatLike) -> List | List[List] | N
 
 
 def identify_workpiece(image: cv2.typing.MatLike) -> None | dict:
-    results = trained_model(image)[0]
+    results = trained_model(image, verbose=False)[0]
     center_of_objects = []
     for result in results.boxes.data.tolist():
         x1, y1, x2, y2, score, class_id = result
