@@ -27,14 +27,14 @@ class LogSeverity(Enum):
 
 class MonitoringLogMessage:
     def __init__(
-            self,
-            process_id: str,
-            message: str,
-            severity: LogSeverity,
-            while_tracking: bool,
-            current_module: int,
-            current_routine: int,
-            additional_data: dict | List = None,
+        self,
+        process_id: str,
+        message: str,
+        severity: LogSeverity,
+        while_tracking: bool,
+        current_module: int,
+        current_routine: int,
+        additional_data: dict | List = None,
     ):
         self._id = ObjectId()
         self._timestamp = datetime.utcnow()
@@ -75,28 +75,38 @@ class MonitoringLogMessage:
             f"{self.__class__.__name__}(id={self._id},process_id={self._process_id}, timestamp={self._timestamp}, "
             f"message={self._message}, additional_data={self._additional_data}, severity={self._severity.name}, "
             f"while_tracking={self._while_tracking}, "
-            f"current_module={self._current_module}, current_routine={self._current_routine})")
+            f"current_module={self._current_module}, current_routine={self._current_routine})"
+        )
 
 
 class MonitoringLogger:
     def __init__(self):
-        self._database_client = MongoClient(os.getenv("MONGO_HOST"), int(os.getenv("MONGO_PORT")))
-        self._database = self._database_client[os.getenv("DATABASE_NAME")]
-        self._collection = self._database[os.getenv("COLLECTION_NAME")]
+        try:
+            print("Attempting database connection...")
+            self._database_client = MongoClient(
+                os.getenv("MONGO_HOST"), int(os.getenv("MONGO_PORT"))
+            )
+            self._database = self._database_client[os.getenv("DATABASE_NAME")]
+            self._collection = self._database[os.getenv("COLLECTION_NAME")]
+            self._database.command("ping")
+            print("Successfully connected to database")
+        except Exception:
+           print(f"Database connection could not be established")
+           exit(-1)
 
     def store_log(self, log: MonitoringLogMessage):
         self._collection.insert_one(log.get_log_data())
 
     def get_total_log_count(
-            self,
-            process_id: str = None,
-            message: str = None,
-            severity: int = None,
-            while_tracking: bool = None,
-            current_routine: int = None,
-            current_module: int = None,
-            lower_boundary: datetime = None,
-            upper_boundary: datetime = None,
+        self,
+        process_id: str = None,
+        message: str = None,
+        severity: int = None,
+        while_tracking: bool = None,
+        current_routine: int = None,
+        current_module: int = None,
+        lower_boundary: datetime = None,
+        upper_boundary: datetime = None,
     ):
         query = {}
         if process_id is not None:
@@ -121,17 +131,17 @@ class MonitoringLogger:
         return log_count
 
     def get_logs(
-            self,
-            process_id: str = None,
-            message: str = None,
-            severity: LogSeverity = None,
-            while_tracking: bool = None,
-            current_routine: int = None,
-            current_module: int = None,
-            lower_boundary: datetime = None,
-            upper_boundary: datetime = None,
-            current_page: int = None,
-            limitation: int = None,
+        self,
+        process_id: str = None,
+        message: str = None,
+        severity: LogSeverity = None,
+        while_tracking: bool = None,
+        current_routine: int = None,
+        current_module: int = None,
+        lower_boundary: datetime = None,
+        upper_boundary: datetime = None,
+        current_page: int = None,
+        limitation: int = None,
     ) -> List:
         query = {}
         if process_id is not None:
@@ -161,7 +171,7 @@ class MonitoringLogger:
                 cursor = self._collection.find(query)
             for log in cursor:
                 log_message = MonitoringLogMessage(
-                    process_id=log['process_id'],
+                    process_id=log["process_id"],
                     message=log["message"],
                     while_tracking=log["while_tracking"],
                     severity=LogSeverity.from_value(log["severity"]),

@@ -12,13 +12,11 @@ from typing import Optional, List
 
 import camera_control_service as camera_control
 from monitoring_service import MonitoringService
-from monitoring_logger import MonitoringLogger
 
 load_dotenv()
 
 smart_monitoring_app = FastAPI()
 surveillance_system = MonitoringService()
-logger = MonitoringLogger()
 
 smart_monitoring_app.add_middleware(
     CORSMiddleware,
@@ -171,7 +169,8 @@ async def get_tracking_workpiece(websocket: WebSocket):
 @smart_monitoring_app.post("/logger/get_total_log_count")
 async def get_total_count(log_request: LogRequest):
     try:
-        logs_count = logger.get_total_log_count(
+
+        logs_count = surveillance_system.logger.get_total_log_count(
             process_id=log_request.process_id,
             message=log_request.message,
             severity=log_request.severity,
@@ -189,7 +188,7 @@ async def get_total_count(log_request: LogRequest):
 @smart_monitoring_app.post("/logger/get_logs")
 async def get_logs(log_request: LogRequest):
     try:
-        logs = logger.get_logs(
+        logs = surveillance_system.logger.get_logs(
             process_id=log_request.process_id,
             message=log_request.message,
             severity=log_request.severity,

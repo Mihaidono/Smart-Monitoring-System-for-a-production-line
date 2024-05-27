@@ -63,6 +63,10 @@ class MonitoringService:
         self._detection_count_per_module = 0
 
     @property
+    def logger(self):
+        return self._logger
+    
+    @property
     def process_started(self):
         return self._process_started
 
