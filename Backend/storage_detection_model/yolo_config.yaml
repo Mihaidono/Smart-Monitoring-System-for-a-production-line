@@ -1,0 +1,13 @@
+path: C:\projects\Smart-Monitoring-System-for-a-production-line\storage_detection_model\datasets
+train: images\train
+val: images\train
+
+# Classes
+names:
+  0: red_storage
+  1: empty_storage
+  2: blue_storage
+  3: white_storage
+  4: white_workpiece
+  5: blue_workpiece
+  6: red_workpiece
