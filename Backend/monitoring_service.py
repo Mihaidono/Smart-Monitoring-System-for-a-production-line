@@ -354,7 +354,7 @@ class MonitoringService:
                     self._reoccurrence_matrix[idx][jdx] = 0
 
         self._prev_frame_with_detected_objects = filled_coordinate_matrix
-        if any(3 in column for column in self._reoccurrence_matrix):
+        if any(5 in column for column in self._reoccurrence_matrix):
             self._reoccurrence_matrix = np.zeros((3, 3))
             self._logger.store_log(
                 MonitoringLogMessage(self._current_process_id, f"Current state of the High-Bay Warehouse",

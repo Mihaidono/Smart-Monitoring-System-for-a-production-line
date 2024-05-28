@@ -233,7 +233,7 @@ function MonitoringLog({ logData }) {
                 }}
                 variant="body2"
               >
-                Id: {logData.process_id}
+                Process Id: {logData.process_id || "Not in a process"}
               </Typography>
             </Grid>
           </Grid>
@@ -285,7 +285,7 @@ function MonitoringLog({ logData }) {
                   justifyContent: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography variant="body2">{logData.process_id}</Typography>
+                <Typography variant="body2">{logData.process_id || "Not in a process"}</Typography>
               </Grid>
             </Grid>
             <Grid xs={12} container item>
