@@ -113,7 +113,6 @@ function ProcessOverview() {
   const [openPopup, setOpenPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
   const [popupseverity, setPopupSeverity] = useState("info");
-
   const { lastMessage: deliveryInfoMessage } = useWebSocket(
     AvailableURLs.BACKEND_WS + "/ws_delivery_info"
   );
@@ -136,11 +135,18 @@ function ProcessOverview() {
       try {
         const data = JSON.parse(deliveryInfoMessage.data);
         if (processStarted) {
-          if (activeStep === null || activeStep === 4) {
+          console.log(data.current_routine);
+          if (
+            activeStep === null &&
+            data.tracking_workpiece !== trackingStarted
+          ) {
             setTrackingStarted(data.tracking_workpiece);
           }
 
-          if (data.current_routine === MonitoringRoutines.DELIVERY_SUCCESSFUL) {
+          if (
+            data.current_routine === MonitoringRoutines.DELIVERY_SUCCESSFUL &&
+            activeStep === 3
+          ) {
             setActiveStep(4);
             createPopupAlert("Successfuly completed delivery!", "success");
             setTimeout(() => {
@@ -151,7 +157,7 @@ function ProcessOverview() {
           if (data.current_routine === MonitoringRoutines.TIMED_OUT) {
             setFailedStepIndex(activeStep);
             createPopupAlert(
-              `Timed out at ${processSteps[failedStepIndex]} module `,
+              `Timed out at ${processSteps[activeStep]} module `,
               "error"
             );
             setTimeout(() => {
@@ -165,7 +171,7 @@ function ProcessOverview() {
         }
       } catch (error) {}
     }
-  }, [processStarted, activeStep, failedStepIndex, deliveryInfoMessage]);
+  }, [processStarted, activeStep, trackingStarted, deliveryInfoMessage]);
 
   useEffect(() => {
     if (deliveryInfoMessage && deliveryInfoMessage.data) {

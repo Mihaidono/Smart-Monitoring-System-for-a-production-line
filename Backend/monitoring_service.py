@@ -15,7 +15,11 @@ import paho.mqtt.publish as publish
 from dotenv import load_dotenv
 
 import camera_control_service as camera_control
-from camera_control_service import CameraDegrees, CameraDirections, FischertechnikModuleLocations
+from camera_control_service import (
+    CameraDegrees,
+    CameraDirections,
+    FischertechnikModuleLocations,
+)
 from storage_detection_model import container_detector
 from monitoring_logger import MonitoringLogger, MonitoringLogMessage, LogSeverity
 
@@ -56,8 +60,8 @@ class MonitoringService:
         self._TXT_BROKER_ADDRESS = os.getenv("TXT_CONTROLLER_ADDRESS")
         self._PORT_USED = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
         self._KEEP_ALIVE = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
-        self._USERNAME = os.getenv('TXT_USERNAME')
-        self._PASSWD = os.getenv('TXT_PASSWD')
+        self._USERNAME = os.getenv("TXT_USERNAME")
+        self._PASSWD = os.getenv("TXT_PASSWD")
 
         self._is_camera_delayed = False
         self._detection_count_per_module = 0
@@ -65,7 +69,7 @@ class MonitoringService:
     @property
     def logger(self):
         return self._logger
-    
+
     @property
     def process_started(self):
         return self._process_started
@@ -73,11 +77,28 @@ class MonitoringService:
     @process_started.setter
     def process_started(self, value):
         self._process_started = value
-        self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Monitoring Service started from GUI",
-                                 LogSeverity.INFO,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+        if value is True:
+            self._logger.store_log(
+                MonitoringLogMessage(
+                    self._current_process_id,
+                    "Monitoring Service started from GUI",
+                    LogSeverity.INFO,
+                    self._tracking_workpiece,
+                    camera_control.current_module,
+                    self._current_routine,
+                )
+            )
+        else:
+            self._logger.store_log(
+                MonitoringLogMessage(
+                    self._current_process_id,
+                    "Monitoring Service stopped from GUI",
+                    LogSeverity.INFO,
+                    self._tracking_workpiece,
+                    camera_control.current_module,
+                    self._current_routine,
+                )
+            )
 
     @property
     def current_routine(self):
@@ -96,11 +117,19 @@ class MonitoringService:
         return self._json_mqtt_data
 
     def progress_camera_position(self):
-        if camera_control.is_module_equal(camera_control.current_module,
-                                          FischertechnikModuleLocations.SHIPPING) is False:
-            if camera_control.is_module_equal(camera_control.current_module,
-                                              FischertechnikModuleLocations.PROCESSING_STATION) and \
-                    self._detection_count_per_module == 0:
+        if (
+            camera_control.is_module_equal(
+                camera_control.current_module, FischertechnikModuleLocations.SHIPPING
+            )
+            is False
+        ):
+            if (
+                camera_control.is_module_equal(
+                    camera_control.current_module,
+                    FischertechnikModuleLocations.PROCESSING_STATION,
+                )
+                and self._detection_count_per_module == 0
+            ):
                 camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.DOWN, CameraDegrees.TWENTY)
@@ -111,16 +140,24 @@ class MonitoringService:
 
                 self._detection_count_per_module += 1
                 self._logger.store_log(
-                    MonitoringLogMessage(self._current_process_id,
-                                         "Workpiece moved from High-Bay Warehouse to Processing Station",
-                                         LogSeverity.INFO,
-                                         self._tracking_workpiece, camera_control.current_module,
-                                         self._current_routine))
+                    MonitoringLogMessage(
+                        self._current_process_id,
+                        "Workpiece moved from High-Bay Warehouse to Processing Station",
+                        LogSeverity.INFO,
+                        self._tracking_workpiece,
+                        camera_control.current_module,
+                        self._current_routine,
+                    )
+                )
                 return
 
-            if camera_control.is_module_equal(camera_control.current_module,
-                                              FischertechnikModuleLocations.PROCESSING_STATION) and \
-                    self._detection_count_per_module == 1:
+            if (
+                camera_control.is_module_equal(
+                    camera_control.current_module,
+                    FischertechnikModuleLocations.PROCESSING_STATION,
+                )
+                and self._detection_count_per_module == 1
+            ):
                 camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TWENTY)
                 camera_control.move_camera(CameraDirections.LEFT, CameraDegrees.TEN)
                 camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
@@ -130,26 +167,39 @@ class MonitoringService:
 
                 self._detection_count_per_module += 1
                 self._logger.store_log(
-                    MonitoringLogMessage(self._current_process_id,
-                                         "Workpiece moved from Processing Station to Sorting Line",
-                                         LogSeverity.INFO,
-                                         self._tracking_workpiece, camera_control.current_module,
-                                         self._current_routine))
+                    MonitoringLogMessage(
+                        self._current_process_id,
+                        "Workpiece moved from Processing Station to Sorting Line",
+                        LogSeverity.INFO,
+                        self._tracking_workpiece,
+                        camera_control.current_module,
+                        self._current_routine,
+                    )
+                )
                 return
 
-            if camera_control.is_module_equal(camera_control.current_module,
-                                              FischertechnikModuleLocations.SORTING_LINE) and \
-                    self._detection_count_per_module == 2:
+            if (
+                camera_control.is_module_equal(
+                    camera_control.current_module,
+                    FischertechnikModuleLocations.SORTING_LINE,
+                )
+                and self._detection_count_per_module == 2
+            ):
                 camera_control.move_camera(CameraDirections.RIGHT, CameraDegrees.TEN)
                 camera_control.move_camera(CameraDirections.UP, CameraDegrees.TWENTY)
                 camera_control.wait_camera_to_stabilize()
 
                 self._detection_count_per_module += 1
                 self._logger.store_log(
-                    MonitoringLogMessage(self._current_process_id, "Workpiece moved from Sorting Line to Delivery",
-                                         LogSeverity.INFO,
-                                         self._tracking_workpiece, camera_control.current_module,
-                                         self._current_routine))
+                    MonitoringLogMessage(
+                        self._current_process_id,
+                        "Workpiece moved from Sorting Line to Delivery",
+                        LogSeverity.INFO,
+                        self._tracking_workpiece,
+                        camera_control.current_module,
+                        self._current_routine,
+                    )
+                )
                 return
 
     def check_if_camera_has_delay(self):
@@ -157,15 +207,24 @@ class MonitoringService:
             time_array = []
             is_delayed_set = False
             for _ in range(5):
-                msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
-                                       client_id=self._CLIENT_TXT_NAME,
-                                       keepalive=self._KEEP_ALIVE,
-                                       auth={'username': self._USERNAME, 'password': self._PASSWD})
+                msg = subscribe.simple(
+                    "i/cam",
+                    hostname=self._TXT_BROKER_ADDRESS,
+                    port=self._PORT_USED,
+                    client_id=self._CLIENT_TXT_NAME,
+                    keepalive=self._KEEP_ALIVE,
+                    auth={"username": self._USERNAME, "password": self._PASSWD},
+                )
                 json_message = json.loads(msg.payload)
-                time_array.append(json_message['ts'])
+                time_array.append(json_message["ts"])
 
-            datetime_array = [datetime.fromisoformat(timestamp) for timestamp in time_array]
-            time_diffs = [datetime_array[i + 1] - datetime_array[i] for i in range(len(datetime_array) - 1)]
+            datetime_array = [
+                datetime.fromisoformat(timestamp) for timestamp in time_array
+            ]
+            time_diffs = [
+                datetime_array[i + 1] - datetime_array[i]
+                for i in range(len(datetime_array) - 1)
+            ]
             for diff in time_diffs:
                 if diff.total_seconds() > 1:
                     is_delayed_set = True
@@ -173,35 +232,57 @@ class MonitoringService:
             time.sleep(60)
 
     def order_workpiece(self, color: str):
-        payload = json.dumps({'ts': datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), 'type': color})
-        publish.single(topic="f/o/order", payload=payload, hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
-                       client_id=self._CLIENT_TXT_NAME,
-                       keepalive=self._KEEP_ALIVE,
-                       auth={'username': self._USERNAME, 'password': self._PASSWD})
+        payload = json.dumps(
+            {"ts": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "type": color}
+        )
+        publish.single(
+            topic="f/o/order",
+            payload=payload,
+            hostname=self._TXT_BROKER_ADDRESS,
+            port=self._PORT_USED,
+            client_id=self._CLIENT_TXT_NAME,
+            keepalive=self._KEEP_ALIVE,
+            auth={"username": self._USERNAME, "password": self._PASSWD},
+        )
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, f"{color} Workpiece ordered",
-                                 LogSeverity.INFO,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                f"{color} Workpiece ordered",
+                LogSeverity.INFO,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
 
     def initialization_routine(self):
         self.initiate_camera_position()
         self._prev_frame_with_detected_objects = []
         self._current_process_id = str(uuid.uuid1())
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Initialization Routine completed successfully!",
-                                 LogSeverity.SUCCESS,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                "Initialization Routine completed successfully!",
+                LogSeverity.SUCCESS,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
         self._current_routine = RoutineStatus.SURVEYING_BAY
 
     def camera_timeout_routine(self):
         self._detection_count_per_module = 0
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Object lost from field of view!",
-                                 LogSeverity.WARNING,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                "Object lost from field of view!",
+                LogSeverity.WARNING,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
         self._tracking_workpiece = False
 
         time.sleep(2)
@@ -210,10 +291,15 @@ class MonitoringService:
     def successful_delivery_routine(self):
         self._tracking_workpiece = False
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Successfully delivered workpiece!",
-                                 LogSeverity.SUCCESS,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                "Successfully delivered workpiece!",
+                LogSeverity.SUCCESS,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
 
         time.sleep(2)
         self._current_routine = RoutineStatus.INITIALIZING
@@ -221,10 +307,15 @@ class MonitoringService:
     def idle_routine(self):
         self._tracking_workpiece = False
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Monitoring Service turned to Idle mode",
-                                 LogSeverity.INFO,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                "Monitoring Service turned to Idle mode",
+                LogSeverity.INFO,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
         while not self._process_started:
             time.sleep(0.5)
         self._current_routine = RoutineStatus.INITIALIZING
@@ -237,11 +328,19 @@ class MonitoringService:
             if self._json_mqtt_data:
                 img = self.decode_image_from_base64()
                 if img is not None:
-                    coordinates_matrix = container_detector.identify_container_units(img)
+                    coordinates_matrix = container_detector.identify_container_units(
+                        img
+                    )
                     if coordinates_matrix:
-                        self._warehouse_containers = container_detector.get_missing_storage_spaces(coordinates_matrix)
+                        self._warehouse_containers = (
+                            container_detector.get_missing_storage_spaces(
+                                coordinates_matrix
+                            )
+                        )
                         if self.has_container_moved(self._warehouse_containers):
-                            self._current_routine = RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                            self._current_routine = (
+                                RoutineStatus.SURVEYING_DELIVERY_PROCESS
+                            )
                             break
 
     def camera_timeout_counter(self):
@@ -255,10 +354,15 @@ class MonitoringService:
         self._tracking_workpiece = True
         countdown_running = False
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Surveillance of the in-delivery workpiece started",
-                                 LogSeverity.INFO,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                "Surveillance of the in-delivery workpiece started",
+                LogSeverity.INFO,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
 
         while True:
             if not self._process_started:
@@ -270,7 +374,9 @@ class MonitoringService:
                     detected_object = container_detector.identify_workpiece(img)
                     if detected_object is None:
                         if countdown_running is not True:
-                            threading.Thread(target=self.camera_timeout_counter, daemon=True).start()
+                            threading.Thread(
+                                target=self.camera_timeout_counter, daemon=True
+                            ).start()
                             countdown_running = True
                         if self._standby_seconds_count >= self._camera_standby_timer:
                             self._detection_event.clear()
@@ -286,27 +392,40 @@ class MonitoringService:
                         if self._detection_count_per_module < 3:
                             self.progress_camera_position()
                         else:
-                            self._current_routine = RoutineStatus.CONFIRM_DELIVERY_STATUS
+                            self._current_routine = (
+                                RoutineStatus.CONFIRM_DELIVERY_STATUS
+                            )
                             self._standby_seconds_count = 0
                             break
                     else:
-                        if camera_control.is_module_equal(camera_control.current_module,
-                                                          FischertechnikModuleLocations.SHIPPING):
-                            self._current_routine = RoutineStatus.CONFIRM_DELIVERY_STATUS
+                        if camera_control.is_module_equal(
+                            camera_control.current_module,
+                            FischertechnikModuleLocations.SHIPPING,
+                        ):
+                            self._current_routine = (
+                                RoutineStatus.CONFIRM_DELIVERY_STATUS
+                            )
                             self._standby_seconds_count = 0
                             break
 
                         crt_height, crt_width, _ = img.shape
-                        self.center_workpiece_in_frame(detected_object["coordinates"],
-                                                       img_width=crt_width,
-                                                       img_height=crt_height)
+                        self.center_workpiece_in_frame(
+                            detected_object["coordinates"],
+                            img_width=crt_width,
+                            img_height=crt_height,
+                        )
 
     def confirm_delivery_status_routine(self):
         self._logger.store_log(
-            MonitoringLogMessage(self._current_process_id, "Waiting for delivery confirmation!",
-                                 LogSeverity.INFO,
-                                 self._tracking_workpiece, camera_control.current_module,
-                                 self._current_routine))
+            MonitoringLogMessage(
+                self._current_process_id,
+                "Waiting for delivery confirmation!",
+                LogSeverity.INFO,
+                self._tracking_workpiece,
+                camera_control.current_module,
+                self._current_routine,
+            )
+        )
         while True:
             if self.check_delivery_status() is True:
                 self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
@@ -315,27 +434,39 @@ class MonitoringService:
                 break
 
     def check_delivery_status(self):
-        msg = subscribe.simple("f/i/state/dso", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
-                               client_id=self._CLIENT_TXT_NAME,
-                               keepalive=self._KEEP_ALIVE,
-                               auth={'username': self._USERNAME, 'password': self._PASSWD})
+        msg = subscribe.simple(
+            "f/i/state/dso",
+            hostname=self._TXT_BROKER_ADDRESS,
+            port=self._PORT_USED,
+            client_id=self._CLIENT_TXT_NAME,
+            keepalive=self._KEEP_ALIVE,
+            auth={"username": self._USERNAME, "password": self._PASSWD},
+        )
         return json.loads(msg.payload)["active"]
 
     def update_json_message(self):
         while True:
-            msg = subscribe.simple("i/cam", hostname=self._TXT_BROKER_ADDRESS, port=self._PORT_USED,
-                                   client_id=self._CLIENT_TXT_NAME,
-                                   keepalive=self._KEEP_ALIVE,
-                                   auth={'username': self._USERNAME, 'password': self._PASSWD})
+            msg = subscribe.simple(
+                "i/cam",
+                hostname=self._TXT_BROKER_ADDRESS,
+                port=self._PORT_USED,
+                client_id=self._CLIENT_TXT_NAME,
+                keepalive=self._KEEP_ALIVE,
+                auth={"username": self._USERNAME, "password": self._PASSWD},
+            )
             json_message = json.loads(msg.payload)
             if "data" in json_message and "ts" in json_message:
-                current_timestamp = datetime.strptime(json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                current_timestamp = datetime.strptime(
+                    json_message["ts"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                )
                 if self._previous_timestamp < current_timestamp:
                     self._json_mqtt_data = json_message
                     self._previous_timestamp = current_timestamp
 
     def decode_image_from_base64(self) -> cv2.typing.MatLike:
-        image_data = base64.b64decode(self._json_mqtt_data['data'].split(',', 1)[-1].strip())
+        image_data = base64.b64decode(
+            self._json_mqtt_data["data"].split(",", 1)[-1].strip()
+        )
         image_np = np.frombuffer(image_data, np.uint8)
         return cv2.imdecode(image_np, cv2.IMREAD_COLOR)
 
@@ -347,8 +478,10 @@ class MonitoringService:
 
         for idx in range(0, len(filled_coordinate_matrix)):
             for jdx in range(0, len(filled_coordinate_matrix)):
-                if self.check_container_movement(self._prev_frame_with_detected_objects[idx][jdx],
-                                                 filled_coordinate_matrix[idx][jdx]):
+                if self.check_container_movement(
+                    self._prev_frame_with_detected_objects[idx][jdx],
+                    filled_coordinate_matrix[idx][jdx],
+                ):
                     self._reoccurrence_matrix[idx][jdx] += 1
                 else:
                     self._reoccurrence_matrix[idx][jdx] = 0
@@ -357,11 +490,16 @@ class MonitoringService:
         if any(5 in column for column in self._reoccurrence_matrix):
             self._reoccurrence_matrix = np.zeros((3, 3))
             self._logger.store_log(
-                MonitoringLogMessage(self._current_process_id, f"Current state of the High-Bay Warehouse",
-                                     LogSeverity.INFO,
-                                     self._tracking_workpiece, camera_control.current_module,
-                                     self._current_routine,
-                                     self._warehouse_containers))
+                MonitoringLogMessage(
+                    self._current_process_id,
+                    f"Current state of the High-Bay Warehouse",
+                    LogSeverity.INFO,
+                    self._tracking_workpiece,
+                    camera_control.current_module,
+                    self._current_routine,
+                    self._warehouse_containers,
+                )
+            )
             return True
         return False
 
@@ -373,7 +511,7 @@ class MonitoringService:
             RoutineStatus.SURVEYING_DELIVERY_PROCESS: self.survey_delivery_process_routine,
             RoutineStatus.CONFIRM_DELIVERY_STATUS: self.confirm_delivery_status_routine,
             RoutineStatus.TIMED_OUT: self.camera_timeout_routine,
-            RoutineStatus.DELIVERY_SUCCESSFUL: self.successful_delivery_routine
+            RoutineStatus.DELIVERY_SUCCESSFUL: self.successful_delivery_routine,
         }
 
         threading.Thread(target=self.update_json_message, daemon=True).start()
@@ -383,20 +521,31 @@ class MonitoringService:
 
     @staticmethod
     def check_container_movement(prev_frame_workpiece, crt_frame_workpiece) -> bool:
-        if ((prev_frame_workpiece is dict and crt_frame_workpiece is not dict) or
-                (type(prev_frame_workpiece) is int and type(crt_frame_workpiece) is int
-                 and crt_frame_workpiece == 0 and prev_frame_workpiece == 0)):
+        if (prev_frame_workpiece is dict and crt_frame_workpiece is not dict) or (
+            type(prev_frame_workpiece) is int
+            and type(crt_frame_workpiece) is int
+            and crt_frame_workpiece == 0
+            and prev_frame_workpiece == 0
+        ):
             return True
         return False
 
     @staticmethod
-    def center_workpiece_in_frame(workpiece_coordinates: tuple, img_width: float, img_height: float):
+    def center_workpiece_in_frame(
+        workpiece_coordinates: tuple, img_width: float, img_height: float
+    ):
         x_img_center_coord, y_img_center_coord = img_width / 2, img_height / 2
         x_percent_value = img_width * 0.4
         y_percent_value = img_height * 0.4
 
-        if x_img_center_coord + x_percent_value > workpiece_coordinates[0] > x_img_center_coord - x_percent_value and \
-                y_img_center_coord + y_percent_value > workpiece_coordinates[1] > y_img_center_coord - y_percent_value:
+        if (
+            x_img_center_coord + x_percent_value
+            > workpiece_coordinates[0]
+            > x_img_center_coord - x_percent_value
+            and y_img_center_coord + y_percent_value
+            > workpiece_coordinates[1]
+            > y_img_center_coord - y_percent_value
+        ):
             return
 
         if workpiece_coordinates[1] > y_img_center_coord + y_percent_value:
