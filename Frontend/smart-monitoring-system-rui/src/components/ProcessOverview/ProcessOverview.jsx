@@ -152,7 +152,7 @@ function ProcessOverview() {
             createPopupAlert("Successfuly completed delivery!", "success");
             setTimeout(() => {
               setActiveStep(null);
-            }, 3000);
+            }, 4000);
           }
 
           if (data.current_routine === MonitoringRoutines.TIMED_OUT - 1) {
@@ -164,7 +164,7 @@ function ProcessOverview() {
             setTimeout(() => {
               setActiveStep(null);
               setFailedStepIndex(null);
-            }, 3000);
+            }, 4000);
           }
         } else {
           setActiveStep(null);
