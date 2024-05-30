@@ -132,20 +132,21 @@ function ProcessOverview() {
 
   useEffect(() => {
     if (deliveryInfoMessage && deliveryInfoMessage.data) {
+      const data = JSON.parse(deliveryInfoMessage.data);
+      if (activeStep === null || processStarted === false) {
+        setTrackingStarted(data.tracking_workpiece);
+      }
+    }
+  }, [deliveryInfoMessage, activeStep, processStarted]);
+
+  useEffect(() => {
+    if (deliveryInfoMessage && deliveryInfoMessage.data) {
       try {
         const data = JSON.parse(deliveryInfoMessage.data);
         if (processStarted) {
-          console.log(data.current_routine);
           if (
-            activeStep === null &&
-            data.tracking_workpiece !== trackingStarted
-          ) {
-            setTrackingStarted(data.tracking_workpiece);
-          }
-
-          if (
-            data.current_routine === MonitoringRoutines.DELIVERY_SUCCESSFUL &&
-            activeStep === 3
+            data.current_routine ===
+            MonitoringRoutines.DELIVERY_SUCCESSFUL - 1
           ) {
             setActiveStep(4);
             createPopupAlert("Successfuly completed delivery!", "success");
@@ -154,7 +155,7 @@ function ProcessOverview() {
             }, 3000);
           }
 
-          if (data.current_routine === MonitoringRoutines.TIMED_OUT) {
+          if (data.current_routine === MonitoringRoutines.TIMED_OUT - 1) {
             setFailedStepIndex(activeStep);
             createPopupAlert(
               `Timed out at ${processSteps[activeStep]} module `,
