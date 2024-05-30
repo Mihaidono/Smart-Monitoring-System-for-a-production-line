@@ -87,7 +87,7 @@ async def move_camera(control_message: CameraControlMessage):
 async def set_process_state(change_state: ChangeState):
     try:
         surveillance_system.process_started = change_state.new_state
-        surveillance_system.tracking_workpiece = False
+
         response = f"Process State set to {change_state.new_state}"
         return JSONResponse(content=response, status_code=200)
     except Exception as e:
