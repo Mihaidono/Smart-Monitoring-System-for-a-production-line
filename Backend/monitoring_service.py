@@ -43,6 +43,7 @@ class MonitoringService:
         self._detection_event = threading.Event()
         self._camera_standby_timer = int(os.getenv("CAMERA_STANDBY_TIME"))
         self._standby_seconds_count = 0
+        self._countdown_running = False
 
         self._current_process_id = None
         self._warehouse_containers = []
@@ -349,10 +350,20 @@ class MonitoringService:
             self._standby_seconds_count += 1
             time.sleep(1)
 
+    def camera_timedout(self) -> bool:
+        if self._countdown_running is False:
+            threading.Thread(target=self.camera_timeout_counter, daemon=True).start()
+            self._countdown_running = True
+        if self._standby_seconds_count >= self._camera_standby_timer:
+            self._detection_event.clear()
+            self._current_routine = RoutineStatus.TIMED_OUT
+            self._standby_seconds_count = 0
+            return True
+        return False
+
     def survey_delivery_process_routine(self):
         self.process_start_camera_position()
         self._tracking_workpiece = True
-        countdown_running = False
         self._logger.store_log(
             MonitoringLogMessage(
                 self._current_process_id,
@@ -373,20 +384,12 @@ class MonitoringService:
                 if img is not None:
                     detected_object = container_detector.identify_workpiece(img)
                     if detected_object is None:
-                        if countdown_running is not True:
-                            threading.Thread(
-                                target=self.camera_timeout_counter, daemon=True
-                            ).start()
-                            countdown_running = True
-                        if self._standby_seconds_count >= self._camera_standby_timer:
-                            self._detection_event.clear()
-                            self._current_routine = RoutineStatus.TIMED_OUT
-                            self._standby_seconds_count = 0
+                        if self.camera_timedout():
                             break
                         continue
                     self._detection_event.clear()
                     self._standby_seconds_count = 0
-                    countdown_running = False
+                    self._countdown_running = False
 
                     if self._is_camera_delayed:
                         if self._detection_count_per_module < 3:
@@ -431,7 +434,11 @@ class MonitoringService:
                 self._current_routine = RoutineStatus.DELIVERY_SUCCESSFUL
                 self._detection_event.clear()
                 self._standby_seconds_count = 0
+                self._countdown_running = False
                 break
+            if self.camera_timedout():
+                break
+            continue
 
     def check_delivery_status(self):
         msg = subscribe.simple(
@@ -442,7 +449,8 @@ class MonitoringService:
             keepalive=self._KEEP_ALIVE,
             auth={"username": self._USERNAME, "password": self._PASSWD},
         )
-        return json.loads(msg.payload)["active"]
+        response = json.loads(msg.payload)
+        return response["active"]
 
     def update_json_message(self):
         while True:
