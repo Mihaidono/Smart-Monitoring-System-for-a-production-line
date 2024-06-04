@@ -1,4 +1,3 @@
-#Stage 1
 FROM node:18-alpine as builder
 
 WORKDIR /smart_monitoring_frontend
