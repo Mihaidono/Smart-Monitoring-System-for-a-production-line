@@ -113,8 +113,8 @@ sampling_period = float(os.getenv("SAMPLING_PERIOD"))
 txt_broker_address = os.getenv("TXT_CONTROLLER_ADDRESS")
 port_used = int(os.getenv("TXT_CONTROLLER_PORT_USED"))
 keep_alive = int(os.getenv("TXT_CONTROLLER_KEEP_ALIVE"))
-username = os.getenv('TXT_USERNAME')
-passwd = os.getenv('TXT_PASSWD')
+username = os.getenv("TXT_USERNAME")
+passwd = os.getenv("TXT_PASSWD")
 
 client_txt_name = "ImageSamplingService"
 client_txt = mqtt.Client(client_id=client_txt_name)
