@@ -13,7 +13,7 @@ def train_container_detector(
     else:
         print("GPU not available, using CPU")
 
-    model.train(data=data_yaml_path, epochs=number_of_epochs, imgsz=320)
+    model.train(data=data_yaml_path, epochs=number_of_epochs)
     print(
         f"Training completed for model {yolo_model_type} with {number_of_epochs} epochs."
     )
